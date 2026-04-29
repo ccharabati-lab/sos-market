@@ -14,15 +14,15 @@ export function useContactModal() {
 
 export function ContactModalProvider({ children }) {
   const [state, setState] = useState({
-    open: false,
+    isOpen: false,
     supplier: '',
     stage: 'choose',
   });
 
   const value = {
     ...state,
-    open: (supplier) => setState({ open: true, supplier, stage: 'choose' }),
-    close: () => setState((s) => ({ ...s, open: false })),
+    open: (supplier) => setState({ isOpen: true, supplier, stage: 'choose' }),
+    close: () => setState((s) => ({ ...s, isOpen: false })),
     confirm: () => setState((s) => ({ ...s, stage: 'sent' })),
   };
 

@@ -10,8 +10,8 @@ const channelOptions = [
 ];
 
 export default function ContactModal() {
-  const { open, supplier, stage, close, confirm } = useContactModal();
-  if (!open) return null;
+  const { isOpen, supplier, stage, close, confirm } = useContactModal();
+  if (!isOpen) return null;
 
   const sent = stage === 'sent';
 
