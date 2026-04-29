@@ -1,0 +1,26 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: #f4f6f3;
+  color: #1a1f18;
+  line-height: 1.55;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+.map-grid {
+  background-image:
+    repeating-linear-gradient(0deg,  transparent, transparent 29px, rgba(0,0,0,.03) 30px),
+    repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(0,0,0,.03) 30px);
+}
+
+.network-grid {
+  background-image:
+    repeating-linear-gradient(0deg,  transparent, transparent 39px, rgba(0,0,0,.03) 40px),
+    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,.03) 40px);
+}
