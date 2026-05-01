@@ -1,3 +1,5 @@
+import SignOutButton from './SignOutButton';
+
 export default function Header() {
   return (
     <header className="bg-paper border-b border-line px-8 h-[60px] flex items-center justify-between sticky top-0 z-40">
@@ -17,6 +19,7 @@ export default function Header() {
         <span className="text-[0.78rem] text-muted font-medium">
           Mercredi 16 avril 2025
         </span>
+        <SignOutButton />
       </div>
     </header>
   );
