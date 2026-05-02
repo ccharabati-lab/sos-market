@@ -1,6 +1,8 @@
 'use client';
 
+import { useMemo } from 'react';
 import { Factory, Droplets, Package, Wheat, Leaf, ShoppingBag } from 'lucide-react';
+import { projectPins } from '../lib/map';
 
 const supplierIconMap = {
   factory: Factory,
@@ -11,7 +13,16 @@ const supplierIconMap = {
   'shopping-bag': ShoppingBag,
 };
 
-export default function MiniMap({ suppliers, mapHints, selectedId, onSelect }) {
+export default function MiniMap({ suppliers, mapHints, selectedId, onSelect, originLat, originLng }) {
+  const projection = useMemo(
+    () =>
+      projectPins(
+        { lat: originLat ?? null, lng: originLng ?? null },
+        suppliers.map((s) => ({ lat: s.lat ?? null, lng: s.lng ?? null })),
+      ),
+    [suppliers, originLat, originLng],
+  );
+
   return (
     <div className="bg-paper border border-line-strong rounded-[10px] aspect-[16/11] relative overflow-hidden map-grid">
       <div
@@ -56,8 +67,8 @@ export default function MiniMap({ suppliers, mapHints, selectedId, onSelect }) {
       <div
         className="absolute z-[3]"
         style={{
-          top: '50%',
-          left: '40%',
+          top: projection.origin.top,
+          left: projection.origin.left,
           transform: 'translate(-50%, -50%)',
           width: 13,
           height: 13,
@@ -71,14 +82,16 @@ export default function MiniMap({ suppliers, mapHints, selectedId, onSelect }) {
         </span>
       </div>
 
-      {suppliers.map((s) => {
+      {suppliers.map((s, idx) => {
+        const pin = projection.points[idx];
+        if (!pin) return null;
         const Icon = supplierIconMap[s.icon] || Package;
         const partial = s.availability_tone === 'warn';
         return (
           <div
             key={s.id}
             className="absolute z-[2]"
-            style={{ top: s.pin?.top, left: s.pin?.left, transform: 'translate(-50%, -50%)' }}
+            style={{ top: pin.top, left: pin.left, transform: 'translate(-50%, -50%)' }}
           >
             <button
               onClick={(e) => {

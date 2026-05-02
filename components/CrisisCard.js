@@ -37,7 +37,7 @@ const pillToneClass = {
   neutral:'bg-canvas-soft border-line-strong text-ink-soft',
 };
 
-export default function CrisisCard({ alert, suppliers, defaultExpanded = false }) {
+export default function CrisisCard({ alert, suppliers, defaultExpanded = false, originLat, originLng }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [selectedId, setSelectedId] = useState(suppliers[0]?.id);
   const { open: openModal } = useContactModal();
@@ -117,6 +117,8 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false }
               mapHints={alert.map_hints}
               selectedId={selectedId}
               onSelect={setSelectedId}
+              originLat={originLat}
+              originLng={originLng}
             />
 
             <div className="flex flex-col gap-[0.55rem]">
