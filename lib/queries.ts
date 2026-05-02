@@ -64,6 +64,47 @@ export async function getMatchingSuppliers(
 }
 
 /**
+ * For each category in the array, returns the closest 10 `offer` listings
+ * joined with the supplier's profile. Returns a map of category → MatchResult[].
+ */
+export async function getMatchingSuppliersByCategories(
+  categories: string[],
+  userLat: number,
+  userLng: number,
+): Promise<Record<string, MatchResult[]>> {
+  if (categories.length === 0) return {};
+
+  const { data, error } = await supabase
+    .from('listings')
+    .select('*, profiles!inner(*)')
+    .eq('type', 'offer')
+    .in('product_category', categories);
+
+  if (error) throw error;
+
+  const rows = (data ?? []) as unknown as Array<Listing & { profiles: Profile }>;
+
+  const result: Record<string, MatchResult[]> = {};
+
+  for (const cat of categories) {
+    result[cat] = rows
+      .filter((row) => row.product_category === cat)
+      .map((row) => {
+        const { profiles: profile, ...listing } = row;
+        const distance_km =
+          profile.lat != null && profile.lng != null
+            ? haversineKm(userLat, userLng, profile.lat, profile.lng)
+            : Number.POSITIVE_INFINITY;
+        return { ...profile, ...listing, distance_km } as MatchResult;
+      })
+      .sort((a, b) => a.distance_km - b.distance_km)
+      .slice(0, 10);
+  }
+
+  return result;
+}
+
+/**
  * Returns crisis alerts that have already started or will start within 48h,
  * with criticals before warnings.
  */
