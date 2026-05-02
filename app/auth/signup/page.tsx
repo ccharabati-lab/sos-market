@@ -7,6 +7,20 @@ import { Loader2, AlertCircle } from 'lucide-react';
 import { supabaseBrowser } from '../../../lib/supabase-browser';
 import type { Role } from '../../../types';
 
+async function geocodeAddress(address: string): Promise<{ lat: number; lng: number } | null> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(address)}`,
+      { headers: { 'User-Agent': 'sos-market/1.0' } },
+    );
+    const json = await res.json();
+    if (!Array.isArray(json) || !json[0]) return null;
+    return { lat: parseFloat(json[0].lat), lng: parseFloat(json[0].lon) };
+  } catch {
+    return null;
+  }
+}
+
 const ROLE_OPTIONS: { value: Role; label: string }[] = [
   { value: 'supermarket', label: 'Supermarché' },
   { value: 'producer',    label: 'Producteur' },
@@ -42,9 +56,11 @@ export default function SignUpPage() {
       return;
     }
 
+    const coords = await geocodeAddress(address);
+
     const { error: profileError } = await supabaseBrowser
       .from('profiles')
-      .insert({ id: data.user.id, name, role, address });
+      .insert({ id: data.user.id, name, role, address, ...coords });
 
     if (profileError) {
       // Most likely cause: Supabase email confirmation is enabled, so

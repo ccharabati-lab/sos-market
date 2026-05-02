@@ -1,0 +1,235 @@
+'use client';
+
+import { useMemo, useState } from 'react';
+import { Package, ArrowDownToLine, ArrowUpFromLine, MapPin } from 'lucide-react';
+import { projectPins } from '../../lib/map';
+import type { Listing, Profile } from '../../types';
+
+const FALLBACK_LAT = 48.6833;
+const FALLBACK_LNG = 2.1333;
+
+interface NetworkClientProps {
+  profile: Profile | null;
+  rows: Array<Listing & { profiles: Profile }>;
+}
+
+const ROLE_LABEL: Record<string, string> = {
+  supermarket: 'Supermarché',
+  producer: 'Producteur',
+  restaurant: 'Restaurant',
+};
+
+function formatDate(iso: string | null): string {
+  if (!iso) return '—';
+  const d = new Date(iso);
+  return d.toLocaleDateString('fr-FR', { day: '2-digit', month: 'short' });
+}
+
+export default function NetworkClient({ profile, rows }: NetworkClientProps) {
+  const [filter, setFilter] = useState<'all' | 'offer' | 'need'>('all');
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+
+  const visible = useMemo(
+    () => (filter === 'all' ? rows : rows.filter((r) => r.type === filter)),
+    [rows, filter],
+  );
+
+  const originLat = profile?.lat ?? FALLBACK_LAT;
+  const originLng = profile?.lng ?? FALLBACK_LNG;
+
+  const projection = useMemo(
+    () =>
+      projectPins(
+        { lat: originLat, lng: originLng },
+        visible.map((r) => ({ lat: r.profiles.lat, lng: r.profiles.lng })),
+      ),
+    [visible, originLat, originLng],
+  );
+
+  const offerCount = rows.filter((r) => r.type === 'offer').length;
+  const needCount = rows.filter((r) => r.type === 'need').length;
+
+  return (
+    <>
+      <div className="mb-7">
+        <h1 className="text-[1.3rem] font-extrabold text-ink">Carte réseau</h1>
+        <p className="text-[0.83rem] text-muted mt-1">
+          {rows.length} annonce{rows.length > 1 ? 's' : ''} actives autour de vous —{' '}
+          {offerCount} offre{offerCount > 1 ? 's' : ''}, {needCount} demande
+          {needCount > 1 ? 's' : ''}.
+        </p>
+      </div>
+
+      <div className="flex gap-2 mb-5">
+        <FilterTab active={filter === 'all'} onClick={() => setFilter('all')} label={`Tout (${rows.length})`} />
+        <FilterTab
+          active={filter === 'offer'}
+          onClick={() => setFilter('offer')}
+          label={`Offres (${offerCount})`}
+        />
+        <FilterTab
+          active={filter === 'need'}
+          onClick={() => setFilter('need')}
+          label={`Demandes (${needCount})`}
+        />
+      </div>
+
+      <div className="grid grid-cols-[1fr_minmax(320px,420px)] gap-5">
+        <div className="flex flex-col gap-2">
+          {visible.length === 0 ? (
+            <div className="bg-paper border border-line rounded-xl p-8 text-center text-muted text-[0.85rem]">
+              Aucune annonce dans cette catégorie.
+            </div>
+          ) : (
+            visible.map((row) => (
+              <ListingRow
+                key={row.id}
+                row={row}
+                selected={selectedId === row.id}
+                onClick={() => setSelectedId(row.id)}
+              />
+            ))
+          )}
+        </div>
+
+        <div className="bg-paper border border-line rounded-xl p-4 sticky top-5 self-start">
+          <div className="flex items-center gap-2 mb-3">
+            <MapPin size={14} className="text-green" />
+            <span className="text-[0.78rem] font-bold text-ink">Vue carte</span>
+          </div>
+
+          <div className="bg-canvas border border-line-strong rounded-[10px] aspect-[16/13] relative overflow-hidden map-grid">
+            <div
+              className="absolute z-[3]"
+              style={{
+                top: projection.origin.top,
+                left: projection.origin.left,
+                transform: 'translate(-50%, -50%)',
+                width: 13,
+                height: 13,
+                borderRadius: 3,
+                background: '#c0312b',
+                border: '2px solid rgba(192,49,43,.4)',
+              }}
+            >
+              <span className="absolute left-1/2 -translate-x-1/2 -top-[17px] text-[0.58rem] text-red font-bold whitespace-nowrap">
+                Vous
+              </span>
+            </div>
+
+            {visible.map((row, idx) => {
+              const pin = projection.points[idx];
+              if (!pin) return null;
+              const isOffer = row.type === 'offer';
+              const isSelected = selectedId === row.id;
+              return (
+                <button
+                  key={row.id}
+                  onClick={() => setSelectedId(row.id)}
+                  className={`absolute z-[2] w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-125 ${
+                    isOffer
+                      ? 'bg-green-light border-[1.5px] border-green-bright text-green'
+                      : 'bg-amber-light border-[1.5px] border-amber text-amber'
+                  } ${isSelected ? 'scale-125 ring-2 ring-ink-soft' : ''}`}
+                  style={{ top: pin.top, left: pin.left, transform: 'translate(-50%, -50%)' }}
+                  title={`${row.profiles.name} · ${row.product_name}`}
+                >
+                  {isOffer ? <ArrowUpFromLine size={10} /> : <ArrowDownToLine size={10} />}
+                </button>
+              );
+            })}
+          </div>
+
+          <div className="flex gap-3 mt-3 text-[0.7rem] text-muted">
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-green border border-green-bright" />
+              Offre
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span className="w-2.5 h-2.5 rounded-full bg-amber-light border border-amber" />
+              Demande
+            </span>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
+
+function FilterTab({
+  active,
+  onClick,
+  label,
+}: {
+  active: boolean;
+  onClick: () => void;
+  label: string;
+}) {
+  return (
+    <button
+      onClick={onClick}
+      className={`px-3.5 py-1.5 rounded-lg text-[0.78rem] font-semibold transition-colors ${
+        active
+          ? 'bg-ink text-white'
+          : 'bg-paper border border-line text-ink-soft hover:bg-canvas-soft'
+      }`}
+    >
+      {label}
+    </button>
+  );
+}
+
+function ListingRow({
+  row,
+  selected,
+  onClick,
+}: {
+  row: Listing & { profiles: Profile };
+  selected: boolean;
+  onClick: () => void;
+}) {
+  const isOffer = row.type === 'offer';
+  const qty = row.quantity != null ? `${row.quantity}${row.unit ? ` ${row.unit}` : ''}` : null;
+
+  return (
+    <button
+      onClick={onClick}
+      className={`bg-paper border rounded-xl p-3.5 flex items-center gap-3 text-left transition-colors ${
+        selected ? 'border-ink-soft' : 'border-line hover:border-line-strong'
+      }`}
+    >
+      <div
+        className={`w-9 h-9 rounded-[10px] flex-shrink-0 flex items-center justify-center ${
+          isOffer ? 'bg-green-light text-green' : 'bg-amber-light text-amber'
+        }`}
+      >
+        {isOffer ? <ArrowUpFromLine size={15} /> : <ArrowDownToLine size={15} />}
+      </div>
+
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-0.5">
+          <span className="text-[0.88rem] font-bold text-ink truncate">{row.product_name}</span>
+          <span
+            className={`text-[0.62rem] font-bold uppercase tracking-[0.05em] px-1.5 py-0.5 rounded ${
+              isOffer ? 'bg-green-light text-green' : 'bg-amber-light text-amber'
+            }`}
+          >
+            {isOffer ? 'Offre' : 'Besoin'}
+          </span>
+        </div>
+        <div className="text-[0.76rem] text-muted truncate">
+          {row.profiles.name} ·{' '}
+          {ROLE_LABEL[row.profiles.role as string] ?? row.profiles.role}
+          {row.profiles.address ? ` · ${row.profiles.address}` : ''}
+        </div>
+      </div>
+
+      <div className="flex-shrink-0 text-right">
+        {qty && <div className="text-[0.82rem] font-bold text-ink">{qty}</div>}
+        <div className="text-[0.7rem] text-muted">
+          {isOffer ? 'Jusqu’au' : 'Pour le'} {formatDate(isOffer ? row.expires_at : row.available_from)}
+        </div>
+      </div>
+    </button>
+  );
+}
