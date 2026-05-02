@@ -13,14 +13,65 @@ body {
 
 *, *::before, *::after { box-sizing: border-box; }
 
-.map-grid {
-  background-image:
-    repeating-linear-gradient(0deg,  transparent, transparent 29px, rgba(0,0,0,.03) 30px),
-    repeating-linear-gradient(90deg, transparent, transparent 29px, rgba(0,0,0,.03) 30px);
+/* ─── Mapbox markers ──────────────────────────────────────────────── */
+
+.sos-origin-marker {
+  position: relative;
+  pointer-events: none;
+}
+.sos-origin-marker::before {
+  content: '';
+  display: block;
+  width: 14px;
+  height: 14px;
+  background: #1a1f18;
+  border: 2px solid rgba(26, 31, 24, 0.45);
+  border-radius: 4px;
+}
+.sos-origin-marker::after {
+  content: 'Vous';
+  position: absolute;
+  top: -16px;
+  left: 50%;
+  transform: translateX(-50%);
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #1a1f18;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+  text-shadow: 0 0 4px #ffffff, 0 0 4px #ffffff;
 }
 
-.network-grid {
-  background-image:
-    repeating-linear-gradient(0deg,  transparent, transparent 39px, rgba(0,0,0,.03) 40px),
-    repeating-linear-gradient(90deg, transparent, transparent 39px, rgba(0,0,0,.03) 40px);
+.sos-pin {
+  width: 30px;
+  height: 30px;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 2px solid;
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  background-clip: padding-box;
+}
+.sos-pin:hover { transform: scale(1.12); }
+.sos-pin-offer {
+  background: #e8f5ee;
+  border-color: #28a060;
+  color: #1e6b45;
+}
+.sos-pin-need {
+  background: #fdf0ef;
+  border-color: #c0312b;
+  color: #c0312b;
+}
+.sos-pin-selected {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px rgba(26, 31, 24, 0.22);
+}
+.sos-pin-selected:hover { transform: scale(1.2); }
+
+/* Mapbox attribution placement: tiny, bottom-right, easy to ignore */
+.mapboxgl-ctrl-attrib.mapboxgl-compact {
+  font-size: 9px;
 }

@@ -1,8 +1,8 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { Package, ArrowDownToLine, ArrowUpFromLine, MapPin } from 'lucide-react';
-import { projectPins } from '../../lib/map';
+import { ArrowDownToLine, ArrowUpFromLine, MapPin } from 'lucide-react';
+import MapView, { type MapPin as PinDef } from '../../components/MapView';
 import type { Listing, Profile } from '../../types';
 
 const FALLBACK_LAT = 48.6833;
@@ -37,13 +37,18 @@ export default function NetworkClient({ profile, rows }: NetworkClientProps) {
   const originLat = profile?.lat ?? FALLBACK_LAT;
   const originLng = profile?.lng ?? FALLBACK_LNG;
 
-  const projection = useMemo(
+  const pins: PinDef[] = useMemo(
     () =>
-      projectPins(
-        { lat: originLat, lng: originLng },
-        visible.map((r) => ({ lat: r.profiles.lat, lng: r.profiles.lng })),
-      ),
-    [visible, originLat, originLng],
+      visible
+        .filter((r) => r.profiles.lat != null && r.profiles.lng != null)
+        .map((r) => ({
+          id: r.id,
+          lat: r.profiles.lat as number,
+          lng: r.profiles.lng as number,
+          type: r.type,
+          label: `${r.profiles.name} · ${r.product_name}`,
+        })),
+    [visible],
   );
 
   const offerCount = rows.filter((r) => r.type === 'offer').length;
@@ -98,55 +103,21 @@ export default function NetworkClient({ profile, rows }: NetworkClientProps) {
             <span className="text-[0.78rem] font-bold text-ink">Vue carte</span>
           </div>
 
-          <div className="bg-canvas border border-line-strong rounded-[10px] aspect-[16/13] relative overflow-hidden map-grid">
-            <div
-              className="absolute z-[3]"
-              style={{
-                top: projection.origin.top,
-                left: projection.origin.left,
-                transform: 'translate(-50%, -50%)',
-                width: 13,
-                height: 13,
-                borderRadius: 3,
-                background: '#c0312b',
-                border: '2px solid rgba(192,49,43,.4)',
-              }}
-            >
-              <span className="absolute left-1/2 -translate-x-1/2 -top-[17px] text-[0.58rem] text-red font-bold whitespace-nowrap">
-                Vous
-              </span>
-            </div>
-
-            {visible.map((row, idx) => {
-              const pin = projection.points[idx];
-              if (!pin) return null;
-              const isOffer = row.type === 'offer';
-              const isSelected = selectedId === row.id;
-              return (
-                <button
-                  key={row.id}
-                  onClick={() => setSelectedId(row.id)}
-                  className={`absolute z-[2] w-6 h-6 rounded-full flex items-center justify-center cursor-pointer transition-transform hover:scale-125 ${
-                    isOffer
-                      ? 'bg-green-light border-[1.5px] border-green-bright text-green'
-                      : 'bg-amber-light border-[1.5px] border-amber text-amber'
-                  } ${isSelected ? 'scale-125 ring-2 ring-ink-soft' : ''}`}
-                  style={{ top: pin.top, left: pin.left, transform: 'translate(-50%, -50%)' }}
-                  title={`${row.profiles.name} · ${row.product_name}`}
-                >
-                  {isOffer ? <ArrowUpFromLine size={10} /> : <ArrowDownToLine size={10} />}
-                </button>
-              );
-            })}
-          </div>
+          <MapView
+            origin={{ lat: originLat, lng: originLng }}
+            pins={pins}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            className="w-full aspect-[16/13] rounded-[10px] overflow-hidden border border-line-strong"
+          />
 
           <div className="flex gap-3 mt-3 text-[0.7rem] text-muted">
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-green border border-green-bright" />
+              <span className="w-2.5 h-2.5 rounded-full bg-green-light border border-green-bright" />
               Offre
             </span>
             <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-amber-light border border-amber" />
+              <span className="w-2.5 h-2.5 rounded-full bg-red-light border border-red" />
               Demande
             </span>
           </div>

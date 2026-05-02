@@ -15,8 +15,8 @@ import {
   TrendingUp,
 } from 'lucide-react';
 import { supabaseBrowser } from '../lib/supabase-browser';
-import { projectPins } from '../lib/map';
 import type { Listing, ListingType, Profile } from '../types';
+import MapView, { type MapPin as MapPinDef } from './MapView';
 import { useContactModal } from './ContactModalProvider';
 
 type SearchIntent = 'need' | 'offer';
@@ -166,13 +166,18 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
     [intent, profile, query, rows, userId],
   );
 
-  const projection = useMemo(
+  const mapPins: MapPinDef[] = useMemo(
     () =>
-      projectPins(
-        { lat: profile?.lat ?? STORE_LAT, lng: profile?.lng ?? STORE_LNG },
-        matches.map((m) => ({ lat: m.profile.lat ?? null, lng: m.profile.lng ?? null })),
-      ),
-    [matches, profile],
+      matches
+        .filter((m) => m.profile.lat != null && m.profile.lng != null)
+        .map((m) => ({
+          id: m.id,
+          lat: m.profile.lat as number,
+          lng: m.profile.lng as number,
+          type: m.type,
+          label: m.profile.name,
+        })),
+    [matches],
   );
 
   const selected = matches.find((match) => match.id === selectedId) ?? matches[0] ?? null;
@@ -450,53 +455,13 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-4">
-            <div className="bg-canvas-soft border border-line rounded-[10px] aspect-[16/12] relative overflow-hidden network-grid">
-              <div className="absolute left-[42%] top-0 bottom-0 w-[3px] bg-black/[0.06]" />
-              <div className="absolute top-[52%] left-0 right-0 h-1 bg-black/[0.06]" />
-
-              <div
-                className="absolute z-[3]"
-                style={{
-                  top: projection.origin.top,
-                  left: projection.origin.left,
-                  transform: 'translate(-50%, -50%)',
-                }}
-              >
-                <div className="w-[14px] h-[14px] rounded-[4px] bg-ink border-2 border-ink-soft" />
-                <span className="absolute left-1/2 -translate-x-1/2 -top-[18px] text-[0.6rem] text-ink font-bold whitespace-nowrap">
-                  Vous
-                </span>
-              </div>
-
-              {matches.map((match, idx) => {
-                const pin = projection.points[idx];
-                if (!pin) return null;
-                const active = selected?.id === match.id;
-                const Icon = match.type === 'offer' ? TrendingUp : TrendingDown;
-                return (
-                  <button
-                    key={match.id}
-                    type="button"
-                    title={match.profile.name}
-                    onClick={() => setSelectedId(match.id)}
-                    className={`absolute z-[4] w-8 h-8 rounded-full flex items-center justify-center transition-transform hover:scale-110 ${
-                      active
-                        ? 'bg-green text-white border-2 border-green-bright'
-                        : match.type === 'offer'
-                          ? 'bg-green-light text-green border-2 border-green-mid'
-                          : 'bg-red-light text-red border-2 border-red-mid'
-                    }`}
-                    style={{
-                      top: pin.top,
-                      left: pin.left,
-                      transform: 'translate(-50%, -50%)',
-                    }}
-                  >
-                    <Icon size={14} />
-                  </button>
-                );
-              })}
-            </div>
+            <MapView
+              origin={{ lat: profile?.lat ?? STORE_LAT, lng: profile?.lng ?? STORE_LNG }}
+              pins={mapPins}
+              selectedId={selected?.id ?? null}
+              onSelect={setSelectedId}
+              className="w-full aspect-[16/12] rounded-[10px] overflow-hidden border border-line"
+            />
 
             <div className="flex flex-col gap-2 min-h-[250px]">
               <div className="flex items-center justify-between">
