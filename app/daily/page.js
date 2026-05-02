@@ -1,10 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabase } from '../../lib/supabase-server';
-import { stockStatus, networkSignals } from '../../data/demo';
-import StockStatusCard from '../../components/StockStatusCard';
-import NetworkFeed from '../../components/NetworkFeed';
-import NetworkMap from '../../components/NetworkMap';
 import ExchangeWorkspace from '../../components/ExchangeWorkspace';
+import MesSignaux from '../../components/MesSignaux';
 
 export const dynamic = 'force-dynamic';
 
@@ -18,11 +15,17 @@ export default async function DailyPage() {
     redirect('/auth/signin');
   }
 
-  const { data: profile } = await supabase
-    .from('profiles')
-    .select('*')
-    .eq('id', user.id)
-    .maybeSingle();
+  const [{ data: profile }, { data: myListings }] = await Promise.all([
+    supabase.from('profiles').select('*').eq('id', user.id).maybeSingle(),
+    supabase
+      .from('listings')
+      .select('*')
+      .eq('owner_id', user.id)
+      .order('created_at', { ascending: false }),
+  ]);
+
+  const listings = myListings ?? [];
+  const activeCount = listings.length;
 
   return (
     <>
@@ -31,18 +34,17 @@ export default async function DailyPage() {
           Gestion des stocks quotidienne
         </h1>
         <p className="text-[0.83rem] text-muted mt-1">
-          5 opportunités d&apos;échange identifiées dans votre réseau · Mis à jour il y a 12 min
+          {activeCount === 0
+            ? 'Publiez vos surplus et besoins pour que le réseau les voie en temps réel.'
+            : `${activeCount} signal${activeCount > 1 ? 'aux' : ''} actif${activeCount > 1 ? 's' : ''} dans votre réseau · Mis à jour à l'instant`}
         </p>
       </div>
 
-      <ExchangeWorkspace userId={user.id} profile={profile} />
-
-      <div className="grid grid-cols-2 gap-5 mb-8">
-        <StockStatusCard items={stockStatus} />
-        <NetworkFeed signals={networkSignals} />
+      <div className="mb-6">
+        <ExchangeWorkspace userId={user.id} profile={profile} />
       </div>
 
-      <NetworkMap signals={networkSignals} />
+      <MesSignaux listings={listings} />
     </>
   );
 }
