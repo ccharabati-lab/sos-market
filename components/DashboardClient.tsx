@@ -8,20 +8,12 @@ import type { CrisisAlert, MatchResult, Profile } from '../types';
 
 interface DashboardClientProps {
   crises: CrisisAlert[];
-  suppliers: MatchResult[];
+  suppliersByCategory: Record<string, MatchResult[]>;
   profile: Profile | null;
 }
 
-// Pin slots are positions on the per-crisis MiniMap, expressed as percentages
-// of the map container. Cycled by index so suppliers don't all land on (0,0).
-const PIN_FALLBACKS = [
-  { top: '31%', left: '75%' },
-  { top: '37%', left: '20%' },
-  { top: '72%', left: '77%' },
-  { top: '20%', left: '18%' },
-  { top: '27%', left: '80%' },
-  { top: '77%', left: '67%' },
-];
+const FALLBACK_LAT = 48.6833;
+const FALLBACK_LNG = 2.1333;
 
 const dateFmt = new Intl.DateTimeFormat('fr-FR', {
   day: '2-digit',
@@ -82,7 +74,7 @@ function availabilityFor(m: MatchResult): {
   return { availability: `Disponible jusqu'au ${fmt}`, availability_tone: 'ok' };
 }
 
-function adaptSupplier(m: MatchResult, idx: number) {
+function adaptSupplier(m: MatchResult) {
   const qtyParts: string[] = [];
   if (m.quantity != null) qtyParts.push(String(m.quantity));
   if (m.unit) qtyParts.push(m.unit);
@@ -99,7 +91,8 @@ function adaptSupplier(m: MatchResult, idx: number) {
     distance_km: Math.round(m.distance_km * 10) / 10,
     availability,
     availability_tone,
-    pin: PIN_FALLBACKS[idx % PIN_FALLBACKS.length],
+    lat: m.lat,
+    lng: m.lng,
   };
 }
 
@@ -138,12 +131,33 @@ function StatCard({ Icon, tone, label, value }: StatCardProps) {
   );
 }
 
-export default function DashboardClient({ crises, suppliers, profile }: DashboardClientProps) {
+function suppliersForCrisis(
+  crisis: CrisisAlert,
+  suppliersByCategory: Record<string, MatchResult[]>,
+): MatchResult[] {
+  const seen = new Set<string>();
+  const result: MatchResult[] = [];
+  for (const cat of crisis.affected_categories) {
+    for (const s of suppliersByCategory[cat] ?? []) {
+      if (!seen.has(s.id)) {
+        seen.add(s.id);
+        result.push(s);
+      }
+    }
+  }
+  return result.sort((a, b) => a.distance_km - b.distance_km).slice(0, 6);
+}
+
+export default function DashboardClient({ crises, suppliersByCategory, profile }: DashboardClientProps) {
   const [bannerOpen, setBannerOpen] = useState(true);
 
   const firstCritical = crises.find((c) => c.severity === 'critical');
-  const adaptedAlerts = crises.map(adaptAlert);
-  const adaptedSuppliers = suppliers.map(adaptSupplier);
+  const totalSuppliers = new Set(
+    Object.values(suppliersByCategory).flat().map((s) => s.id),
+  ).size;
+
+  const originLat = profile?.lat ?? FALLBACK_LAT;
+  const originLng = profile?.lng ?? FALLBACK_LNG;
 
   const alertWord = crises.length === 1 ? 'alerte détectée' : 'alertes détectées';
   const displayName = profile?.name ?? 'votre organisation';
@@ -177,7 +191,7 @@ export default function DashboardClient({ crises, suppliers, profile }: Dashboar
 
       <div className="grid grid-cols-3 gap-4 mb-8">
         <StatCard Icon={TriangleAlert} tone="red"   label="Alertes actives"          value={String(crises.length)} />
-        <StatCard Icon={Store}         tone="green" label="Fournisseurs disponibles" value={String(suppliers.length)} />
+        <StatCard Icon={Store}         tone="green" label="Fournisseurs disponibles" value={String(totalSuppliers)} />
         <StatCard Icon={Clock}         tone="amber" label="Délai moyen livraison"    value="J+1" />
       </div>
 
@@ -186,14 +200,20 @@ export default function DashboardClient({ crises, suppliers, profile }: Dashboar
       </p>
 
       <div className="flex flex-col gap-[0.85rem]">
-        {adaptedAlerts.map((alert, i) => (
-          <CrisisCard
-            key={alert.id}
-            alert={alert}
-            suppliers={adaptedSuppliers}
-            defaultExpanded={i === 0}
-          />
-        ))}
+        {crises.map((crisis, i) => {
+          const alert = adaptAlert(crisis);
+          const adaptedSuppliers = suppliersForCrisis(crisis, suppliersByCategory).map(adaptSupplier);
+          return (
+            <CrisisCard
+              key={alert.id}
+              alert={alert}
+              suppliers={adaptedSuppliers}
+              defaultExpanded={i === 0}
+              originLat={originLat}
+              originLng={originLng}
+            />
+          );
+        })}
       </div>
     </>
   );
