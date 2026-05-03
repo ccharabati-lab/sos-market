@@ -79,8 +79,38 @@ export default function NetworkClient({ profile, rows }: NetworkClientProps) {
         />
       </div>
 
-      <div className="grid grid-cols-[1fr_minmax(320px,420px)] gap-5">
-        <div className="flex flex-col gap-2">
+      <div className="grid grid-cols-1 xl:grid-cols-[1fr_380px] gap-5">
+        <div className="bg-paper border border-line rounded-xl p-3 flex flex-col">
+          <div className="flex items-center justify-between mb-2 px-1">
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-green" />
+              <span className="text-[0.78rem] font-bold text-ink">Vue carte</span>
+            </div>
+            <div className="flex gap-3 text-[0.7rem] text-muted">
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-green-light border border-green-bright" />
+                Offre
+              </span>
+              <span className="flex items-center gap-1.5">
+                <span className="w-2.5 h-2.5 rounded-full bg-red-light border border-red" />
+                Demande
+              </span>
+            </div>
+          </div>
+
+          <MapView
+            origin={{ lat: originLat, lng: originLng }}
+            pins={pins}
+            selectedId={selectedId}
+            onSelect={setSelectedId}
+            className="w-full h-[calc(100vh-260px)] min-h-[520px] rounded-[10px] overflow-hidden border border-line-strong"
+          />
+        </div>
+
+        <div className="flex flex-col gap-2 xl:max-h-[calc(100vh-260px)] xl:overflow-y-auto xl:pr-1">
+          <div className="text-[0.7rem] font-bold uppercase tracking-[0.1em] text-muted px-1 mb-1">
+            {visible.length} annonce{visible.length > 1 ? 's' : ''}
+          </div>
           {visible.length === 0 ? (
             <div className="bg-paper border border-line rounded-xl p-8 text-center text-muted text-[0.85rem]">
               Aucune annonce dans cette catégorie.
@@ -95,32 +125,6 @@ export default function NetworkClient({ profile, rows }: NetworkClientProps) {
               />
             ))
           )}
-        </div>
-
-        <div className="bg-paper border border-line rounded-xl p-4 sticky top-5 self-start">
-          <div className="flex items-center gap-2 mb-3">
-            <MapPin size={14} className="text-green" />
-            <span className="text-[0.78rem] font-bold text-ink">Vue carte</span>
-          </div>
-
-          <MapView
-            origin={{ lat: originLat, lng: originLng }}
-            pins={pins}
-            selectedId={selectedId}
-            onSelect={setSelectedId}
-            className="w-full aspect-[16/13] rounded-[10px] overflow-hidden border border-line-strong"
-          />
-
-          <div className="flex gap-3 mt-3 text-[0.7rem] text-muted">
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-green-light border border-green-bright" />
-              Offre
-            </span>
-            <span className="flex items-center gap-1.5">
-              <span className="w-2.5 h-2.5 rounded-full bg-red-light border border-red" />
-              Demande
-            </span>
-          </div>
         </div>
       </div>
     </>

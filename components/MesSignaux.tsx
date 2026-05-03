@@ -1,5 +1,6 @@
 import { TrendingDown, TrendingUp, Clock, Package } from 'lucide-react';
 import type { Listing } from '../types';
+import DeleteListingButton from './DeleteListingButton';
 
 interface MesSignauxProps {
   listings: Listing[];
@@ -42,11 +43,12 @@ function SignalRow({ listing }: { listing: Listing }) {
           {qty ? ` · ${qty}` : ''}
         </div>
       </div>
-      <div className="text-right flex-shrink-0">
+      <div className="flex flex-col items-end gap-1.5 flex-shrink-0">
         <div className="inline-flex items-center gap-1 text-[0.7rem] text-muted">
           <Clock size={11} />
           {formatExpiry(listing.expires_at)}
         </div>
+        <DeleteListingButton listingId={listing.id} productName={listing.product_name} />
       </div>
     </div>
   );

@@ -28,7 +28,7 @@ export default function Providers({ children }) {
       <main className="ml-[72px] flex-1 flex flex-col">
         <Header />
         <TabsBar />
-        <div className="p-8 flex-1 max-w-content w-full">{children}</div>
+        <div className="p-8 flex-1 w-full">{children}</div>
       </main>
       <ContactModal />
     </ContactModalProvider>
