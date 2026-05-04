@@ -25,11 +25,23 @@ export default function DeleteListingButton({
     if (!confirmed) return;
 
     setDeleting(true);
-    const { error } = await supabaseBrowser.from('listings').delete().eq('id', listingId);
+    const { data, error } = await supabaseBrowser
+      .from('listings')
+      .delete()
+      .eq('id', listingId)
+      .select('id');
 
     if (error) {
       setDeleting(false);
       window.alert(`Suppression impossible : ${error.message}`);
+      return;
+    }
+
+    if (!data || data.length === 0) {
+      setDeleting(false);
+      window.alert(
+        "Suppression refusée par la base : vous n'êtes pas propriétaire de ce signal, ou votre session a expiré.",
+      );
       return;
     }
 
