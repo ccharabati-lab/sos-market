@@ -2,7 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-html { scroll-behavior: smooth; }
+html {
+  scroll-behavior: smooth;
+}
 
 body {
   font-family: 'DM Sans', sans-serif;
@@ -11,38 +13,75 @@ body {
   line-height: 1.55;
 }
 
-*, *::before, *::after { box-sizing: border-box; }
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
 
 /* ─── Mapbox markers ──────────────────────────────────────────────── */
+/* IMPORTANT: never put `transition: transform` on the outer marker
+   element — Mapbox writes a translate() on it every frame to position
+   the marker geographically, and animating that causes the pin to drift
+   visibly when you zoom. Put visual transitions on the .sos-*-inner
+   child instead. */
 
 .sos-origin-marker {
   position: relative;
   pointer-events: none;
+  width: 24px;
+  height: 24px;
 }
+
 .sos-origin-marker::before {
   content: '';
-  display: block;
-  width: 14px;
-  height: 14px;
-  background: #1a1f18;
-  border: 2px solid rgba(26, 31, 24, 0.45);
-  border-radius: 4px;
+  position: absolute;
+  inset: 0;
+  border-radius: 9999px;
+  background: #28a060;
+  box-shadow:
+    0 0 0 4px #ffffff,
+    0 0 0 6px rgba(40, 160, 96, 0.6),
+    0 2px 8px rgba(0, 0, 0, 0.25);
+  animation: sos-origin-pulse 2.4s ease-in-out infinite;
 }
+
 .sos-origin-marker::after {
   content: 'Vous';
   position: absolute;
-  top: -16px;
+  bottom: calc(100% + 6px);
   left: 50%;
   transform: translateX(-50%);
-  font-size: 0.62rem;
-  font-weight: 700;
-  color: #1a1f18;
-  letter-spacing: 0.02em;
+  font-size: 0.7rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: #1a1f18;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
   white-space: nowrap;
-  text-shadow: 0 0 4px #ffffff, 0 0 4px #ffffff;
+  padding: 2px 7px;
+  border-radius: 4px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.18);
+}
+
+@keyframes sos-origin-pulse {
+
+  0%,
+  100% {
+    box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px rgba(40, 160, 96, 0.55), 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
+
+  50% {
+    box-shadow: 0 0 0 4px #ffffff, 0 0 0 11px rgba(40, 160, 96, 0.0), 0 2px 8px rgba(0, 0, 0, 0.25);
+  }
 }
 
 .sos-pin {
+  cursor: pointer;
+  /* No transitions on this element — Mapbox owns its transform. */
+}
+
+.sos-pin-inner {
   width: 30px;
   height: 30px;
   border-radius: 9999px;
@@ -50,26 +89,35 @@ body {
   align-items: center;
   justify-content: center;
   border: 2px solid;
-  cursor: pointer;
-  transition: transform 0.15s ease, box-shadow 0.15s ease;
   background-clip: padding-box;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transform-origin: center center;
 }
-.sos-pin:hover { transform: scale(1.12); }
-.sos-pin-offer {
+
+.sos-pin:hover .sos-pin-inner {
+  transform: scale(1.12);
+}
+
+.sos-pin-offer .sos-pin-inner {
   background: #e8f5ee;
   border-color: #28a060;
   color: #1e6b45;
 }
-.sos-pin-need {
+
+.sos-pin-need .sos-pin-inner {
   background: #fdf0ef;
   border-color: #c0312b;
   color: #c0312b;
 }
-.sos-pin-selected {
+
+.sos-pin-selected .sos-pin-inner {
   transform: scale(1.2);
-  box-shadow: 0 0 0 3px rgba(26, 31, 24, 0.22);
+  box-shadow: 0 0 0 3px rgba(26, 31, 24, 0.25);
 }
-.sos-pin-selected:hover { transform: scale(1.2); }
+
+.sos-pin-selected:hover .sos-pin-inner {
+  transform: scale(1.2);
+}
 
 /* Mapbox attribution placement: tiny, bottom-right, easy to ignore */
 .mapboxgl-ctrl-attrib.mapboxgl-compact {

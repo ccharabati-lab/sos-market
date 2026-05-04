@@ -1,3 +1,6 @@
+'use client';
+
+import { useState } from 'react';
 import { TrendingDown, TrendingUp, Clock, Package } from 'lucide-react';
 import type { Listing } from '../types';
 import DeleteListingButton from './DeleteListingButton';
@@ -20,7 +23,13 @@ function quantityLabel(listing: Listing) {
   return parts.join(' ');
 }
 
-function SignalRow({ listing }: { listing: Listing }) {
+function SignalRow({
+  listing,
+  onDeleted,
+}: {
+  listing: Listing;
+  onDeleted: (id: string) => void;
+}) {
   const isOffer = listing.type === 'offer';
   const Icon = isOffer ? TrendingUp : TrendingDown;
   const qty = quantityLabel(listing);
@@ -48,15 +57,22 @@ function SignalRow({ listing }: { listing: Listing }) {
           <Clock size={11} />
           {formatExpiry(listing.expires_at)}
         </div>
-        <DeleteListingButton listingId={listing.id} productName={listing.product_name} />
+        <DeleteListingButton
+          listingId={listing.id}
+          productName={listing.product_name}
+          onDeleted={() => onDeleted(listing.id)}
+        />
       </div>
     </div>
   );
 }
 
 export default function MesSignaux({ listings }: MesSignauxProps) {
-  const offers = listings.filter((l) => l.type === 'offer');
-  const needs = listings.filter((l) => l.type === 'need');
+  const [items, setItems] = useState(listings);
+  const handleDeleted = (id: string) => setItems((cur) => cur.filter((l) => l.id !== id));
+
+  const offers = items.filter((l) => l.type === 'offer');
+  const needs = items.filter((l) => l.type === 'need');
 
   return (
     <section className="bg-paper border border-line rounded-xl p-5">
@@ -81,7 +97,7 @@ export default function MesSignaux({ listings }: MesSignauxProps) {
         </div>
       </div>
 
-      {listings.length === 0 ? (
+      {items.length === 0 ? (
         <div className="bg-canvas-soft border border-dashed border-line rounded-lg p-6 flex flex-col items-center text-center">
           <div className="w-10 h-10 rounded-xl bg-paper border border-line flex items-center justify-center mb-3 text-muted">
             <Package size={18} />
@@ -105,7 +121,9 @@ export default function MesSignaux({ listings }: MesSignauxProps) {
                 Aucun surplus publié pour le moment.
               </div>
             ) : (
-              offers.map((l) => <SignalRow key={l.id} listing={l} />)
+              offers.map((l) => (
+                <SignalRow key={l.id} listing={l} onDeleted={handleDeleted} />
+              ))
             )}
           </div>
           <div className="flex flex-col gap-2">
@@ -117,7 +135,9 @@ export default function MesSignaux({ listings }: MesSignauxProps) {
                 Aucun besoin signalé pour le moment.
               </div>
             ) : (
-              needs.map((l) => <SignalRow key={l.id} listing={l} />)
+              needs.map((l) => (
+                <SignalRow key={l.id} listing={l} onDeleted={handleDeleted} />
+              ))
             )}
           </div>
         </div>

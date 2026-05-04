@@ -272,7 +272,7 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
         </button>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[0.9fr_1.35fr] gap-5 items-start">
+      <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-5 items-start">
         <form onSubmit={onCreateListing} className="bg-canvas border border-line rounded-[10px] p-4">
           <div className="flex items-center gap-2 text-[0.76rem] font-bold uppercase tracking-[0.1em] text-muted mb-4">
             <Plus size={14} />
@@ -454,7 +454,7 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
             )}
           </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-4">
+          <div className="grid grid-cols-1 lg:grid-cols-[2.4fr_1fr] gap-4">
             <MapView
               origin={{ lat: profile?.lat ?? STORE_LAT, lng: profile?.lng ?? STORE_LNG }}
               pins={mapPins}

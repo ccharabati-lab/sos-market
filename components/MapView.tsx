@@ -117,7 +117,10 @@ export default function MapView({
       } else {
         const el = document.createElement('div');
         el.className = pinClassName(pin.type, isSelected);
-        el.innerHTML = pin.type === 'offer' ? ARROW_UP : ARROW_DOWN;
+        const inner = document.createElement('div');
+        inner.className = 'sos-pin-inner';
+        inner.innerHTML = pin.type === 'offer' ? ARROW_UP : ARROW_DOWN;
+        el.appendChild(inner);
         if (pin.label) el.title = pin.label;
         el.addEventListener('click', (e) => {
           e.stopPropagation();

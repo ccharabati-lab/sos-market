@@ -3,6 +3,31 @@
 
 create extension if not exists "pgcrypto";
 
+create table if not exists profiles (
+  id                 uuid primary key, -- references auth.users(id)
+  name               text not null,
+  role               text,
+  lat                double precision,
+  lng                double precision,
+  address            text,
+  phone              text,
+  created_at         timestamptz not null default now()
+);
+
+create table if not exists listings (
+  id                 uuid primary key default gen_random_uuid(),
+  owner_id           uuid references profiles(id) on delete cascade,
+  type               text not null check (type in ('offer', 'need')),
+  product_category   text,
+  product_name       text,
+  quantity           numeric,
+  unit               text,
+  available_from     date,
+  expires_at         date,
+  notes              text,
+  created_at         timestamptz not null default now()
+);
+
 create table if not exists alerts (
   id                 uuid primary key default gen_random_uuid(),
   type               text not null,
@@ -48,3 +73,16 @@ create table if not exists stock_signals (
 create index if not exists idx_alerts_created_at         on alerts (created_at desc);
 create index if not exists idx_stock_signals_created_at  on stock_signals (created_at desc);
 create index if not exists idx_contact_requests_status   on contact_requests (status);
+
+-- ─── Row Level Security (RLS) ────────────────────────────────────────
+
+alter table listings enable row level security;
+
+-- Anyone can view listings
+create policy "Listings are viewable by everyone" 
+  on listings for select using (true);
+
+-- Only owners can delete their own listings
+create policy "Users can delete their own listings"
+  on listings for delete
+  using (auth.uid() = owner_id);

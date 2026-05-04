@@ -1,25 +1,24 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { Loader2, Trash2 } from 'lucide-react';
 import { supabaseBrowser } from '../lib/supabase-browser';
 
 interface DeleteListingButtonProps {
   listingId: string;
   productName: string;
+  onDeleted?: () => void;
 }
 
 export default function DeleteListingButton({
   listingId,
   productName,
+  onDeleted,
 }: DeleteListingButtonProps) {
-  const router = useRouter();
-  const [pending, startTransition] = useTransition();
   const [deleting, setDeleting] = useState(false);
 
   async function onClick() {
-    if (deleting || pending) return;
+    if (deleting) return;
     const confirmed = window.confirm(
       `Retirer « ${productName} » du réseau ? Cette action est définitive.`,
     );
@@ -27,27 +26,25 @@ export default function DeleteListingButton({
 
     setDeleting(true);
     const { error } = await supabaseBrowser.from('listings').delete().eq('id', listingId);
-    setDeleting(false);
 
     if (error) {
+      setDeleting(false);
       window.alert(`Suppression impossible : ${error.message}`);
       return;
     }
 
-    startTransition(() => router.refresh());
+    onDeleted?.();
   }
-
-  const busy = deleting || pending;
 
   return (
     <button
       type="button"
       onClick={onClick}
-      disabled={busy}
+      disabled={deleting}
       title="Retirer ce signal"
       className="inline-flex items-center justify-center w-7 h-7 rounded-md text-muted hover:text-red hover:bg-red-light border border-transparent hover:border-red-mid disabled:opacity-60 transition-colors"
     >
-      {busy ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
+      {deleting ? <Loader2 size={13} className="animate-spin" /> : <Trash2 size={13} />}
     </button>
   );
 }
