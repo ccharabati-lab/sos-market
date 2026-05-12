@@ -29,6 +29,11 @@ Schema and seed live in plain SQL — no Supabase CLI required.
    five demo profiles (Paris-Saclay area), five listings (3 offers + 2 needs),
    and two crisis alerts. The seed is idempotent (`on conflict (id) do nothing`),
    so re-running it is safe.
+4. Optional map demo data: paste `supabase/seed-demo-network.sql` into a new
+   query and click **Run**. This adds 25 synthetic demo accounts around
+   Gif-sur-Yvette, Paris-Saclay, Chevreuse, Massy, and Rungis, each with one
+   active offer so they appear on the network map. These are explicitly fake
+   records and are not real clients or real businesses.
 
 ### Verifying
 
@@ -36,6 +41,13 @@ Schema and seed live in plain SQL — no Supabase CLI required.
 select count(*) from profiles;       -- 5
 select count(*) from listings;       -- 5
 select count(*) from crisis_alerts;  -- 2
+```
+
+After running the optional network seed:
+
+```sql
+select count(*) from profiles where name like 'Démo%';   -- 25
+select count(*) from listings where notes like 'Compte démo%'; -- 25
 ```
 
 ## File layout
@@ -53,6 +65,7 @@ types/index.ts                 Profile, Listing, CrisisAlert, MatchResult, Datab
 supabase/
   migrations/001_init.sql      schema + RLS policies
   seed.sql                     idempotent demo data
+  seed-demo-network.sql        optional 25-account synthetic map seed
 ```
 
 ## Notes on the schema
