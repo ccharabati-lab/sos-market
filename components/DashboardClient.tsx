@@ -15,6 +15,97 @@ interface DashboardClientProps {
 const FALLBACK_LAT = 48.6833;
 const FALLBACK_LNG = 2.1333;
 
+const DEMO_CRISIS_SUPPLIERS = [
+  {
+    id: 'demo-crisis-rungis-halle',
+    name: 'Démo Halle Fraîche de Rungis',
+    role_label: 'Grossiste / Rungis',
+    product_category: 'eau',
+    stock_detail: 'Eaux minérales 1.5 L · 35 palettes',
+    availability: "Disponible jusqu'au 02/06",
+    availability_tone: 'ok' as const,
+    lat: 48.7488,
+    lng: 2.352,
+  },
+  {
+    id: 'demo-crisis-rungis-grossiste',
+    name: 'Démo Grossiste Fruits de Rungis',
+    role_label: 'Grossiste / Rungis',
+    product_category: 'glaces',
+    stock_detail: 'Glaces fruits exotiques · 24 cartons',
+    availability: 'DLC 19/05 · stock limité',
+    availability_tone: 'warn' as const,
+    lat: 48.7552,
+    lng: 2.3491,
+  },
+  {
+    id: 'demo-crisis-saclay',
+    name: 'Démo Ferme du Plateau de Saclay',
+    role_label: 'Producteur',
+    product_category: 'produits laitiers',
+    stock_detail: 'Lait demi-écrémé 1 L · 18 palettes',
+    availability: 'DLC 20/05 · stock limité',
+    availability_tone: 'warn' as const,
+    lat: 48.7328,
+    lng: 2.1715,
+  },
+  {
+    id: 'demo-crisis-saint-aubin',
+    name: 'Démo Primeur de Saint-Aubin',
+    role_label: 'Producteur',
+    product_category: 'glaces',
+    stock_detail: 'Sorbets fruits rouges · 22 cartons',
+    availability: 'DLC 18/05 · stock limité',
+    availability_tone: 'warn' as const,
+    lat: 48.7137,
+    lng: 2.1419,
+  },
+  {
+    id: 'demo-crisis-gif',
+    name: 'Démo Maraîcher de Gif-sur-Yvette',
+    role_label: 'Producteur',
+    product_category: 'eau',
+    stock_detail: 'Eaux minérales 1.5 L · 12 palettes',
+    availability: "Disponible jusqu'au 31/05",
+    availability_tone: 'ok' as const,
+    lat: 48.6997,
+    lng: 2.1332,
+  },
+  {
+    id: 'demo-crisis-chevreuse',
+    name: 'Démo Ferme de Chevreuse',
+    role_label: 'Producteur',
+    product_category: 'produits laitiers',
+    stock_detail: 'Yaourts nature 4x125g · 34 cartons',
+    availability: 'DLC 17/05 · stock limité',
+    availability_tone: 'warn' as const,
+    lat: 48.7068,
+    lng: 2.0387,
+  },
+  {
+    id: 'demo-crisis-wissous',
+    name: 'Démo Atelier Légumes de Wissous',
+    role_label: 'Producteur',
+    product_category: 'eau',
+    stock_detail: 'Eaux minérales 50 cl · 16 palettes',
+    availability: "Disponible jusqu'au 02/06",
+    availability_tone: 'ok' as const,
+    lat: 48.7311,
+    lng: 2.3264,
+  },
+  {
+    id: 'demo-crisis-vauhallan',
+    name: 'Démo Apiculteur de Vauhallan',
+    role_label: 'Producteur',
+    product_category: 'boissons',
+    stock_detail: 'Eau aromatisée miel-citron · 18 cartons',
+    availability: "Disponible jusqu'au 01/06",
+    availability_tone: 'ok' as const,
+    lat: 48.7322,
+    lng: 2.2035,
+  },
+];
+
 const dateFmt = new Intl.DateTimeFormat('fr-FR', {
   day: '2-digit',
   month: '2-digit',
@@ -95,6 +186,55 @@ function adaptSupplier(m: MatchResult) {
     lat: m.lat,
     lng: m.lng,
   };
+}
+
+type AdaptedSupplier = ReturnType<typeof adaptSupplier>;
+
+function toRad(deg: number): number {
+  return (deg * Math.PI) / 180;
+}
+
+function distanceKm(originLat: number, originLng: number, lat: number, lng: number): number {
+  const earthRadiusKm = 6371;
+  const dLat = toRad(lat - originLat);
+  const dLng = toRad(lng - originLng);
+  const a =
+    Math.sin(dLat / 2) ** 2 +
+    Math.cos(toRad(originLat)) * Math.cos(toRad(lat)) * Math.sin(dLng / 2) ** 2;
+  return 2 * earthRadiusKm * Math.asin(Math.sqrt(a));
+}
+
+function withDemoSupplierFallback(
+  crisis: CrisisAlert,
+  suppliers: AdaptedSupplier[],
+  originLat: number,
+  originLng: number,
+): AdaptedSupplier[] {
+  const producerishCount = suppliers.filter(
+    (s) => s.role_label === 'Grossiste / Rungis' || s.role_label === 'Producteur',
+  ).length;
+
+  if (producerishCount >= 5) return suppliers.slice(0, 8);
+
+  const crisisCategories = new Set(crisis.affected_categories);
+  const seenNames = new Set(suppliers.map((s) => s.name.toLowerCase()));
+  const demoSuppliers = DEMO_CRISIS_SUPPLIERS
+    .filter((s) => crisisCategories.has(s.product_category))
+    .filter((s) => !seenNames.has(s.name.toLowerCase()))
+    .map((s) => ({
+      id: s.id,
+      name: s.name,
+      icon: categoryIconFor(s.product_category),
+      role_label: s.role_label,
+      stock_detail: s.stock_detail,
+      distance_km: Math.round(distanceKm(originLat, originLng, s.lat, s.lng) * 10) / 10,
+      availability: s.availability,
+      availability_tone: s.availability_tone,
+      lat: s.lat,
+      lng: s.lng,
+    }));
+
+  return [...demoSuppliers, ...suppliers].slice(0, 8);
 }
 
 function roleLabelFor(m: MatchResult): string {
@@ -237,7 +377,12 @@ export default function DashboardClient({ crises, suppliersByCategory, profile }
       <div className="flex flex-col gap-[0.85rem]">
         {crises.map((crisis, i) => {
           const alert = adaptAlert(crisis);
-          const adaptedSuppliers = suppliersForCrisis(crisis, suppliersByCategory).map(adaptSupplier);
+          const adaptedSuppliers = withDemoSupplierFallback(
+            crisis,
+            suppliersForCrisis(crisis, suppliersByCategory).map(adaptSupplier),
+            originLat,
+            originLng,
+          );
           return (
             <CrisisCard
               key={alert.id}
