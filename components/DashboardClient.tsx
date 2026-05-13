@@ -87,6 +87,7 @@ function adaptSupplier(m: MatchResult) {
     id: m.id,
     name: m.name,
     icon: categoryIconFor(m.product_category),
+    role_label: roleLabelFor(m),
     stock_detail: stockDetail,
     distance_km: Math.round(m.distance_km * 10) / 10,
     availability,
@@ -94,6 +95,22 @@ function adaptSupplier(m: MatchResult) {
     lat: m.lat,
     lng: m.lng,
   };
+}
+
+function roleLabelFor(m: MatchResult): string {
+  const name = m.name.toLowerCase();
+  const address = (m.address ?? '').toLowerCase();
+  if (
+    name.includes('rungis') ||
+    name.includes('grossiste') ||
+    name.includes('halle') ||
+    address.includes('rungis')
+  ) {
+    return 'Grossiste / Rungis';
+  }
+  if (m.role === 'producer') return 'Producteur';
+  if (m.role === 'restaurant') return 'Restaurant';
+  return 'Supermarché';
 }
 
 interface StatCardProps {
@@ -135,17 +152,35 @@ function suppliersForCrisis(
   crisis: CrisisAlert,
   suppliersByCategory: Record<string, MatchResult[]>,
 ): MatchResult[] {
-  const seen = new Set<string>();
-  const result: MatchResult[] = [];
+  const byOwner = new Map<string, MatchResult>();
+
   for (const cat of crisis.affected_categories) {
     for (const s of suppliersByCategory[cat] ?? []) {
-      if (!seen.has(s.id)) {
-        seen.add(s.id);
-        result.push(s);
+      const ownerKey = s.owner_id || s.id;
+      const current = byOwner.get(ownerKey);
+      if (!current || compareSupplierPriority(s, current) < 0) {
+        byOwner.set(ownerKey, s);
       }
     }
   }
-  return result.sort((a, b) => a.distance_km - b.distance_km).slice(0, 6);
+
+  return [...byOwner.values()]
+    .sort(compareSupplierPriority)
+    .slice(0, 8);
+}
+
+function compareSupplierPriority(a: MatchResult, b: MatchResult): number {
+  const priorityDiff = supplierPriority(a) - supplierPriority(b);
+  if (priorityDiff !== 0) return priorityDiff;
+  return a.distance_km - b.distance_km;
+}
+
+function supplierPriority(m: MatchResult): number {
+  const label = roleLabelFor(m);
+  if (label === 'Grossiste / Rungis') return 0;
+  if (label === 'Producteur') return 1;
+  if (label === 'Restaurant') return 2;
+  return 3;
 }
 
 export default function DashboardClient({ crises, suppliersByCategory, profile }: DashboardClientProps) {
@@ -153,7 +188,7 @@ export default function DashboardClient({ crises, suppliersByCategory, profile }
 
   const firstCritical = crises.find((c) => c.severity === 'critical');
   const totalSuppliers = new Set(
-    Object.values(suppliersByCategory).flat().map((s) => s.id),
+    Object.values(suppliersByCategory).flat().map((s) => s.owner_id || s.id),
   ).size;
 
   const originLat = profile?.lat ?? FALLBACK_LAT;

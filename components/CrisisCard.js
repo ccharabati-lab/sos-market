@@ -146,7 +146,14 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false, 
                       <SIcon size={14} />
                     </div>
                     <div className="flex-1">
-                      <div className="text-[0.85rem] font-bold text-ink">{s.name}</div>
+                      <div className="flex items-center gap-2">
+                        <div className="text-[0.85rem] font-bold text-ink">{s.name}</div>
+                        {s.role_label && (
+                          <span className="text-[0.61rem] font-bold uppercase tracking-[0.05em] text-green bg-green-light rounded px-1.5 py-0.5">
+                            {s.role_label}
+                          </span>
+                        )}
+                      </div>
                       <div className="text-[0.73rem] text-muted mt-[0.1rem]">
                         {s.stock_detail}
                       </div>
