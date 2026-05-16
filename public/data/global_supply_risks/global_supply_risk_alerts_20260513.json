@@ -1,0 +1,364 @@
+{
+  "date_execution": "2026-05-13",
+  "alerts": [
+    {
+      "alert_id": "milv_2026_05_13_0001",
+      "detected_at": "2026-05-13T06:48:41Z",
+      "risk_global": "Logistique",
+      "risk_specific": "LO-04",
+      "title": "Perturbation maritime Hormuz: risque élevé sur imports et fret",
+      "description": "Sources institutionnelles et presse convergent sur une contrainte durable de navigation autour d’Hormuz, avec navires bloqués, hausse de coûts et reroutages. Impact direct sur délais imports; impact indirect sur prix.",
+      "severity": "critical",
+      "confidence": 0.86,
+      "region": {
+        "name": "Détroit d’Hormuz / routes Asie-Europe",
+        "level": "international",
+        "geojson": null
+      },
+      "affected_categories": [
+        "fruits_exotiques",
+        "cafe_the_chocolat",
+        "epicerie_seche",
+        "bazar_saisonnier",
+        "petfood",
+        "hygiene_papier"
+      ],
+      "start_time": "2026-05-06",
+      "end_time": null,
+      "sources": [
+        {
+          "name": "IMO",
+          "url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx",
+          "type": "institution",
+          "priority": "haute"
+        },
+        {
+          "name": "AP",
+          "url": "https://apnews.com/article/03af894eaddb8ede53928babc76f80e2",
+          "type": "presse",
+          "priority": "haute"
+        },
+        {
+          "name": "Reuters",
+          "url": "https://www.investing.com/news/commodities-news/most-strait-of-hormuz-shipping-at-a-standstill-despite-latest-us-pledge-4655862",
+          "type": "presse",
+          "priority": "haute"
+        }
+      ],
+      "recommended_actions": [
+        "alerte_achats",
+        "augmentation_stock_securite",
+        "securisation_transport",
+        "diversification_fournisseurs",
+        "revue_prix"
+      ],
+      "raw_payload": {
+        "risk_id": "LO-04",
+        "risk_specific_label": "Congestion fret international",
+        "watch_indicator": "Navires bloqués, reroutage, primes war-risk, indices conteneurs Asie-Europe",
+        "alert_threshold": "Perturbation observée sur chokepoint majeur + délais import > 2 semaines ou surcharges fret significatives",
+        "source_priority": "institution+presse",
+        "product_slugs_source": [
+          "fruits_exotiques",
+          "cafe_the_chocolat",
+          "epicerie_seche",
+          "bazar_saisonnier"
+        ],
+        "evidence": "IMO signale une situation opérationnelle autour d’Hormuz; AP/Reuters rapportent navires coincés et coûts en hausse.",
+        "matching_notes": "Lien direct grande distribution via import maritime et indirect via prix fret/assurance.",
+        "original_reference": "C005,C007,C008,C009,C024"
+      }
+    },
+    {
+      "alert_id": "milv_2026_05_13_0002",
+      "detected_at": "2026-05-13T06:48:41Z",
+      "risk_global": "Économique",
+      "risk_specific": "LO-05",
+      "title": "Hausse bunker fuel/pétrole: surcoût transport et chaîne du froid",
+      "description": "La tension énergétique liée à Hormuz et aux stocks pétroliers peut maintenir des surcharges carburant et renchérir les produits frais, surgelés et importés.",
+      "severity": "warning",
+      "confidence": 0.72,
+      "region": {
+        "name": "International",
+        "level": "international",
+        "geojson": null
+      },
+      "affected_categories": [
+        "surgeles",
+        "glaces",
+        "laitier_frais",
+        "fruits_legumes",
+        "epicerie_seche"
+      ],
+      "start_time": "2026-05-06",
+      "end_time": null,
+      "sources": [
+        {
+          "name": "AP",
+          "url": "https://apnews.com/article/db0ba1dbc0bd3ff2179a84118d0064d0",
+          "type": "presse",
+          "priority": "haute"
+        },
+        {
+          "name": "Reuters",
+          "url": "https://www.marketscreener.com/news/oil-supply-shock-to-worsen-as-inventories-fall-further-even-if-conflict-ends-ce7f58d2dd8eff27",
+          "type": "presse",
+          "priority": "haute"
+        },
+        {
+          "name": "World Bank",
+          "url": "https://www.worldbank.org/ja/news/press-release/2026/04/28/commodity-markets-outlook-april-2026-press-release",
+          "type": "institution",
+          "priority": "haute"
+        }
+      ],
+      "recommended_actions": [
+        "renegociation_contrats",
+        "securisation_transport",
+        "revue_prix",
+        "gel_promotions"
+      ],
+      "raw_payload": {
+        "risk_id": "LO-05",
+        "risk_specific_label": "Hausse coût carburant",
+        "watch_indicator": "Brent, bunker fuel, surcharges transporteurs, factures énergie froid",
+        "alert_threshold": "Hausse durable carburant/fret ou surcharges fournisseur confirmées",
+        "source_priority": "presse+institution",
+        "product_slugs_source": [
+          "surgeles",
+          "laitier_frais",
+          "fruits_legumes",
+          "epicerie_seche"
+        ],
+        "evidence": "AP décrit un risque de pénurie de bunker fuel; Reuters estime que le retour des flux pétroliers prendra des semaines.",
+        "matching_notes": "Impact prix direct; disponibilité seulement si transporteurs réduisent capacités.",
+        "original_reference": "C001,C003,C010,C012"
+      }
+    },
+    {
+      "alert_id": "milv_2026_05_13_0003",
+      "detected_at": "2026-05-13T06:48:41Z",
+      "risk_global": "Économique",
+      "risk_specific": "intrants_engrais_2026",
+      "title": "Engrais sous tension: risque différé sur rendements agricoles",
+      "description": "Contrôles chinois sur exports d’engrais et perturbations énergie/fret entretiennent des prix élevés. Impact attendu surtout à 1-6 mois sur céréales, fruits/légumes et huiles.",
+      "severity": "warning",
+      "confidence": 0.69,
+      "region": {
+        "name": "Chine / marchés mondiaux des engrais",
+        "level": "international",
+        "geojson": null
+      },
+      "affected_categories": [
+        "fruits_legumes",
+        "epicerie_seche",
+        "huiles",
+        "volaille",
+        "oeufs"
+      ],
+      "start_time": "2026-04-28",
+      "end_time": null,
+      "sources": [
+        {
+          "name": "Reuters",
+          "url": "https://www.marketscreener.com/news/china-tightens-border-inspections-for-fertilizer-exports-sources-say-ce7f59d2db80fe27",
+          "type": "presse",
+          "priority": "haute"
+        },
+        {
+          "name": "UNCTAD",
+          "url": "https://unctad.org/news/gas-to-grain-fertiliser-disruptions-raise-risks-food-security-and-trade",
+          "type": "institution",
+          "priority": "haute"
+        },
+        {
+          "name": "FAO",
+          "url": "https://www.fao.org/newsroom/detail/fao--protracted-strait-of-hormuz-crisis-could-turn-into-global-agrifood-catastrophe/en",
+          "type": "institution",
+          "priority": "haute"
+        }
+      ],
+      "recommended_actions": [
+        "analyse_dependance_fournisseur",
+        "diversification_fournisseurs",
+        "renegociation_contrats",
+        "revue_prix"
+      ],
+      "raw_payload": {
+        "risk_id": "intrants_engrais_2026",
+        "risk_specific_label": "Restrictions et surcoûts engrais",
+        "watch_indicator": "Prix urée/DAP/potasse, volumes export Chine, achats engrais agriculteurs",
+        "alert_threshold": "Prix engrais durablement hauts + signaux de réduction d’usage dans bassins fournisseurs",
+        "source_priority": "institution+presse",
+        "product_slugs_source": [
+          "fruits_legumes",
+          "epicerie_seche",
+          "huiles"
+        ],
+        "evidence": "Reuters rapporte contrôles chinois; UNCTAD/FAO relient énergie, fret, engrais et risque alimentaire.",
+        "matching_notes": "Impact indirect et différé; confiance moyenne car dépend des décisions de fertilisation et météo.",
+        "original_reference": "C002,C004,C011"
+      }
+    },
+    {
+      "alert_id": "milv_2026_05_13_0004",
+      "detected_at": "2026-05-13T06:48:41Z",
+      "risk_global": "Climat",
+      "risk_specific": "CL-07",
+      "title": "Blé/céréales: baisse de production américaine et stress hydrique",
+      "description": "Le WASDE du 12 mai abaisse la production américaine de blé et relève le prix moyen, tandis que les signaux JRC et Reuters indiquent un stress hydrique en Europe/États-Unis.",
+      "severity": "warning",
+      "confidence": 0.78,
+      "region": {
+        "name": "États-Unis / Europe",
+        "level": "international",
+        "geojson": null
+      },
+      "affected_categories": [
+        "pain_viennoiserie",
+        "epicerie_seche",
+        "petfood"
+      ],
+      "start_time": "2026-05-12",
+      "end_time": null,
+      "sources": [
+        {
+          "name": "USDA",
+          "url": "https://esmis.nal.usda.gov/sites/default/release-files/795899/wasde0526.txt",
+          "type": "institution",
+          "priority": "haute"
+        },
+        {
+          "name": "European Commission / JRC",
+          "url": "https://joint-research-centre.ec.europa.eu/european-and-global-drought-observatories/current-drought-situation-europe_en",
+          "type": "institution",
+          "priority": "haute"
+        }
+      ],
+      "recommended_actions": [
+        "alerte_achats",
+        "renegociation_contrats",
+        "gel_promotions",
+        "revue_prix"
+      ],
+      "raw_payload": {
+        "risk_id": "CL-07",
+        "risk_specific_label": "Mauvaise récolte / rendement céréales",
+        "watch_indicator": "WASDE, JRC MARS, prix blé MATIF/Chicago",
+        "alert_threshold": "Révision production négative + prix blé en hausse confirmée",
+        "source_priority": "institution",
+        "product_slugs_source": [
+          "pain_viennoiserie",
+          "epicerie_seche",
+          "petfood"
+        ],
+        "evidence": "USDA abaisse la production de blé US à 1 561 M bu et relève le prix moyen farm à 6,50 $/bu selon candidat fourni.",
+        "matching_notes": "Impact prix moyen terme; pas de rupture immédiate attendue.",
+        "original_reference": "C015,C016,C020,C021"
+      }
+    },
+    {
+      "alert_id": "milv_2026_05_13_0005",
+      "detected_at": "2026-05-13T06:48:41Z",
+      "risk_global": "Sanitaire",
+      "risk_specific": "SA-02",
+      "title": "HPAI persistante: surveillance renforcée œufs et volaille",
+      "description": "La WOAH met à jour la situation HPAI; l’USDA ERS signale des pertes récentes liées à l’HPAI sur œufs de table et dinde. Risque de tension si foyers touchent les bassins d’approvisionnement.",
+      "severity": "warning",
+      "confidence": 0.74,
+      "region": {
+        "name": "International",
+        "level": "international",
+        "geojson": null
+      },
+      "affected_categories": [
+        "oeufs",
+        "volaille"
+      ],
+      "start_time": "2026-05-07",
+      "end_time": null,
+      "sources": [
+        {
+          "name": "WOAH",
+          "url": "https://www.woah.org/en/document/high-pathogenicity-avian-influenza-hpai-situation-report-81/",
+          "type": "institution",
+          "priority": "haute"
+        },
+        {
+          "name": "USDA ERS",
+          "url": "https://www.ers.usda.gov/topics/animal-products/poultry-eggs/market-outlook/",
+          "type": "institution",
+          "priority": "moyenne"
+        }
+      ],
+      "recommended_actions": [
+        "alerte_achats",
+        "diversification_fournisseurs",
+        "augmentation_stock_securite",
+        "substitution_produit"
+      ],
+      "raw_payload": {
+        "risk_id": "SA-02",
+        "risk_specific_label": "Grippe aviaire HPAI",
+        "watch_indicator": "Foyers HPAI, abattages pondeuses, prix gros œufs/dinde",
+        "alert_threshold": "Hausse foyers dans bassins fournisseurs ou réduction production confirmée",
+        "source_priority": "institution",
+        "product_slugs_source": [
+          "oeufs",
+          "volaille"
+        ],
+        "evidence": "WOAH situation report 81; USDA ERS réduit les attentes de production œufs de table et dinde selon candidat fourni.",
+        "matching_notes": "Impact direct possible sur rayon œufs/volaille; horizon 1-3 mois.",
+        "original_reference": "C017,C018"
+      }
+    },
+    {
+      "alert_id": "milv_2026_05_13_0006",
+      "detected_at": "2026-05-13T06:48:41Z",
+      "risk_global": "Sanitaire",
+      "risk_specific": "SA-03",
+      "title": "Peste porcine africaine: signal de surveillance porc/charcuterie",
+      "description": "La WOAH publie une mise à jour ASF. Le lien rayon reste conditionnel à des foyers dans les bassins d’approvisionnement ou à des embargos.",
+      "severity": "info",
+      "confidence": 0.56,
+      "region": {
+        "name": "International / Europe à surveiller",
+        "level": "international",
+        "geojson": null
+      },
+      "affected_categories": [
+        "frais_viande",
+        "frais_charcuterie"
+      ],
+      "start_time": "2026-04-29",
+      "end_time": null,
+      "sources": [
+        {
+          "name": "WOAH",
+          "url": "https://www.woah.org/en/document/african-swine-fever-asf-situation-report-75/",
+          "type": "institution",
+          "priority": "haute"
+        }
+      ],
+      "recommended_actions": [
+        "surveillance_simple",
+        "analyse_dependance_fournisseur",
+        "diversification_fournisseurs"
+      ],
+      "raw_payload": {
+        "risk_id": "SA-03",
+        "risk_specific_label": "Peste porcine africaine",
+        "watch_indicator": "Foyers ASF UE, embargos, cotation porc",
+        "alert_threshold": "Foyer majeur dans bassin fournisseur ou restriction commerciale significative",
+        "source_priority": "institution",
+        "product_slugs_source": [
+          "frais_viande",
+          "frais_charcuterie"
+        ],
+        "evidence": "WOAH ASF Situation Report 75 sur notifications de mars 2026 selon candidat fourni.",
+        "matching_notes": "Signal faible à modéré; pas d’impact immédiat observé sur grande distribution.",
+        "original_reference": "C019"
+      }
+    }
+  ]
+}

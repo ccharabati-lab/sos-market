@@ -1,4 +1,4 @@
-import { supabase } from './supabase';
+import { createServerSupabase } from './supabase-server';
 import type {
   CrisisAlert,
   Listing,
@@ -34,6 +34,8 @@ export async function getMatchingSuppliers(
   userLat: number,
   userLng: number,
 ): Promise<MatchResult[]> {
+  const supabase = createServerSupabase();
+
   const { data, error } = await supabase
     .from('listings')
     .select('*, profiles!inner(*)')
@@ -74,6 +76,8 @@ export async function getMatchingSuppliersByCategories(
 ): Promise<Record<string, MatchResult[]>> {
   if (categories.length === 0) return {};
 
+  const supabase = createServerSupabase();
+
   const { data, error } = await supabase
     .from('listings')
     .select('*, profiles!inner(*)')
@@ -110,6 +114,7 @@ export async function getMatchingSuppliersByCategories(
  */
 export async function getActiveCrises(): Promise<CrisisAlert[]> {
   const cutoffIso = new Date(Date.now() + 48 * 60 * 60 * 1000).toISOString();
+  const supabase = createServerSupabase();
 
   const { data, error } = await supabase
     .from('crisis_alerts')

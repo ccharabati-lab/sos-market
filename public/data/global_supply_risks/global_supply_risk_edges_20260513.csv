@@ -1,0 +1,10 @@
+Source;Mecanisme;Stress;Amplificateur;Impact;Cible;Horizon;Poids direct;Poids second saut
+Hormuz perturbé;Blocage ou reroutage maritime;Délais conteneurs et baisse fiabilité ETA;Primes war-risk et capacité transport limitée;Ruptures ponctuelles et hausse coût import;"fruits_exotiques;cafe_the_chocolat;epicerie_seche;bazar_saisonnier";2-8 semaines;0.86;0.42
+Hormuz perturbé;Rareté bunker fuel;Surcharges carburant maritime;Stocks pétroliers bas et délais de normalisation;Hausse prix transport et fournisseurs;"surgeles;laitier_frais;fruits_legumes;epicerie_seche";1-12 semaines;0.72;0.55
+Contrôles chinois engrais;Ralentissement export et disponibilité réduite;Prix engrais élevés;Gaz/fret chers liés au Moyen-Orient;Rendements agricoles et coûts de production sous pression;"fruits_legumes;epicerie_seche;huiles";1-6 mois;0.62;0.58
+Sécheresse États-Unis/Europe;Stress hydrique cultures;Baisse rendement et qualité blé;Intrants chers et stocks prudents;Hausse farine et produits céréaliers;"pain_viennoiserie;epicerie_seche;petfood";1-6 mois;0.74;0.39
+HPAI persistante;Abattages et restrictions sanitaires;Offre pondeuses/volaille réduite;Embargos et coûts biosécurité;Tension disponibilité et prix;"oeufs;volaille";1-3 mois;0.78;0.28
+ASF persistante;Restrictions sanitaires et embargos potentiels;Déséquilibre flux porcins;Foyers dans bassins fournisseurs;Hausse prix porc/charcuterie;"frais_viande;frais_charcuterie";2-6 mois;0.46;0.22
+Cacao/sucre hauts;Mauvaise récolte anticipée et intrants chers;Coûts matières premières chocolaterie/boissons;Météo 2026/27 incertaine;Revalorisations fournisseurs et réduction promotions;"cafe_the_chocolat;glaces;brsa";1-6 mois;0.57;0.31
+Aluminium sous tension;Risque choc offre métal;Coût et disponibilité emballages;Demande saisonnière canettes été;Prix ou arbitrage formats;"brsa;biere;conserves";1-6 mois;0.48;0.24
+Enquête sauvegarde riz Philippines;Possible barrière commerciale;Réallocation flux riz asiatique;Comportements protectionnistes d’autres pays;Tension prix riz importé;epicerie_seche;1-6 mois;0.3;0.18

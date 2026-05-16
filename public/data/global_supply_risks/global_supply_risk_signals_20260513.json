@@ -1,0 +1,871 @@
+{
+  "run_context": {
+    "date_execution": "2026-05-13",
+    "lookback_days": 7,
+    "forecast_horizons": [
+      "court_terme",
+      "moyen_terme",
+      "saison_suivante",
+      "structurel"
+    ],
+    "scope": "risques mondiaux supply chain grande distribution",
+    "hypotheses": [
+      "Le choc Hormuz continue de transmettre des tensions via énergie, engrais, fret et assurance maritime.",
+      "Les filières volaille/œufs et porc restent vulnérables aux épisodes HPAI/ASF.",
+      "Les déficits hydriques européens et américains pèsent sur céréales, fruits/légumes et pain/viennoiserie.",
+      "Les restrictions commerciales et mesures de sauvegarde peuvent provoquer des tensions sur le riz et les intrants agricoles.",
+      "Les marchés cacao/blé/engrais restent sensibles aux aléas météo et géopolitiques à court terme."
+    ]
+  },
+  "executive_summary": {
+    "global_risk_level": "élevé",
+    "main_message": "La veille retient surtout un cluster Hormuz-énergie-fret-engrais, qui combine perturbations maritimes observées, hausse des carburants et tension sur les intrants agricoles. Les impacts distributeurs les plus plausibles concernent d’abord les délais et coûts d’import, puis les prix céréales, huiles, fruits/légumes, emballages aluminium, œufs/volaille et chocolat à horizon 1-6 mois.",
+    "top_risks": [
+      "LO-04: congestion et risque de blocage maritime autour du détroit d’Hormuz, impact délais/coûts d’import.",
+      "LO-05/EC-02: hausse énergie, bunker fuel et fret, impact prix transport et chaîne du froid.",
+      "Intrants engrais: contrôles chinois et choc gaz/transport, risque rendement agricole différé.",
+      "CL-06/CL-07: sécheresse et baisse de production de blé aux États-Unis et stress hydrique européen.",
+      "SA-02: HPAI persistante, tensions sur œufs et volaille."
+    ],
+    "top_impacted_product_families": [
+      "Ambiant: épicerie sèche, huiles, conserves, café/thé/chocolat.",
+      "Frais: fruits et légumes, œufs, volaille, laitier frais.",
+      "Surgelés: glaces et produits surgelés sensibles à énergie/froid.",
+      "Boissons: BRSA et bières via emballage aluminium et fret.",
+      "Bazar: articles importés, hygiène papier, petfood."
+    ],
+    "recommended_sourcing_actions": [
+      "Sécuriser capacités de transport et ETA sur imports critiques; prioriser conteneurs à forte marge ou forte rotation.",
+      "Augmenter stock de sécurité sur références importées longues: café/cacao, riz, conserves importées, bazar saisonnier, petfood.",
+      "Diversifier origines céréales, huiles, fruits/légumes et intrants indirects; revoir dépendance fournisseurs exposés au fret maritime long-courrier.",
+      "Préparer revues prix et clauses énergie/fret avec fournisseurs; geler promotions sur catégories sous tension.",
+      "Surveiller HPAI/ASF et activer sources alternatives œufs, volaille, charcuterie."
+    ]
+  },
+  "signals": [
+    {
+      "signal_id": "SIG_2026_05_13_001",
+      "title": "Cluster Hormuz: navigation maritime contrainte, navires bloqués et coûts de fret en hausse",
+      "date_publication": "2026-05-06",
+      "source_name": "IMO",
+      "source_url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx",
+      "source_type": "institution",
+      "source_reliability": 5,
+      "geography": {
+        "country": "International",
+        "region": "Moyen-Orient / Golfe",
+        "trade_route": "Détroit d’Hormuz et routes alternatives Asie-Europe",
+        "port_or_chokepoint": "Strait of Hormuz"
+      },
+      "risk_category": "transport",
+      "risk_id": "LO-04",
+      "risk_specific": "Congestion fret international liée au détroit d’Hormuz",
+      "event_type": "Perturbation maritime observée et persistante",
+      "signal_status": "critique",
+      "impact_certainty": "observe",
+      "affected_supply_chain_stage": [
+        "transport",
+        "importation",
+        "distribution"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "fruits_exotiques",
+          "product_family": "Frais",
+          "product": "Bananes, avocats, mangues et autres imports longue distance",
+          "impact_type": "delai",
+          "impact_mechanism": "Ralentissement ou reroutage maritime, allongement des transit-times et arbitrages capacitaires.",
+          "time_horizon": "court_terme",
+          "risk_score": 76,
+          "risk_level": "élevé",
+          "confidence": "forte"
+        },
+        {
+          "product_slug": "cafe_the_chocolat",
+          "product_family": "Ambiant",
+          "product": "Café, cacao, chocolat",
+          "impact_type": "prix",
+          "impact_mechanism": "Fret maritime, assurance war-risk et carburant plus chers sur flux importés.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 72,
+          "risk_level": "élevé",
+          "confidence": "forte"
+        },
+        {
+          "product_slug": "epicerie_seche",
+          "product_family": "Ambiant",
+          "product": "Riz, pâtes, légumineuses importées",
+          "impact_type": "delai",
+          "impact_mechanism": "Congestion et baisse de fiabilité des arrivées conteneurisées.",
+          "time_horizon": "court_terme",
+          "risk_score": 68,
+          "risk_level": "élevé",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "bazar_saisonnier",
+          "product_family": "Bazar",
+          "product": "Bazar, textile, électronique saisonnière",
+          "impact_type": "delai",
+          "impact_mechanism": "Dépendance aux flux Asie-Europe et priorisation des cargaisons.",
+          "time_horizon": "court_terme",
+          "risk_score": 78,
+          "risk_level": "élevé",
+          "confidence": "forte"
+        }
+      ],
+      "impact_pathway": "Perturbation Hormuz observée -> moindre fluidité maritime, risques sécurité et assurances -> hausse fret et retards conteneurs -> imports alimentaires et non alimentaires retardés -> sous 2-8 semaines, sécuriser transport et stocks tampons.",
+      "retail_implications": "Risque direct sur disponibilité d’articles importés et indirect sur coût d’achat; la transmission prix peut précéder la rupture physique si les fournisseurs répercutent fret/assurance.",
+      "recommended_distributor_actions": [
+        "alerte_achats",
+        "augmentation_stock_securite",
+        "securisation_transport",
+        "diversification_fournisseurs",
+        "changement_origine",
+        "revue_prix"
+      ],
+      "overall_supply_risk_score": 78,
+      "overall_supply_risk_level": "élevé",
+      "watch_next": [
+        "Taux de navires en attente dans le Golfe",
+        "Primes assurance war-risk",
+        "Indices spot conteneurs Asie-Europe",
+        "Annonces Maersk/MSC/CMA CGM sur reroutage",
+        "ETA fournisseurs import long-courrier"
+      ],
+      "keywords": [
+        "Hormuz",
+        "shipping",
+        "war-risk premiums",
+        "conteneurs",
+        "fret maritime",
+        "reroutage"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_002",
+      "title": "Bunker fuel et pétrole: canal de surcoût rapide vers transport, froid et prix rayon",
+      "date_publication": "2026-05-12",
+      "source_name": "AP",
+      "source_url": "https://apnews.com/article/db0ba1dbc0bd3ff2179a84118d0064d0",
+      "source_type": "presse",
+      "source_reliability": 4,
+      "geography": {
+        "country": "International",
+        "region": "Asie / Moyen-Orient",
+        "trade_route": "Routes maritimes internationales",
+        "port_or_chokepoint": "Strait of Hormuz"
+      },
+      "risk_category": "energie",
+      "risk_id": "LO-05",
+      "risk_specific": "Hausse coût carburant et bunker fuel",
+      "event_type": "Hausse de coût énergétique probable et prolongée",
+      "signal_status": "degrade",
+      "impact_certainty": "probable",
+      "affected_supply_chain_stage": [
+        "energie",
+        "transport",
+        "distribution"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "surgeles",
+          "product_family": "Surgelés",
+          "product": "Surgelés salés/sucrés",
+          "impact_type": "prix",
+          "impact_mechanism": "Coûts énergie et froid plus élevés dans transport et entrepôts.",
+          "time_horizon": "court_terme",
+          "risk_score": 65,
+          "risk_level": "élevé",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "laitier_frais",
+          "product_family": "Frais",
+          "product": "Lait, yaourts, beurre, fromages frais",
+          "impact_type": "prix",
+          "impact_mechanism": "Transport réfrigéré et énergie industrielle plus chers.",
+          "time_horizon": "court_terme",
+          "risk_score": 62,
+          "risk_level": "élevé",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "fruits_legumes",
+          "product_family": "Frais",
+          "product": "Fruits et légumes frais",
+          "impact_type": "prix",
+          "impact_mechanism": "Hausse transport routier et maritime, surtout produits importés ou sous température contrôlée.",
+          "time_horizon": "court_terme",
+          "risk_score": 60,
+          "risk_level": "significatif",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "epicerie_seche",
+          "product_family": "Ambiant",
+          "product": "Épicerie sèche",
+          "impact_type": "prix",
+          "impact_mechanism": "Répercussion fret amont et distribution aval.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 58,
+          "risk_level": "significatif",
+          "confidence": "moyenne"
+        }
+      ],
+      "impact_pathway": "Rareté bunker fuel/pétrole -> hausse carburant maritime et routier -> renchérissement fret et froid -> fournisseurs demandent revalorisations -> impact rayon en semaines à mois.",
+      "retail_implications": "Impact surtout prix et marges; risque de disponibilité si certains transporteurs réduisent capacités ou si les rotations import sont arbitrées.",
+      "recommended_distributor_actions": [
+        "renegociation_contrats",
+        "revue_prix",
+        "securisation_transport",
+        "analyse_dependance_fournisseur",
+        "gel_promotions"
+      ],
+      "overall_supply_risk_score": 66,
+      "overall_supply_risk_level": "élevé",
+      "watch_next": [
+        "Cours Brent et bunker fuel Singapour/Fujairah",
+        "Surcharges carburant transporteurs",
+        "Délais de réouverture ou normalisation Hormuz",
+        "Demandes de revalorisation fournisseurs"
+      ],
+      "keywords": [
+        "bunker fuel",
+        "pétrole",
+        "diesel",
+        "fret",
+        "chaîne du froid"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_003",
+      "title": "Engrais: choc gaz/fret et contrôles chinois à l’export entretiennent un risque de rendement agricole différé",
+      "date_publication": "2026-04-28",
+      "source_name": "Reuters",
+      "source_url": "https://www.marketscreener.com/news/china-tightens-border-inspections-for-fertilizer-exports-sources-say-ce7f59d2db80fe27",
+      "source_type": "presse",
+      "source_reliability": 4,
+      "geography": {
+        "country": "Chine / International",
+        "region": "Marchés mondiaux des engrais",
+        "trade_route": "Exports chinois et routes maritimes énergétiques",
+        "port_or_chokepoint": "Strait of Hormuz"
+      },
+      "risk_category": "intrants",
+      "risk_id": "intrants_engrais_2026",
+      "risk_specific": "Restrictions et surcoûts sur engrais",
+      "event_type": "Tension intrants agricoles",
+      "signal_status": "degrade",
+      "impact_certainty": "probable",
+      "affected_supply_chain_stage": [
+        "intrants",
+        "production",
+        "transport"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "fruits_legumes",
+          "product_family": "Frais",
+          "product": "Fruits et légumes",
+          "impact_type": "prix",
+          "impact_mechanism": "Engrais plus chers ou moins disponibles -> arbitrage d’usage -> rendements et calibres sous pression.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 70,
+          "risk_level": "élevé",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "epicerie_seche",
+          "product_family": "Ambiant",
+          "product": "Céréales, pâtes, riz, légumineuses",
+          "impact_type": "prix",
+          "impact_mechanism": "Coûts de fertilisation élevés -> coût de production et risque rendement.",
+          "time_horizon": "saison_suivante",
+          "risk_score": 69,
+          "risk_level": "élevé",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "huiles",
+          "product_family": "Ambiant",
+          "product": "Huiles de tournesol, colza, soja",
+          "impact_type": "prix",
+          "impact_mechanism": "Oléagineux sensibles à intrants et coûts agricoles.",
+          "time_horizon": "saison_suivante",
+          "risk_score": 64,
+          "risk_level": "élevé",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "volaille",
+          "product_family": "Frais",
+          "product": "Volaille et œufs via alimentation animale",
+          "impact_type": "prix",
+          "impact_mechanism": "Effet second saut: céréales et tourteaux plus chers -> coût aliment animal.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 55,
+          "risk_level": "significatif",
+          "confidence": "faible"
+        }
+      ],
+      "impact_pathway": "Contrôles export engrais + choc gaz/fret -> prix internationaux élevés -> agriculteurs réduisent ou paient plus les intrants -> rendements/coûts agricoles dégradés -> prix fruits/légumes, céréales, huiles et protéines animales à 1-6 mois.",
+      "retail_implications": "Signal surtout différé; nécessite sécurisation contractuelle plutôt que réponse rupture immédiate.",
+      "recommended_distributor_actions": [
+        "diversification_fournisseurs",
+        "analyse_dependance_fournisseur",
+        "renegociation_contrats",
+        "revue_prix",
+        "surveillance_simple"
+      ],
+      "overall_supply_risk_score": 70,
+      "overall_supply_risk_level": "élevé",
+      "watch_next": [
+        "Prix urée/DAP/potasse",
+        "Volumes d’export chinois",
+        "Achats d’engrais par producteurs européens",
+        "Prévisions rendement céréales et fruits/légumes"
+      ],
+      "keywords": [
+        "engrais",
+        "urée",
+        "gaz",
+        "Chine",
+        "rendements",
+        "intrants"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_004",
+      "title": "Blé et céréales: baisse WASDE de production américaine et stress hydrique Europe/États-Unis",
+      "date_publication": "2026-05-12",
+      "source_name": "USDA",
+      "source_url": "https://esmis.nal.usda.gov/sites/default/release-files/795899/wasde0526.txt",
+      "source_type": "institution",
+      "source_reliability": 5,
+      "geography": {
+        "country": "États-Unis / Europe",
+        "region": "Grandes zones céréalières",
+        "trade_route": "Commerce mondial céréales",
+        "port_or_chokepoint": ""
+      },
+      "risk_category": "climat",
+      "risk_id": "CL-07",
+      "risk_specific": "Mauvaise récolte / rendement céréales",
+      "event_type": "Révision officielle de production et stress climatique",
+      "signal_status": "avere",
+      "impact_certainty": "probable",
+      "affected_supply_chain_stage": [
+        "production",
+        "stockage",
+        "transformation"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "pain_viennoiserie",
+          "product_family": "Frais",
+          "product": "Pain, baguettes, viennoiseries",
+          "impact_type": "prix",
+          "impact_mechanism": "Blé plus cher -> farine et produits boulangers sous pression.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 66,
+          "risk_level": "élevé",
+          "confidence": "forte"
+        },
+        {
+          "product_slug": "epicerie_seche",
+          "product_family": "Ambiant",
+          "product": "Pâtes, semoule, farines et produits céréaliers",
+          "impact_type": "prix",
+          "impact_mechanism": "Contraction offre et prix farm moyen relevé dans WASDE.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 64,
+          "risk_level": "élevé",
+          "confidence": "forte"
+        },
+        {
+          "product_slug": "petfood",
+          "product_family": "Bazar",
+          "product": "Croquettes chien/chat",
+          "impact_type": "prix",
+          "impact_mechanism": "Céréales et protéines végétales dans formulations petfood.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 50,
+          "risk_level": "significatif",
+          "confidence": "moyenne"
+        }
+      ],
+      "impact_pathway": "Sécheresse/froid et révision WASDE -> baisse production blé et hausse prix indicatif -> hausse farine/céréales transformées -> négociations fournisseurs et prix rayon à horizon 1-3 mois.",
+      "retail_implications": "Risque davantage inflationniste que rupture; la sensibilité promotionnelle pain/pâtes doit être réduite si les prix continuent de monter.",
+      "recommended_distributor_actions": [
+        "alerte_achats",
+        "renegociation_contrats",
+        "gel_promotions",
+        "revue_prix",
+        "diversification_fournisseurs"
+      ],
+      "overall_supply_risk_score": 64,
+      "overall_supply_risk_level": "élevé",
+      "watch_next": [
+        "Prochains WASDE/FranceAgriMer/JRC MARS",
+        "Prix blé Chicago/MATIF",
+        "Conditions hydriques Europe centrale/nord/est",
+        "Qualité protéines du blé"
+      ],
+      "keywords": [
+        "WASDE",
+        "blé",
+        "sécheresse",
+        "JRC",
+        "rendement",
+        "farine"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_005",
+      "title": "HPAI persistante: pertes avicoles et risque de tension œufs/volaille",
+      "date_publication": "2026-05-07",
+      "source_name": "WOAH",
+      "source_url": "https://www.woah.org/en/document/high-pathogenicity-avian-influenza-hpai-situation-report-81/",
+      "source_type": "institution",
+      "source_reliability": 5,
+      "geography": {
+        "country": "International",
+        "region": "Monde",
+        "trade_route": "Commerce œufs/volaille",
+        "port_or_chokepoint": ""
+      },
+      "risk_category": "sanitaire",
+      "risk_id": "SA-02",
+      "risk_specific": "Grippe aviaire HPAI",
+      "event_type": "Risque sanitaire animal persistant",
+      "signal_status": "avere",
+      "impact_certainty": "probable",
+      "affected_supply_chain_stage": [
+        "production",
+        "transformation",
+        "distribution"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "oeufs",
+          "product_family": "Frais ambiant",
+          "product": "Œufs frais",
+          "impact_type": "disponibilite",
+          "impact_mechanism": "Pertes de cheptel pondeur et restrictions sanitaires locales/internationales.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 63,
+          "risk_level": "élevé",
+          "confidence": "forte"
+        },
+        {
+          "product_slug": "volaille",
+          "product_family": "Frais",
+          "product": "Poulet, dinde, produits de volaille",
+          "impact_type": "prix",
+          "impact_mechanism": "Abattages, biosécurité et restrictions commerciales réduisent l’offre flexible.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 61,
+          "risk_level": "élevé",
+          "confidence": "forte"
+        }
+      ],
+      "impact_pathway": "Notifications HPAI persistantes -> abattages/restrictions -> baisse disponibilité œufs/volaille et hausse coûts biosécurité -> tensions rayon à 1-3 mois -> sécuriser fournisseurs alternatifs.",
+      "retail_implications": "Risque direct sur œufs et volaille, particulièrement si foyers proches des bassins fournisseurs européens; risque d’effet substitution vers porc/produits végétaux.",
+      "recommended_distributor_actions": [
+        "alerte_achats",
+        "diversification_fournisseurs",
+        "augmentation_stock_securite",
+        "substitution_produit",
+        "communication_consommateur"
+      ],
+      "overall_supply_risk_score": 62,
+      "overall_supply_risk_level": "élevé",
+      "watch_next": [
+        "Foyers HPAI en Europe et Amérique du Nord",
+        "Abattages de pondeuses",
+        "Prix gros œufs et dinde",
+        "Embargos sanitaires"
+      ],
+      "keywords": [
+        "HPAI",
+        "H5N1",
+        "grippe aviaire",
+        "œufs",
+        "volaille"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_006",
+      "title": "Cacao et sucre: cacao londonien à un pic de 2 mois et demi, risques engrais/météo 2026-2027",
+      "date_publication": "2026-05-01",
+      "source_name": "Reuters",
+      "source_url": "https://www.sahmcapital.com/news/content/softs-raw-sugar-steadies-near-3-week-high-london-cocoa-hits-2-12-month-peak-2026-05-01",
+      "source_type": "presse",
+      "source_reliability": 4,
+      "geography": {
+        "country": "International",
+        "region": "Marchés soft commodities",
+        "trade_route": "Flux cacao/sucre",
+        "port_or_chokepoint": ""
+      },
+      "risk_category": "climat",
+      "risk_id": "CL-07",
+      "risk_specific": "Mauvaise récolte / rendement cacao-sucre",
+      "event_type": "Tension de marché commodity",
+      "signal_status": "emergent",
+      "impact_certainty": "possible",
+      "affected_supply_chain_stage": [
+        "production",
+        "transformation",
+        "importation"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "cafe_the_chocolat",
+          "product_family": "Ambiant",
+          "product": "Chocolat, cacao poudre, confiserie chocolatée",
+          "impact_type": "prix",
+          "impact_mechanism": "Cours cacao plus haut, inquiétudes engrais et météo sur production 2026/27.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 57,
+          "risk_level": "significatif",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "glaces",
+          "product_family": "Surgelés",
+          "product": "Glaces chocolatées",
+          "impact_type": "prix",
+          "impact_mechanism": "Coût cacao et sucre répercuté dans recettes et enrobages.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 49,
+          "risk_level": "significatif",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "brsa",
+          "product_family": "Boissons",
+          "product": "Sodas et boissons sucrées",
+          "impact_type": "prix",
+          "impact_mechanism": "Sucre proche d’un plus haut récent; transmission plus probable si tendance persiste.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 44,
+          "risk_level": "significatif",
+          "confidence": "faible"
+        }
+      ],
+      "impact_pathway": "Hausse cours cacao/sucre + risques météo/engrais -> coûts industriels confiserie/boissons -> demandes tarifaires fournisseurs -> ajustements prix et promotions à 1-6 mois.",
+      "retail_implications": "Impact prix plus probable que rupture; attention aux opérations chocolat saisonnières et glaces été.",
+      "recommended_distributor_actions": [
+        "surveillance_simple",
+        "renegociation_contrats",
+        "gel_promotions",
+        "revue_prix",
+        "substitution_produit"
+      ],
+      "overall_supply_risk_score": 56,
+      "overall_supply_risk_level": "significatif",
+      "watch_next": [
+        "Cours ICE cacao Londres/New York",
+        "Prévisions El Niño/La Niña zones cacao",
+        "Disponibilité engrais Afrique de l’Ouest",
+        "Demandes tarifs industriels chocolat"
+      ],
+      "keywords": [
+        "cacao",
+        "sucre",
+        "softs",
+        "El Niño",
+        "engrais"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_007",
+      "title": "Peste porcine africaine: risque sanitaire persistant pour porc et charcuterie",
+      "date_publication": "2026-04-29",
+      "source_name": "WOAH",
+      "source_url": "https://www.woah.org/en/document/african-swine-fever-asf-situation-report-75/",
+      "source_type": "institution",
+      "source_reliability": 5,
+      "geography": {
+        "country": "International",
+        "region": "Monde / Europe à surveiller",
+        "trade_route": "Commerce porc et charcuterie",
+        "port_or_chokepoint": ""
+      },
+      "risk_category": "sanitaire",
+      "risk_id": "SA-03",
+      "risk_specific": "Peste porcine africaine",
+      "event_type": "Mise à jour sanitaire internationale",
+      "signal_status": "emergent",
+      "impact_certainty": "possible",
+      "affected_supply_chain_stage": [
+        "production",
+        "transformation",
+        "distribution"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "frais_viande",
+          "product_family": "Frais",
+          "product": "Viande fraîche de porc",
+          "impact_type": "prix",
+          "impact_mechanism": "Foyers ASF peuvent déclencher restrictions, abattages et déséquilibres commerciaux.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 45,
+          "risk_level": "significatif",
+          "confidence": "moyenne"
+        },
+        {
+          "product_slug": "frais_charcuterie",
+          "product_family": "Frais",
+          "product": "Jambon, saucisson, rillettes",
+          "impact_type": "prix",
+          "impact_mechanism": "Transmission via coût matière première porc et origine disponible.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 47,
+          "risk_level": "significatif",
+          "confidence": "moyenne"
+        }
+      ],
+      "impact_pathway": "Notifications ASF -> mesures sanitaires/embargos locaux -> arbitrage des flux porcins -> tension prix porc et charcuterie si bassins fournisseurs touchés -> sourcing alternatif.",
+      "retail_implications": "Signal de surveillance; pas de crise rayon immédiate sans foyer majeur dans les bassins d’approvisionnement.",
+      "recommended_distributor_actions": [
+        "surveillance_simple",
+        "analyse_dependance_fournisseur",
+        "diversification_fournisseurs",
+        "revue_prix"
+      ],
+      "overall_supply_risk_score": 46,
+      "overall_supply_risk_level": "significatif",
+      "watch_next": [
+        "Foyers ASF UE",
+        "Décisions d’embargo pays tiers",
+        "Cotations porc Europe",
+        "Capacité abattage et transformation"
+      ],
+      "keywords": [
+        "ASF",
+        "PPA",
+        "porc",
+        "charcuterie",
+        "embargo"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_008",
+      "title": "Aluminium: risque de choc d’offre avec impact emballages canettes et conserves",
+      "date_publication": "2026-04-21",
+      "source_name": "Reuters",
+      "source_url": "https://www.marketscreener.com/news/aluminium-faces-black-swan-supply-shock-mercuria-says-ce7f59dbde8bf62c",
+      "source_type": "presse",
+      "source_reliability": 3,
+      "geography": {
+        "country": "International",
+        "region": "Marchés métaux",
+        "trade_route": "Flux aluminium et emballages",
+        "port_or_chokepoint": ""
+      },
+      "risk_category": "intrants",
+      "risk_id": "intrants_aluminium_2026",
+      "risk_specific": "Tension aluminium et emballages",
+      "event_type": "Signal de marché sur intrant emballage",
+      "signal_status": "emergent",
+      "impact_certainty": "possible",
+      "affected_supply_chain_stage": [
+        "emballage",
+        "transformation",
+        "distribution"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "brsa",
+          "product_family": "Boissons",
+          "product": "Canettes sodas, energy drinks",
+          "impact_type": "prix",
+          "impact_mechanism": "Aluminium plus cher ou moins disponible -> canettes et opercules sous tension.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 49,
+          "risk_level": "significatif",
+          "confidence": "faible"
+        },
+        {
+          "product_slug": "biere",
+          "product_family": "Boissons",
+          "product": "Bières en canettes",
+          "impact_type": "prix",
+          "impact_mechanism": "Coût emballage aluminium répercuté par brasseurs.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 50,
+          "risk_level": "significatif",
+          "confidence": "faible"
+        },
+        {
+          "product_slug": "conserves",
+          "product_family": "Ambiant",
+          "product": "Conserves et barquettes",
+          "impact_type": "prix",
+          "impact_mechanism": "Métal emballage plus coûteux; risque d’arbitrage formats.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 47,
+          "risk_level": "significatif",
+          "confidence": "faible"
+        }
+      ],
+      "impact_pathway": "Tension aluminium -> hausse prix emballage métallique -> fabricants boissons/conserves répercutent ou arbitrent formats -> prix rayon et disponibilité de certains formats à 1-6 mois.",
+      "retail_implications": "Lien indirect et confiance réduite; à surveiller surtout avant pics été boissons et promotions bières/BRSA.",
+      "recommended_distributor_actions": [
+        "surveillance_simple",
+        "renegociation_contrats",
+        "substitution_produit",
+        "revue_prix"
+      ],
+      "overall_supply_risk_score": 48,
+      "overall_supply_risk_level": "significatif",
+      "watch_next": [
+        "Cours LME aluminium",
+        "Lead times canettes/barquettes",
+        "Demandes de revalorisation emballeurs",
+        "Disponibilité formats canettes avant saison estivale"
+      ],
+      "keywords": [
+        "aluminium",
+        "canettes",
+        "emballages",
+        "conserves",
+        "BRSA"
+      ]
+    },
+    {
+      "signal_id": "SIG_2026_05_13_009",
+      "title": "Riz: enquête de sauvegarde des Philippines, signal faible de restrictions commerciales",
+      "date_publication": "2026-04-15",
+      "source_name": "WTO",
+      "source_url": "https://www.wto.org/english/news_e/news26_e/safe_phl_15apr26_360_e.htm",
+      "source_type": "institution",
+      "source_reliability": 5,
+      "geography": {
+        "country": "Philippines",
+        "region": "Asie du Sud-Est",
+        "trade_route": "Commerce international du riz",
+        "port_or_chokepoint": ""
+      },
+      "risk_category": "reglementaire",
+      "risk_id": "GP-03",
+      "risk_specific": "Choc tarifaire / mesure de sauvegarde sur riz",
+      "event_type": "Enquête réglementaire commerciale",
+      "signal_status": "faible",
+      "impact_certainty": "speculatif",
+      "affected_supply_chain_stage": [
+        "importation",
+        "distribution"
+      ],
+      "impacted_products": [
+        {
+          "product_slug": "epicerie_seche",
+          "product_family": "Ambiant",
+          "product": "Riz",
+          "impact_type": "prix",
+          "impact_mechanism": "Mesures de sauvegarde d’un grand importateur pouvant modifier les flux et anticipations de marché.",
+          "time_horizon": "moyen_terme",
+          "risk_score": 32,
+          "risk_level": "modéré",
+          "confidence": "moyenne"
+        }
+      ],
+      "impact_pathway": "Enquête de sauvegarde -> possible modification droits/quotas -> réallocation flux riz en Asie -> effet indirect prix mondiaux -> surveillance des coûts d’achat riz importé.",
+      "retail_implications": "Signal faible; pas d’impact direct Europe identifié à ce stade, mais utile pour veille sur comportements protectionnistes riz.",
+      "recommended_distributor_actions": [
+        "surveillance_simple",
+        "analyse_dependance_fournisseur"
+      ],
+      "overall_supply_risk_score": 32,
+      "overall_supply_risk_level": "modéré",
+      "watch_next": [
+        "Décision finale de sauvegarde Philippines",
+        "Prix riz Thaï/Vietnam/Inde",
+        "Éventuelles restrictions export d’autres pays"
+      ],
+      "keywords": [
+        "riz",
+        "WTO",
+        "safeguard",
+        "tarif",
+        "Philippines"
+      ]
+    }
+  ],
+  "discarded_results": [
+    {
+      "title": "FAO: Protracted Strait of Hormuz crisis could turn into global agrifood catastrophe",
+      "url": "https://www.fao.org/newsroom/detail/fao--protracted-strait-of-hormuz-crisis-could-turn-into-global-agrifood-catastrophe/en",
+      "reason": "Retenu comme source d’appui dans le cluster engrais/Hormuz, non séparé pour éviter double comptage du même choc géopolitique."
+    },
+    {
+      "title": "From gas to grain: Fertilizer disruptions raise risks for food security and trade",
+      "url": "https://unctad.org/news/gas-to-grain-fertiliser-disruptions-raise-risks-food-security-and-trade",
+      "reason": "Dédoublonné dans le signal intrants engrais; mécanisme couvert par C011 et sources institutionnelles."
+    },
+    {
+      "title": "WFP navigates turbulent waters to tackle hunger",
+      "url": "https://www.wfp.org/stories/middle-east-crisis-wfp-navigates-turbulent-waters-fight-hunger",
+      "reason": "Pertinent mais principalement aide alimentaire/humanitaire; utilisé comme contexte logistique, non retenu comme signal retail distinct."
+    },
+    {
+      "title": "Most Strait of Hormuz shipping at a standstill despite latest US pledge",
+      "url": "https://www.investing.com/news/commodities-news/most-strait-of-hormuz-shipping-at-a-standstill-despite-latest-us-pledge-4655862",
+      "reason": "Dédoublonné dans le signal LO-04 Hormuz; même mécanisme transport maritime que IMO/AP/UNCTAD."
+    },
+    {
+      "title": "Shipping firms are being whipsawed by changing stances and risks as they wait for Hormuz to reopen",
+      "url": "https://apnews.com/article/03af894eaddb8ede53928babc76f80e2",
+      "reason": "Dédoublonné dans le signal LO-04 Hormuz; source citée dans l’alerte mais non signal séparé."
+    },
+    {
+      "title": "Oil supply shock to worsen as inventories fall further even if conflict ends",
+      "url": "https://www.marketscreener.com/news/oil-supply-shock-to-worsen-as-inventories-fall-further-even-if-conflict-ends-ce7f58d2dd8eff27",
+      "reason": "Dédoublonné dans le signal énergie/bunker fuel; mécanisme pétrole-carburant déjà qualifié."
+    },
+    {
+      "title": "FAO Food Price Index interview with Chief Economist Maximo Torero",
+      "url": "https://digital-media.fao.org/Detail/2A6XC5LTW2VL",
+      "reason": "Signal macro prix alimentaire pertinent mais trop agrégé; intégré comme contexte dans énergie/commodities sans scoring produit distinct."
+    },
+    {
+      "title": "Commodity Markets Outlook, April 2026",
+      "url": "https://www.worldbank.org/ja/news/press-release/2026/04/28/commodity-markets-outlook-april-2026-press-release",
+      "reason": "Signal macro pertinent mais agrégé; utilisé comme confirmation du canal énergie/commodities."
+    },
+    {
+      "title": "Basis stays steady as cold and drought threaten crops",
+      "url": "https://www.investing.com/news/commodities-news/basis-stays-steady-as-cold-and-drought-threaten-crops-4665530",
+      "reason": "Dédoublonné dans le signal céréales/blé avec WASDE et JRC, sources plus structurantes."
+    },
+    {
+      "title": "Current drought situation in Europe",
+      "url": "https://joint-research-centre.ec.europa.eu/european-and-global-drought-observatories/current-drought-situation-europe_en",
+      "reason": "Dédoublonné dans le signal céréales/stress hydrique; source institutionnelle utilisée en appui."
+    },
+    {
+      "title": "JRC MARS Bulletin - Crop monitoring in Europe - April 2026 - Vol. 34 No 3",
+      "url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC145786",
+      "reason": "Dédoublonné avec JRC sécheresse et WASDE dans le signal CL-07."
+    },
+    {
+      "title": "Poultry & Eggs - Market Outlook",
+      "url": "https://www.ers.usda.gov/topics/animal-products/poultry-eggs/market-outlook/",
+      "reason": "Dédoublonné dans le signal HPAI, utilisé comme confirmation de production œufs/dinde."
+    },
+    {
+      "title": "U.S. container imports fell 5.5% in April on trade and geopolitical risks",
+      "url": "https://ca.marketscreener.com/news/us-container-imports-fell-5-5-in-april-on-trade-and-geopolitical-risks-descartes-says-ce7f5bdbd98af126",
+      "reason": "Lien indirect avec la grande distribution européenne; proxy transport utile mais non retenu car moins actionnable que les signaux Hormuz directs."
+    },
+    {
+      "title": "Maersk first-quarter profit beats forecasts, keeps outlook unchanged",
+      "url": "https://wsau.com/2026/05/07/maersk-first-quarter-profit-beats-forecasts-keeps-outlook-unchanged/",
+      "reason": "Dédoublonné dans le signal LO-04 Hormuz; même mécanisme reroutage/sécurité maritime."
+    }
+  ]
+}

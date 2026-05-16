@@ -1,0 +1,595 @@
+{
+  "run_context": {
+    "date_execution": "2026-05-13",
+    "periode_couverte": "2026-05-06 à 2026-05-13 (avec signaux persistants retenus si un effet supply chain à 1-6 mois reste plausible)",
+    "lookback_days": 90,
+    "scope": "Grande distribution alimentaire et non alimentaire; intrants critiques et transport.",
+    "queries_executed": [
+      "FAO / World Bank : prix alimentaires, énergie, engrais, food security",
+      "WTO : export restrictions, safeguards, riz et autres denrées",
+      "USDA / WOAH : grippe aviaire, œufs, volaille, peste porcine",
+      "IMO / UNCTAD / Reuters / AP : Hormuz, Suez, fret, bunker fuel, conteneurs",
+      "UE / JRC : sécheresse, crop monitoring, stress hydrique",
+      "Soft commodities : cacao, sucre, café, céréales",
+      "Flux import : conteneurs, ports, coûts de transport"
+    ],
+    "hypotheses": [
+      "Le choc Hormuz continue de transmettre des tensions via énergie, engrais, fret et assurance maritime.",
+      "Les filières volaille/œufs et porc restent vulnérables aux épisodes HPAI/ASF.",
+      "Les déficits hydriques européens et américains pèsent sur céréales, fruits/légumes et pain/viennoiserie.",
+      "Les restrictions commerciales et mesures de sauvegarde peuvent provoquer des tensions sur le riz et les intrants agricoles.",
+      "Les marchés cacao/blé/engrais restent sensibles aux aléas météo et géopolitiques à court terme."
+    ]
+  },
+  "raw_candidates": [
+    {
+      "candidate_id": "C001",
+      "title": "Commodity Markets Outlook, April 2026",
+      "url": "https://www.worldbank.org/ja/news/press-release/2026/04/28/commodity-markets-outlook-april-2026-press-release",
+      "source": "World Bank",
+      "source_type": "institution",
+      "date_publication": "2026-04-28",
+      "geography": "Monde",
+      "risk_category": "economique",
+      "potential_risk_id": "EC-02",
+      "snippet": "La Banque mondiale anticipe une forte hausse des prix de l’énergie en 2026, avec des effets de cascade sur l’inflation, le fret et les engrais. ([worldbank.org](https://www.worldbank.org/ja/news/press-release/2026/04/28/commodity-markets-outlook-april-2026-press-release?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "intrants",
+        "transport",
+        "amont"
+      ],
+      "potential_products": [
+        "huiles",
+        "cafe_the_chocolat",
+        "epicerie_seche",
+        "laitier_frais",
+        "viande"
+      ],
+      "why_potentially_relevant": "Signal macro direct sur coûts de production et de transport, transmissible aux prix rayon. ([worldbank.org](https://www.worldbank.org/ja/news/press-release/2026/04/28/commodity-markets-outlook-april-2026-press-release?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C002",
+      "title": "FAO: Protracted Strait of Hormuz crisis could turn into global agrifood catastrophe",
+      "url": "https://www.fao.org/newsroom/detail/fao--protracted-strait-of-hormuz-crisis-could-turn-into-global-agrifood-catastrophe/en",
+      "source": "FAO",
+      "source_type": "institution",
+      "date_publication": "2026-04-13",
+      "geography": "Monde",
+      "risk_category": "geopolitique",
+      "potential_risk_id": "GP-01",
+      "snippet": "La FAO avertit qu’une crise prolongée à Hormuz peut peser sur les choix de semis, les engrais et les export restrictions, avec un risque de choc alimentaire mondial. ([fao.org](https://www.fao.org/newsroom/detail/fao--protracted-strait-of-hormuz-crisis-could-turn-into-global-agrifood-catastrophe/en?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "intrants",
+        "production",
+        "transport international"
+      ],
+      "potential_products": [
+        "epicerie_seche",
+        "huiles",
+        "fruits_legumes",
+        "viande",
+        "oeufs"
+      ],
+      "why_potentially_relevant": "Lien explicite entre conflit, intrants agricoles et prix alimentaires à venir. ([fao.org](https://www.fao.org/newsroom/detail/fao--protracted-strait-of-hormuz-crisis-could-turn-into-global-agrifood-catastrophe/en?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C003",
+      "title": "FAO Food Price Index interview with Chief Economist Maximo Torero",
+      "url": "https://digital-media.fao.org/Detail/2A6XC5LTW2VL",
+      "source": "FAO",
+      "source_type": "institution",
+      "date_publication": "2026-05-08",
+      "geography": "Monde",
+      "risk_category": "economique",
+      "potential_risk_id": "EC-02",
+      "snippet": "La FAO indique que l’indice des prix alimentaires a encore monté en avril, poussé par l’énergie chère et les perturbations liées au conflit au Moyen-Orient. ([digital-media.fao.org](https://digital-media.fao.org/Detail/2A6XC5LTW2VL?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "prix matière première",
+        "amont",
+        "pricing"
+      ],
+      "potential_products": [
+        "epicerie_seche",
+        "huiles",
+        "conserves",
+        "cafe_the_chocolat"
+      ],
+      "why_potentially_relevant": "Confirme une pression de prix déjà visible sur plusieurs familles de produits. ([digital-media.fao.org](https://digital-media.fao.org/Detail/2A6XC5LTW2VL?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C004",
+      "title": "From gas to grain: Fertilizer disruptions raise risks for food security and trade",
+      "url": "https://unctad.org/news/gas-to-grain-fertiliser-disruptions-raise-risks-food-security-and-trade",
+      "source": "UNCTAD",
+      "source_type": "institution",
+      "date_publication": "2026-03-30",
+      "geography": "Monde",
+      "risk_category": "intrants",
+      "potential_risk_id": "GP-01",
+      "snippet": "UNCTAD relie l’effondrement des transits via Hormuz à des coûts plus élevés pour l’énergie, le fret et les engrais, avec un risque direct sur l’offre alimentaire future. ([unctad.org](https://unctad.org/news/gas-grain-fertiliser-disruptions-raise-risks-food-security-and-trade?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport international",
+        "intrants",
+        "amont"
+      ],
+      "potential_products": [
+        "cereales",
+        "fruits_legumes",
+        "viande",
+        "laitier_frais"
+      ],
+      "why_potentially_relevant": "Le choc touche à la fois les intrants agricoles et les coûts logistiques. ([unctad.org](https://unctad.org/news/gas-grain-fertiliser-disruptions-raise-risks-food-security-and-trade?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C005",
+      "title": "Hormuz disruption shows why early-warning data matters",
+      "url": "https://unctad.org/news/hormuz-disruption-shows-why-early-warning-data-matters",
+      "source": "UNCTAD",
+      "source_type": "institution",
+      "date_publication": "2026-04-28",
+      "geography": "Monde",
+      "risk_category": "transport",
+      "potential_risk_id": "LO-04",
+      "snippet": "UNCTAD souligne que le choc Hormuz touche shipping, énergie, finance et denrées, avec des transits en baisse d’environ 95% et des coûts de fret/fuel en hausse. ([unctad.org](https://unctad.org/news/hormuz-disruption-shows-why-early-warning-data-matters?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport international",
+        "energie",
+        "intrants"
+      ],
+      "potential_products": [
+        "bazar",
+        "fruits_exotiques",
+        "cafe_the_chocolat",
+        "petfood",
+        "hygiene_papier"
+      ],
+      "why_potentially_relevant": "Signal multi-chaîne sur délais, surcoûts et couverture assurance. ([unctad.org](https://unctad.org/news/hormuz-disruption-shows-why-early-warning-data-matters?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C006",
+      "title": "WFP navigates turbulent waters to tackle hunger",
+      "url": "https://www.wfp.org/stories/middle-east-crisis-wfp-navigates-turbulent-waters-fight-hunger",
+      "source": "WFP",
+      "source_type": "institution",
+      "date_publication": "2026-04-02",
+      "geography": "Monde",
+      "risk_category": "geopolitique",
+      "potential_risk_id": "GP-01",
+      "snippet": "Le WFP décrit des routes commerciales et d’aide perturbées, avec hausse des frais de transport, des war-risk premiums et besoin de corridors alternatifs. ([wfp.org](https://www.wfp.org/stories/middle-east-crisis-wfp-navigates-turbulent-waters-fight-hunger?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport international",
+        "distribution"
+      ],
+      "potential_products": [
+        "epicerie_seche",
+        "fruits_exotiques",
+        "conserves",
+        "hygiene_papier"
+      ],
+      "why_potentially_relevant": "Montre comment le choc géopolitique se traduit en coûts et détours logistiques. ([wfp.org](https://www.wfp.org/stories/middle-east-crisis-wfp-navigates-turbulent-waters-fight-hunger?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C007",
+      "title": "IMO Middle East / Strait of Hormuz situation page",
+      "url": "https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx",
+      "source": "IMO",
+      "source_type": "institution",
+      "date_publication": "2026-05-06",
+      "geography": "Moyen-Orient",
+      "risk_category": "transport",
+      "potential_risk_id": "LO-04",
+      "snippet": "L’IMO signale qu’environ 20 000 marins sont impactés et met en avant un cadre d’évacuation sécurisé pour les navires confinés dans le Golfe. ([imo.org](https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport maritime",
+        "import",
+        "amont"
+      ],
+      "potential_products": [
+        "bazar",
+        "textile",
+        "electronique",
+        "boissons"
+      ],
+      "why_potentially_relevant": "Confirmation officielle d’une contrainte durable sur la navigation et les imports. ([imo.org](https://www.imo.org/en/mediacentre/hottopics/pages/middle-east-strait-of-hormuz.aspx?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C008",
+      "title": "Most Strait of Hormuz shipping at a standstill despite latest US pledge",
+      "url": "https://www.investing.com/news/commodities-news/most-strait-of-hormuz-shipping-at-a-standstill-despite-latest-us-pledge-4655862",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-05-04",
+      "geography": "Moyen-Orient",
+      "risk_category": "transport",
+      "potential_risk_id": "LO-04",
+      "snippet": "Reuters note qu’il n’y a presque pas d’augmentation du trafic maritime et que des navires restent bloqués dans le Golfe après des attaques dans la zone. ([investing.com](https://www.investing.com/news/commodities-news/most-strait-of-hormuz-shipping-at-a-standstill-despite-latest-us-pledge-4655862?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport maritime",
+        "import"
+      ],
+      "potential_products": [
+        "fruits_exotiques",
+        "cafe_the_chocolat",
+        "riz",
+        "bazar",
+        "textile"
+      ],
+      "why_potentially_relevant": "Risque concret de retards d’import et de rupture de flux entrants. ([investing.com](https://www.investing.com/news/commodities-news/most-strait-of-hormuz-shipping-at-a-standstill-despite-latest-us-pledge-4655862?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C009",
+      "title": "Shipping firms are being whipsawed by changing stances and risks as they wait for Hormuz to reopen",
+      "url": "https://apnews.com/article/03af894eaddb8ede53928babc76f80e2",
+      "source": "AP",
+      "source_type": "presse",
+      "date_publication": "2026-05-06",
+      "geography": "Moyen-Orient",
+      "risk_category": "transport",
+      "potential_risk_id": "LO-04",
+      "snippet": "L’AP rapporte des centaines de navires encore coincés et des coûts qui montent, avec un porte-conteneurs endommagé lors d’une tentative de transit. ([apnews.com](https://apnews.com/article/03af894eaddb8ede53928babc76f80e2?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport maritime",
+        "import",
+        "distribution"
+      ],
+      "potential_products": [
+        "bazar",
+        "textile",
+        "electronique"
+      ],
+      "why_potentially_relevant": "Indique une perturbation persistante du routage des cargaisons de consommation. ([apnews.com](https://apnews.com/article/03af894eaddb8ede53928babc76f80e2?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C010",
+      "title": "Shipping industry fears fuel shortages as Iran war squeezes bunker fuel supply",
+      "url": "https://apnews.com/article/db0ba1dbc0bd3ff2179a84118d0064d0",
+      "source": "AP",
+      "source_type": "presse",
+      "date_publication": "2026-05-12",
+      "geography": "Asie / Moyen-Orient",
+      "risk_category": "energie",
+      "potential_risk_id": "LO-05",
+      "snippet": "L’AP souligne que la fermeture de Hormuz raréfie le bunker fuel, ce qui renchérit directement le shipping et les prix finaux. ([apnews.com](https://apnews.com/article/db0ba1dbc0bd3ff2179a84118d0064d0?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "energie",
+        "transport maritime",
+        "distribution"
+      ],
+      "potential_products": [
+        "boissons",
+        "bazar",
+        "textile",
+        "electronique"
+      ],
+      "why_potentially_relevant": "Le bunker fuel est un canal de transmission rapide vers les surcoûts de fret. ([apnews.com](https://apnews.com/article/db0ba1dbc0bd3ff2179a84118d0064d0?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C011",
+      "title": "China tightens border inspections for fertilizer exports",
+      "url": "https://www.marketscreener.com/news/china-tightens-border-inspections-for-fertilizer-exports-sources-say-ce7f59d2db80fe27",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-04-28",
+      "geography": "Chine",
+      "risk_category": "reglementaire",
+      "potential_risk_id": "GP-02",
+      "snippet": "Reuters indique que la Chine renforce les contrôles douaniers sur ses exportations d’engrais, ce qui entretient des prix internationaux très élevés. ([marketscreener.com](https://www.marketscreener.com/news/china-tightens-border-inspections-for-fertilizer-exports-sources-say-ce7f59d2db80fe27?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "intrants",
+        "amont"
+      ],
+      "potential_products": [
+        "fruits_legumes",
+        "cereales",
+        "viande",
+        "oeufs",
+        "petfood"
+      ],
+      "why_potentially_relevant": "Les engrais sont un intrant critique pour les rendements à 1-6 mois. ([marketscreener.com](https://www.marketscreener.com/news/china-tightens-border-inspections-for-fertilizer-exports-sources-say-ce7f59d2db80fe27?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C012",
+      "title": "Oil supply shock to worsen as inventories fall further even if conflict ends",
+      "url": "https://www.marketscreener.com/news/oil-supply-shock-to-worsen-as-inventories-fall-further-even-if-conflict-ends-ce7f58d2dd8eff27",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-05-06",
+      "geography": "Monde",
+      "risk_category": "energie",
+      "potential_risk_id": "LO-05",
+      "snippet": "Reuters estime que le retour des flux pétroliers prendra des semaines, même en cas d’apaisement, ce qui prolonge la tension sur les stocks et les coûts. ([marketscreener.com](https://www.marketscreener.com/news/oil-supply-shock-to-worsen-as-inventories-fall-further-even-if-conflict-ends-ce7f58d2dd8eff27?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "energie",
+        "transport",
+        "distribution"
+      ],
+      "potential_products": [
+        "surgeles",
+        "laitier_frais",
+        "fruits_legumes",
+        "epicerie_seche"
+      ],
+      "why_potentially_relevant": "La hausse durable de l’énergie se répercute sur le froid, le transport et les marges. ([marketscreener.com](https://www.marketscreener.com/news/oil-supply-shock-to-worsen-as-inventories-fall-further-even-if-conflict-ends-ce7f58d2dd8eff27?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C013",
+      "title": "Aluminium faces 'black swan' supply shock",
+      "url": "https://www.marketscreener.com/news/aluminium-faces-black-swan-supply-shock-mercuria-says-ce7f59dbde8bf62c",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-04-21",
+      "geography": "Monde",
+      "risk_category": "intrants",
+      "potential_risk_id": "GP-01",
+      "snippet": "Reuters/Mercuria évoquent un choc d’offre sur l’aluminium lié au conflit au Moyen-Orient, avec risque de pénuries cette année. ([marketscreener.com](https://www.marketscreener.com/news/aluminium-faces-black-swan-supply-shock-mercuria-says-ce7f59dbde8bf62c?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "emballage",
+        "industrie",
+        "distribution"
+      ],
+      "potential_products": [
+        "brsa",
+        "biere",
+        "conserves",
+        "hygiene_papier",
+        "bazar_saisonnier"
+      ],
+      "why_potentially_relevant": "Peut renchérir canettes, barquettes, films et emballages alimentaires. ([marketscreener.com](https://www.marketscreener.com/news/aluminium-faces-black-swan-supply-shock-mercuria-says-ce7f59dbde8bf62c?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C014",
+      "title": "SOFTS-Raw sugar steadies near 3-week high; London cocoa hits 2-1/2-month peak",
+      "url": "https://www.sahmcapital.com/news/content/softs-raw-sugar-steadies-near-3-week-high-london-cocoa-hits-2-12-month-peak-2026-05-01",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-05-01",
+      "geography": "Monde",
+      "risk_category": "climat",
+      "potential_risk_id": "CL-07",
+      "snippet": "Reuters relaye des craintes de hausse du cacao liées à un manque d’engrais et à un risque El Niño sur la production 2026/27. ([sahmcapital.com](https://www.sahmcapital.com/news/content/softs-raw-sugar-steadies-near-3-week-high-london-cocoa-hits-2-12-month-peak-2026-05-01?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "amont",
+        "commodities",
+        "pricing"
+      ],
+      "potential_products": [
+        "cafe_the_chocolat",
+        "glaces",
+        "brsa"
+      ],
+      "why_potentially_relevant": "Signal direct sur les coûts du chocolat et des confiseries. ([sahmcapital.com](https://www.sahmcapital.com/news/content/softs-raw-sugar-steadies-near-3-week-high-london-cocoa-hits-2-12-month-peak-2026-05-01?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C015",
+      "title": "Basis stays steady as cold and drought threaten crops",
+      "url": "https://www.investing.com/news/commodities-news/basis-stays-steady-as-cold-and-drought-threaten-crops-4665530",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-05-06",
+      "geography": "États-Unis",
+      "risk_category": "climat",
+      "potential_risk_id": "CL-06",
+      "snippet": "Reuters rapporte des craintes de dommages irréversibles sur le blé d’hiver dur américain, dans un contexte de sécheresse persistante. ([investing.com](https://www.investing.com/news/commodities-news/basis-stays-steady-as-cold-and-drought-threaten-crops-4665530?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "production agricole",
+        "amont"
+      ],
+      "potential_products": [
+        "epicerie_seche",
+        "pain_viennoiserie",
+        "sucre"
+      ],
+      "why_potentially_relevant": "Peut soutenir le blé et la boulangerie-viennoiserie à moyen terme. ([investing.com](https://www.investing.com/news/commodities-news/basis-stays-steady-as-cold-and-drought-threaten-crops-4665530?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C016",
+      "title": "World Agricultural Supply and Demand Estimates",
+      "url": "https://esmis.nal.usda.gov/sites/default/release-files/795899/wasde0526.txt",
+      "source": "USDA",
+      "source_type": "institution",
+      "date_publication": "2026-05-12",
+      "geography": "États-Unis / Monde",
+      "risk_category": "climat",
+      "potential_risk_id": "CL-07",
+      "snippet": "Le WASDE du 12 mai 2026 abaisse la production américaine de blé à 1 561 M bu et relève le prix moyen farm à 6,50 $/bu. ([esmis.nal.usda.gov](https://esmis.nal.usda.gov/sites/default/release-files/795899/wasde0526.txt))",
+      "potential_supply_chain_stage": [
+        "production",
+        "stock",
+        "pricing"
+      ],
+      "potential_products": [
+        "pain_viennoiserie",
+        "epicerie_seche",
+        "sucre"
+      ],
+      "why_potentially_relevant": "Signal officiel de contraction d’offre et de pression prix sur les céréales. ([esmis.nal.usda.gov](https://esmis.nal.usda.gov/sites/default/release-files/795899/wasde0526.txt))"
+    },
+    {
+      "candidate_id": "C017",
+      "title": "Poultry & Eggs - Market Outlook",
+      "url": "https://www.ers.usda.gov/topics/animal-products/poultry-eggs/market-outlook/",
+      "source": "USDA ERS",
+      "source_type": "institution",
+      "date_publication": "2026-03-17",
+      "geography": "États-Unis",
+      "risk_category": "sanitaire",
+      "potential_risk_id": "SA-02",
+      "snippet": "L’ERS USDA réduit les attentes de production d’œufs de table à cause des pertes récentes liées à l’HPAI, et abaisse aussi la dinde 2026. ([ers.usda.gov](https://www.ers.usda.gov/topics/animal-products/poultry-eggs/market-outlook/?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "elevage",
+        "abattage",
+        "distribution"
+      ],
+      "potential_products": [
+        "volaille",
+        "oeufs"
+      ],
+      "why_potentially_relevant": "Impact direct sur rayon œufs/volaille, avec risque de tension sur les prix. ([ers.usda.gov](https://www.ers.usda.gov/topics/animal-products/poultry-eggs/market-outlook/?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C018",
+      "title": "High Pathogenicity Avian Influenza (HPAI) – Situation Report 81",
+      "url": "https://www.woah.org/en/document/high-pathogenicity-avian-influenza-hpai-situation-report-81/",
+      "source": "WOAH",
+      "source_type": "institution",
+      "date_publication": "2026-05-07",
+      "geography": "Monde",
+      "risk_category": "sanitaire",
+      "potential_risk_id": "SA-02",
+      "snippet": "Le rapport WOAH du 7 mai 2026 met à jour la situation HPAI sur la base des notifications de mars 2026. ([woah.org](https://www.woah.org/en/document/high-pathogenicity-avian-influenza-hpai-situation-report-81/?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "elevage",
+        "sanitaire",
+        "commerce international"
+      ],
+      "potential_products": [
+        "volaille",
+        "oeufs"
+      ],
+      "why_potentially_relevant": "Confirme la persistance du risque sanitaire et des mesures de restriction associées. ([woah.org](https://www.woah.org/en/document/high-pathogenicity-avian-influenza-hpai-situation-report-81/?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C019",
+      "title": "African swine fever (ASF) – Situation Report 75",
+      "url": "https://www.woah.org/en/document/african-swine-fever-asf-situation-report-75/",
+      "source": "WOAH",
+      "source_type": "institution",
+      "date_publication": "2026-04-29",
+      "geography": "Monde",
+      "risk_category": "sanitaire",
+      "potential_risk_id": "SA-03",
+      "snippet": "La WOAH publie une mise à jour ASF sur la base des notifications de mars 2026, utile pour suivre les risques sur la filière porcine. ([woah.org](https://www.woah.org/en/document/african-swine-fever-asf-situation-report-75/?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "elevage",
+        "abattage",
+        "commerce international"
+      ],
+      "potential_products": [
+        "frais_viande",
+        "frais_charcuterie"
+      ],
+      "why_potentially_relevant": "Peut alimenter hausses de coûts et restrictions sur porc/charcuterie. ([woah.org](https://www.woah.org/en/document/african-swine-fever-asf-situation-report-75/?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C020",
+      "title": "Current drought situation in Europe",
+      "url": "https://joint-research-centre.ec.europa.eu/european-and-global-drought-observatories/current-drought-situation-europe_en",
+      "source": "European Commission / JRC",
+      "source_type": "institution",
+      "date_publication": "2026-04-28",
+      "geography": "Europe",
+      "risk_category": "climat",
+      "potential_risk_id": "CL-06",
+      "snippet": "Le JRC note des déficits de pluie persistants en Europe centrale, nord et est, avec hausse des besoins en eau pour les cultures. ([joint-research-centre.ec.europa.eu](https://joint-research-centre.ec.europa.eu/european-and-global-drought-observatories/current-drought-situation-europe_en))",
+      "potential_supply_chain_stage": [
+        "production agricole",
+        "stockage",
+        "distribution"
+      ],
+      "potential_products": [
+        "fruits_legumes",
+        "cereales",
+        "huiles",
+        "pain_viennoiserie"
+      ],
+      "why_potentially_relevant": "Risque climat compatible avec tensions sur rendements et qualité des récoltes. ([joint-research-centre.ec.europa.eu](https://joint-research-centre.ec.europa.eu/european-and-global-drought-observatories/current-drought-situation-europe_en))"
+    },
+    {
+      "candidate_id": "C021",
+      "title": "JRC MARS Bulletin - Crop monitoring in Europe - April 2026 - Vol. 34 No 3",
+      "url": "https://publications.jrc.ec.europa.eu/repository/handle/JRC145786",
+      "source": "European Commission / JRC",
+      "source_type": "institution",
+      "date_publication": "2026-04-27",
+      "geography": "Europe",
+      "risk_category": "climat",
+      "potential_risk_id": "CL-07",
+      "snippet": "Le bulletin JRC signale des déficits hydriques persistants en Europe centrale, nord et est, avec une demande en eau croissante pour les cultures. ([publications.jrc.ec.europa.eu](https://publications.jrc.ec.europa.eu/repository/handle/JRC145786))",
+      "potential_supply_chain_stage": [
+        "production agricole",
+        "amont"
+      ],
+      "potential_products": [
+        "fruits_legumes",
+        "cereales",
+        "huiles"
+      ],
+      "why_potentially_relevant": "Alerte précoce sur les récoltes européennes et les prix à venir. ([publications.jrc.ec.europa.eu](https://publications.jrc.ec.europa.eu/repository/handle/JRC145786))"
+    },
+    {
+      "candidate_id": "C022",
+      "title": "Philippines launches safeguard investigation on imports of rice",
+      "url": "https://www.wto.org/english/news_e/news26_e/safe_phl_15apr26_360_e.htm",
+      "source": "WTO",
+      "source_type": "institution",
+      "date_publication": "2026-04-15",
+      "geography": "Philippines",
+      "risk_category": "reglementaire",
+      "potential_risk_id": "GP-03",
+      "snippet": "Le 15 avril 2026, les Philippines notifient à l’OMC une enquête de sauvegarde sur certaines importations de riz. ([wto.org](https://www.wto.org/english/news_e/news26_e/safe_phl_15apr26_360_e.htm?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "commerce international",
+        "import",
+        "assortiment"
+      ],
+      "potential_products": [
+        "epicerie_seche",
+        "conserves"
+      ],
+      "why_potentially_relevant": "Peut annoncer des barrières temporaires et des tensions sur les flux de riz. ([wto.org](https://www.wto.org/english/news_e/news26_e/safe_phl_15apr26_360_e.htm?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C023",
+      "title": "U.S. container imports fell 5.5% in April on trade and geopolitical risks",
+      "url": "https://ca.marketscreener.com/news/us-container-imports-fell-5-5-in-april-on-trade-and-geopolitical-risks-descartes-says-ce7f5bdbd98af126",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-05-08",
+      "geography": "États-Unis",
+      "risk_category": "transport",
+      "potential_risk_id": "LO-04",
+      "snippet": "Reuters indique une baisse de 5,5% des importations conteneurisées américaines en avril, sur fond de risques commerciaux et géopolitiques. ([ca.marketscreener.com](https://ca.marketscreener.com/news/us-container-imports-fell-5-5-in-april-on-trade-and-geopolitical-risks-descartes-says-ce7f5bdbd98af126?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport international",
+        "import",
+        "distribution"
+      ],
+      "potential_products": [
+        "bazar",
+        "textile",
+        "electronique",
+        "hygiene_papier"
+      ],
+      "why_potentially_relevant": "Bon proxy de ralentissement des flux importés vers le retail. ([ca.marketscreener.com](https://ca.marketscreener.com/news/us-container-imports-fell-5-5-in-april-on-trade-and-geopolitical-risks-descartes-says-ce7f5bdbd98af126?utm_source=openai))"
+    },
+    {
+      "candidate_id": "C024",
+      "title": "Maersk first-quarter profit beats forecasts, keeps outlook unchanged",
+      "url": "https://wsau.com/2026/05/07/maersk-first-quarter-profit-beats-forecasts-keeps-outlook-unchanged/",
+      "source": "Reuters",
+      "source_type": "presse",
+      "date_publication": "2026-05-07",
+      "geography": "Monde",
+      "risk_category": "transport",
+      "potential_risk_id": "LO-04",
+      "snippet": "Reuters signale que la sécurité reste fragile et que le retour en mer Rouge/Suez a été brutalement stoppé après un navire touché dans le détroit d’Hormuz. ([wsau.com](https://wsau.com/2026/05/07/maersk-first-quarter-profit-beats-forecasts-keeps-outlook-unchanged/?utm_source=openai))",
+      "potential_supply_chain_stage": [
+        "transport maritime",
+        "import"
+      ],
+      "potential_products": [
+        "bazar",
+        "textile",
+        "electronique",
+        "boissons"
+      ],
+      "why_potentially_relevant": "Indique un risque de reroutage et de pression sur les coûts de fret en 2026. ([wsau.com](https://wsau.com/2026/05/07/maersk-first-quarter-profit-beats-forecasts-keeps-outlook-unchanged/?utm_source=openai))"
+    }
+  ],
+  "collection_notes": [
+    "Signal cluster Hormuz volontairement dédoublé par mécanisme: shipping, fuel, engrais, food insecurity, afin d’alimenter la 2e passe de qualification.",
+    "Quelques signaux antérieurs au 6 mai 2026 ont été conservés car leurs effets restent plausibles sur 1-6 mois.",
+    "Priorité donnée aux sources institutionnelles (FAO, World Bank, UNCTAD, WFP, IMO, USDA, WOAH, JRC, WTO) et aux fils Reuters/AP pour les signaux opérationnels.",
+    "Les doublons très proches ont été évités; les candidats retenus couvrent des chemins supply chain distincts."
+  ]
+}

@@ -1,0 +1,126 @@
+{
+  "date_execution": "2026-05-13",
+  "scenarios": [
+    {
+      "scenario_id": "SCN_001",
+      "title": "Hormuz reste perturbé 4-8 semaines: retards imports et surcoûts généralisés",
+      "trigger_signals": [
+        "SIG_2026_05_13_001",
+        "SIG_2026_05_13_002"
+      ],
+      "probability": "moyenne",
+      "severity": "élevée",
+      "time_horizon": "1_3_mois",
+      "affected_products": [
+        "bazar_saisonnier",
+        "fruits_exotiques",
+        "cafe_the_chocolat",
+        "epicerie_seche",
+        "petfood",
+        "hygiene_papier"
+      ],
+      "supply_chain_pathway": "Blocage/reroutage maritime -> transit-times et assurance en hausse -> baisse fiabilité fournisseurs -> trous d’assortiment et hausses prix.",
+      "early_warning_indicators": [
+        "Navires en attente autour du Golfe",
+        "Surcharges war-risk dans devis transport",
+        "ETA fournisseurs dégradés",
+        "Annulations de booking conteneurs"
+      ],
+      "retailer_actions": [
+        "Augmenter stock sécurité sur imports critiques.",
+        "Prioriser volumes de forte rotation.",
+        "Informer achats et magasins sur risques de retard.",
+        "Renégocier incoterms et transporteurs alternatifs."
+      ]
+    },
+    {
+      "scenario_id": "SCN_002",
+      "title": "Tension engrais + sécheresse réduit rendements céréales/fruits-légumes",
+      "trigger_signals": [
+        "SIG_2026_05_13_003",
+        "SIG_2026_05_13_004"
+      ],
+      "probability": "moyenne",
+      "severity": "élevée",
+      "time_horizon": "3_6_mois",
+      "affected_products": [
+        "epicerie_seche",
+        "pain_viennoiserie",
+        "huiles",
+        "fruits_legumes",
+        "petfood"
+      ],
+      "supply_chain_pathway": "Intrants chers + déficit hydrique -> rendement/qualité en baisse -> hausse coûts agricoles -> demandes tarifaires industriels et producteurs.",
+      "early_warning_indicators": [
+        "Prix engrais élevés",
+        "Indices JRC sécheresse",
+        "Révisions WASDE négatives",
+        "Hausse MATIF blé/colza"
+      ],
+      "retailer_actions": [
+        "Sécuriser contrats longue durée.",
+        "Diversifier origines Europe/hors Europe.",
+        "Réduire pression promotionnelle sur farine/pâtes/huiles.",
+        "Préparer communication prix."
+      ]
+    },
+    {
+      "scenario_id": "SCN_003",
+      "title": "Recrudescence HPAI dans bassins fournisseurs: tension œufs et volaille",
+      "trigger_signals": [
+        "SIG_2026_05_13_005"
+      ],
+      "probability": "moyenne",
+      "severity": "modérée",
+      "time_horizon": "1_3_mois",
+      "affected_products": [
+        "oeufs",
+        "volaille"
+      ],
+      "supply_chain_pathway": "Foyers HPAI -> abattages et restrictions -> offre pondeuses/volaille réduite -> hausse prix et arbitrages de volume.",
+      "early_warning_indicators": [
+        "Hausse foyers HPAI Europe",
+        "Prix gros œufs en hausse",
+        "Abattages pondeuses",
+        "Embargos régionaux"
+      ],
+      "retailer_actions": [
+        "Contracter fournisseurs alternatifs.",
+        "Limiter promotions œufs/volaille.",
+        "Prévoir substitution vers autres protéines.",
+        "Communiquer si limitation par client devient nécessaire."
+      ]
+    },
+    {
+      "scenario_id": "SCN_004",
+      "title": "Transmission prix cacao/sucre et aluminium avant saison glaces-boissons",
+      "trigger_signals": [
+        "SIG_2026_05_13_006",
+        "SIG_2026_05_13_008"
+      ],
+      "probability": "faible",
+      "severity": "modérée",
+      "time_horizon": "3_6_mois",
+      "affected_products": [
+        "cafe_the_chocolat",
+        "glaces",
+        "brsa",
+        "biere",
+        "conserves"
+      ],
+      "supply_chain_pathway": "Commodities et emballages plus chers -> industriels revalorisent tarifs -> pression sur promotions saisonnières et formats canettes.",
+      "early_warning_indicators": [
+        "Cours cacao/sucre restent hauts",
+        "Cours aluminium LME en hausse",
+        "Lead times canettes s’allongent",
+        "Revalorisations fournisseurs boissons/chocolat"
+      ],
+      "retailer_actions": [
+        "Arbitrer formats et MDD.",
+        "Geler promotions destructrices de marge.",
+        "Sécuriser canettes et alternatives emballages.",
+        "Préparer substitution produits."
+      ]
+    }
+  ]
+}

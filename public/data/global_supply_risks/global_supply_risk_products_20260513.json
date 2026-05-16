@@ -1,0 +1,273 @@
+{
+  "date_execution": "2026-05-13",
+  "products": [
+    {
+      "product_family": "Ambiant",
+      "product_slug": "epicerie_seche",
+      "products": [
+        "Riz",
+        "pâtes",
+        "farine",
+        "semoule",
+        "légumineuses"
+      ],
+      "risk_level": "élevé",
+      "risk_score": 66,
+      "main_signals": [
+        "SIG_2026_05_13_001",
+        "SIG_2026_05_13_003",
+        "SIG_2026_05_13_004",
+        "SIG_2026_05_13_009"
+      ],
+      "geographies": [
+        "International",
+        "États-Unis",
+        "Europe",
+        "Asie du Sud-Est"
+      ],
+      "impact_type": [
+        "prix",
+        "delai",
+        "disponibilite"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "forte",
+      "recommended_actions": [
+        "Sécuriser volumes contractuels céréales/riz.",
+        "Réduire promotions sur pâtes/farines si les cours confirment la hausse.",
+        "Diversifier origines et transporteurs."
+      ]
+    },
+    {
+      "product_family": "Ambiant",
+      "product_slug": "cafe_the_chocolat",
+      "products": [
+        "Café",
+        "cacao",
+        "chocolat",
+        "confiserie"
+      ],
+      "risk_level": "élevé",
+      "risk_score": 64,
+      "main_signals": [
+        "SIG_2026_05_13_001",
+        "SIG_2026_05_13_006"
+      ],
+      "geographies": [
+        "International",
+        "Routes maritimes",
+        "Marchés soft commodities"
+      ],
+      "impact_type": [
+        "prix",
+        "delai"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "moyenne",
+      "recommended_actions": [
+        "Augmenter visibilité fournisseurs sur ETA et prix.",
+        "Préparer substitutions MDD/grammages.",
+        "Surveiller opérations saisonnières chocolat."
+      ]
+    },
+    {
+      "product_family": "Frais",
+      "product_slug": "fruits_legumes",
+      "products": [
+        "Fruits et légumes frais",
+        "imports exotiques"
+      ],
+      "risk_level": "élevé",
+      "risk_score": 68,
+      "main_signals": [
+        "SIG_2026_05_13_001",
+        "SIG_2026_05_13_003"
+      ],
+      "geographies": [
+        "International",
+        "Europe",
+        "routes maritimes"
+      ],
+      "impact_type": [
+        "prix",
+        "delai",
+        "qualite"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "moyenne",
+      "recommended_actions": [
+        "Basculer partiellement vers origines proches si possible.",
+        "Sécuriser transport froid et contrôles qualité à réception.",
+        "Prévoir substitutions saisonnières."
+      ]
+    },
+    {
+      "product_family": "Frais",
+      "product_slug": "oeufs",
+      "products": [
+        "Œufs frais"
+      ],
+      "risk_level": "élevé",
+      "risk_score": 63,
+      "main_signals": [
+        "SIG_2026_05_13_005"
+      ],
+      "geographies": [
+        "International",
+        "bassins avicoles à surveiller"
+      ],
+      "impact_type": [
+        "disponibilite",
+        "prix"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "forte",
+      "recommended_actions": [
+        "Contractualiser sources alternatives.",
+        "Surveiller foyers HPAI locaux.",
+        "Préparer rationnement promotionnel si tension."
+      ]
+    },
+    {
+      "product_family": "Frais",
+      "product_slug": "volaille",
+      "products": [
+        "Poulet",
+        "dinde"
+      ],
+      "risk_level": "élevé",
+      "risk_score": 61,
+      "main_signals": [
+        "SIG_2026_05_13_005",
+        "SIG_2026_05_13_003"
+      ],
+      "geographies": [
+        "International"
+      ],
+      "impact_type": [
+        "prix",
+        "disponibilite"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "forte",
+      "recommended_actions": [
+        "Diversifier abattoirs/fournisseurs.",
+        "Prévoir substitution vers autres protéines.",
+        "Suivre prix aliment animal."
+      ]
+    },
+    {
+      "product_family": "Boissons",
+      "product_slug": "brsa",
+      "products": [
+        "Sodas",
+        "energy drinks",
+        "jus en canettes"
+      ],
+      "risk_level": "significatif",
+      "risk_score": 50,
+      "main_signals": [
+        "SIG_2026_05_13_008",
+        "SIG_2026_05_13_006"
+      ],
+      "geographies": [
+        "International"
+      ],
+      "impact_type": [
+        "prix",
+        "substitution"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "faible",
+      "recommended_actions": [
+        "Surveiller disponibilité canettes.",
+        "Favoriser formats PET/verre si contrainte aluminium.",
+        "Revoir promotions été."
+      ]
+    },
+    {
+      "product_family": "Boissons",
+      "product_slug": "biere",
+      "products": [
+        "Bières en canettes",
+        "bières importées"
+      ],
+      "risk_level": "significatif",
+      "risk_score": 50,
+      "main_signals": [
+        "SIG_2026_05_13_008",
+        "SIG_2026_05_13_001"
+      ],
+      "geographies": [
+        "International"
+      ],
+      "impact_type": [
+        "prix",
+        "delai"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "faible",
+      "recommended_actions": [
+        "Sécuriser formats canettes avant saison estivale.",
+        "Prévoir substitution bouteilles/fûts selon disponibilité."
+      ]
+    },
+    {
+      "product_family": "Frais",
+      "product_slug": "frais_charcuterie",
+      "products": [
+        "Jambon",
+        "saucisson",
+        "rillettes"
+      ],
+      "risk_level": "significatif",
+      "risk_score": 47,
+      "main_signals": [
+        "SIG_2026_05_13_007"
+      ],
+      "geographies": [
+        "International",
+        "Europe à surveiller"
+      ],
+      "impact_type": [
+        "prix"
+      ],
+      "time_horizon": "moyen_terme",
+      "confidence": "moyenne",
+      "recommended_actions": [
+        "Cartographier origines porc.",
+        "Prévoir alternatives fournisseurs.",
+        "Suivre cotations porc."
+      ]
+    },
+    {
+      "product_family": "Bazar",
+      "product_slug": "bazar_saisonnier",
+      "products": [
+        "Bazar importé",
+        "textile",
+        "électronique saisonnière"
+      ],
+      "risk_level": "élevé",
+      "risk_score": 78,
+      "main_signals": [
+        "SIG_2026_05_13_001"
+      ],
+      "geographies": [
+        "Asie-Europe",
+        "Moyen-Orient"
+      ],
+      "impact_type": [
+        "delai",
+        "prix"
+      ],
+      "time_horizon": "court_terme",
+      "confidence": "forte",
+      "recommended_actions": [
+        "Prioriser conteneurs critiques.",
+        "Replanifier opérations commerciales dépendantes d’imports.",
+        "Sécuriser transport alternatif."
+      ]
+    }
+  ]
+}

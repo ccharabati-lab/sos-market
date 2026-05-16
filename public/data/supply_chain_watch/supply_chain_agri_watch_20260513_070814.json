@@ -1,0 +1,383 @@
+{
+  "query_context": {
+    "date_execution": "2026-05-13",
+    "periode_couverte": "2026-05-06 à 2026-05-13",
+    "zone": "Bourg-la-Reine → Orléans",
+    "scope": [
+      "grande_distribution",
+      "logistique",
+      "transport",
+      "producteurs_locaux",
+      "risques_agricoles"
+    ],
+    "hypotheses": [
+      "Impacts possibles sur les flux A10/A71 autour d'Orléans et Artenay",
+      "Tension ou signal sur l'approvisionnement Rungis et la distribution alimentaire locale",
+      "Pressions agricoles susceptibles d'affecter betteraves, semis et disponibilités produits"
+    ]
+  },
+  "summary": {
+    "niveau_risque_global": "modéré",
+    "message_court": "Risque surtout logistique à court terme sur A10/A71 pendant le pont de l’Ascension, et signal agricole à surveiller sur la betterave sucrière en Centre-Val de Loire.",
+    "principaux_signaux": [
+      "Trafic difficile annoncé sur l’A10 le 13 mai, susceptible de ralentir les flux GMS et frais vers/depuis l’Île-de-France sud.",
+      "Travaux nocturnes A71/Olivet : perturbation ponctuelle autour d’Orléans, impact probablement limité.",
+      "Jaunisse de la betterave signalée comme préoccupante : risque différé sur rendement betteravier puis sucre.",
+      "Pression sanglier dans le Loiret : signal agricole local, effet produit très incertain."
+    ],
+    "produits_les_plus_exposes": [
+      "sucre",
+      "produits biologiques frais",
+      "fruits et légumes",
+      "flux de produits frais et GMS"
+    ]
+  },
+  "items": [
+    {
+      "title": "Au Min de Rungis, le bio résiste, dix ans après la création d’un pavillon dédié",
+      "date_publication": "2026-05-09",
+      "source_name": "Le Parisien",
+      "source_url": "https://www.leparisien.fr/val-de-marne-94/au-min-de-rungis-le-bio-resiste-dix-ans-apres-la-creation-dun-pavillon-dedie-09-05-2026-5N5WR5XL5RBDDN7VBKN3HMJZYY.php",
+      "zone": "Rungis / Val-de-Marne",
+      "departement": "94",
+      "actors": [
+        "MIN de Rungis",
+        "Pavillon bio de Rungis"
+      ],
+      "category": "grande_distribution",
+      "upstream_signal": false,
+      "filiere": "multi_filiere",
+      "impacted_products": [
+        {
+          "product": "produits biologiques frais",
+          "impact_type": "aucun_impact_identifie",
+          "impact_confidence": "moyenne",
+          "explanation": "L’article signale une progression du chiffre d’affaires du pavillon bio, mais pas de rupture, grève, incident froid ou baisse de disponibilité."
+        },
+        {
+          "product": "fruits et légumes bio",
+          "impact_type": "aucun_impact_identifie",
+          "impact_confidence": "moyenne",
+          "explanation": "Signal de marché positif à Rungis, sans chemin d’impact négatif identifié vers les rayons."
+        }
+      ],
+      "impact_pathway": "Activité soutenue du pavillon bio de Rungis -> maintien de l’offre de gros bio -> pas de tension opérationnelle identifiée pour les magasins, mais signal utile sur la résilience de l’approvisionnement bio régional.",
+      "time_to_retail_effect": "inconnu",
+      "supply_chain_relevance": "Signal direct sur un marché de gros majeur alimentant l’Île-de-France sud, mais sans perturbation logistique ou produit avérée.",
+      "impact_level": "faible",
+      "impact_explanation": "Information utile pour le suivi de l’offre bio à Rungis, sans effet immédiat sur prix, disponibilité ou livraison.",
+      "freshness_status": "moins_de_7_jours",
+      "reliability": "moyenne",
+      "why_kept": "Source presse locale récente, zone Rungis directement dans le périmètre, lien avec produits frais et bio.",
+      "keywords": [
+        "Rungis",
+        "bio",
+        "marché de gros",
+        "produits frais"
+      ]
+    },
+    {
+      "title": "A71 sortie Olivet N°2 obligatoire direction Orléans",
+      "date_publication": "2026-05-09",
+      "source_name": "Radio VINCI Autoroutes",
+      "source_url": "https://radio.vinci-autoroutes.com/article/a71-sortie-olivet-n-2-obligatoire-direction-orleans-18155",
+      "zone": "Orléans / Loiret",
+      "departement": "45",
+      "actors": [
+        "VINCI Autoroutes"
+      ],
+      "category": "transport",
+      "upstream_signal": false,
+      "filiere": "multi_filiere",
+      "impacted_products": [
+        {
+          "product": "flux logistiques GMS",
+          "impact_type": "retard_livraison",
+          "impact_confidence": "faible",
+          "explanation": "La sortie obligatoire et la déviation nocturne peuvent allonger certains trajets de livraison autour d’Orléans, mais l’événement semble ponctuel."
+        }
+      ],
+      "impact_pathway": "Travaux nocturnes sur A71/viaduc de la Loire -> sortie obligatoire à Olivet et déviation -> ralentissement possible de camions desservant plateformes ou magasins autour d’Orléans -> retards ponctuels sans rupture produit attendue.",
+      "time_to_retail_effect": "immediat",
+      "supply_chain_relevance": "Axe autoroutier structurant pour les flux régionaux, mais perturbation limitée dans le temps.",
+      "impact_level": "faible",
+      "impact_explanation": "Effet logistique local et temporaire, principalement nocturne.",
+      "freshness_status": "moins_de_7_jours",
+      "reliability": "forte",
+      "why_kept": "Source autoroutière fiable, publication dans la fenêtre, impact potentiel sur les flux autour d’Orléans.",
+      "keywords": [
+        "A71",
+        "Olivet",
+        "Orléans",
+        "travaux",
+        "déviation",
+        "livraisons"
+      ]
+    },
+    {
+      "title": "Pont de l'Ascension : à quoi s’attendre sur les autoroutes A7, A9, A10 et A63 mercredi et jeudi ?",
+      "date_publication": "2026-05-11",
+      "source_name": "Radio VINCI Autoroutes",
+      "source_url": "https://radio.vinci-autoroutes.com/article/pont-de-l-ascension-a-quoi-s-attendre-sur-a7-a9-a10-et-a63-mercredi-et-jeudi--18173",
+      "zone": "A10 / Île-de-France / axe centre-sud",
+      "departement": "multi-départements",
+      "actors": [
+        "VINCI Autoroutes"
+      ],
+      "category": "transport",
+      "upstream_signal": false,
+      "filiere": "multi_filiere",
+      "impacted_products": [
+        {
+          "product": "produits frais livrés par route",
+          "impact_type": "retard_livraison",
+          "impact_confidence": "moyenne",
+          "explanation": "Les départs difficiles et le classement rouge peuvent ralentir les camions sur l’A10, axe utilisé pour des flux alimentaires et GMS vers l’Île-de-France sud."
+        },
+        {
+          "product": "livraisons magasins et drives",
+          "impact_type": "retard_livraison",
+          "impact_confidence": "moyenne",
+          "explanation": "Des congestions sur l’A10 peuvent décaler des tournées entre plateformes, magasins et drives, surtout sur produits à horaires contraints."
+        }
+      ],
+      "impact_pathway": "Pont de l’Ascension avec trafic rouge sur A10 -> congestion et temps de parcours accrus -> camions et tournées GMS retardés -> risque de décalage de livraison en produits frais, drive et réassort magasin, sans baisse structurelle de disponibilité.",
+      "time_to_retail_effect": "immediat",
+      "supply_chain_relevance": "A10 incluse dans le périmètre ; impact possible sur flux entre Orléans, Rungis et sud francilien.",
+      "impact_level": "modéré",
+      "impact_explanation": "Risque de retard régional plausible pendant le pic de circulation, mais pas de blocage ni pénurie annoncés.",
+      "freshness_status": "moins_de_7_jours",
+      "reliability": "forte",
+      "why_kept": "Source trafic fiable, information récente et directement liée à l’axe A10 ciblé.",
+      "keywords": [
+        "A10",
+        "pont de l’Ascension",
+        "trafic rouge",
+        "livraisons",
+        "GMS"
+      ]
+    },
+    {
+      "title": "Logistique, Essonne : plus de 300 emplois",
+      "date_publication": "2026-05-13",
+      "source_name": "Indeed",
+      "source_url": "https://fr.indeed.com/m/jobs?l=Essonne&q=Logistique",
+      "zone": "Essonne",
+      "departement": "91",
+      "actors": [
+        "entreprises logistiques en Essonne",
+        "Indeed"
+      ],
+      "category": "emploi_logistique",
+      "upstream_signal": false,
+      "filiere": "multi_filiere",
+      "impacted_products": [
+        {
+          "product": "flux entrepôt et transport",
+          "impact_type": "risque_indirect",
+          "impact_confidence": "faible",
+          "explanation": "Le volume d’offres peut traduire une activité ou un besoin de main-d’œuvre logistique, mais ne démontre pas à lui seul une tension opérationnelle."
+        }
+      ],
+      "impact_pathway": "Recrutements logistiques en Essonne -> besoin de personnel en entrepôt/transport -> possible signal de charge ou turnover -> risque indirect de friction opérationnelle si les postes restent non pourvus, sans produit spécifique affecté à ce stade.",
+      "time_to_retail_effect": "inconnu",
+      "supply_chain_relevance": "Signal territorial sur la main-d’œuvre logistique en Essonne, zone clé pour entrepôts et distribution sud francilienne.",
+      "impact_level": "faible",
+      "impact_explanation": "Source agrégée et non spécifique ; aucun retard ou manque de capacité avéré.",
+      "freshness_status": "moins_de_7_jours",
+      "reliability": "faible",
+      "why_kept": "Conservé comme unique signal emploi/logistique le plus récent et le plus proche de l’Essonne, après dé-doublonnage des pages Indeed similaires.",
+      "keywords": [
+        "Essonne",
+        "logistique",
+        "emploi",
+        "entrepôt",
+        "transport"
+      ]
+    },
+    {
+      "title": "Jaunisse de la betterave : « la dynamique s’intensifie » et réactive « le spectre » de 2020",
+      "date_publication": "inconnu",
+      "source_name": "Pleinchamp",
+      "source_url": "https://www.pleinchamp.com/actualite/jaunisse-de-la-betterave-la-dynamique-s-intensifie-et-reactive-le-spectre-de-2020",
+      "zone": "Centre-Val de Loire / bassin betteravier",
+      "departement": "45",
+      "actors": [
+        "Pleinchamp",
+        "producteurs betteraviers"
+      ],
+      "category": "maladie_vegetale",
+      "upstream_signal": true,
+      "filiere": "betterave",
+      "impacted_products": [
+        {
+          "product": "betterave sucrière",
+          "impact_type": "baisse_disponibilite",
+          "impact_confidence": "moyenne",
+          "explanation": "Des vols élevés de pucerons et traitements T3 précoces indiquent un risque de jaunisse, susceptible de réduire le rendement betteravier."
+        },
+        {
+          "product": "sucre",
+          "impact_type": "hausse_prix",
+          "impact_confidence": "faible",
+          "explanation": "Si la maladie réduit les rendements, les volumes transformés en sucrerie peuvent baisser ; l’effet retail sur le sucre serait différé et dépendra de l’ampleur régionale et nationale."
+        }
+      ],
+      "impact_pathway": "Pucerons vecteurs de jaunisse -> contamination des parcelles de betteraves -> baisse potentielle de rendement racine/sucre -> moindre volume livré aux sucreries -> tension différée possible sur sucre et produits sucrés, avec effet surtout à la campagne suivante.",
+      "time_to_retail_effect": "1_3_mois",
+      "supply_chain_relevance": "Risque amont pertinent pour le bassin betteravier Centre-Val de Loire, incluant le Loiret ; effet magasin non immédiat.",
+      "impact_level": "modéré",
+      "impact_explanation": "Signal agricole préoccupant mais date non confirmée et impact final dépendant de l’évolution sanitaire et météo.",
+      "freshness_status": "date_ambigue",
+      "reliability": "moyenne",
+      "why_kept": "Signal fort sur une filière agricole régionale stratégique, malgré date de publication absente dans les données collectées.",
+      "keywords": [
+        "betterave",
+        "jaunisse",
+        "pucerons",
+        "Centre-Val de Loire",
+        "sucre"
+      ]
+    },
+    {
+      "title": "Tir de jour du sanglier en avril - mai",
+      "date_publication": "inconnu",
+      "source_name": "Préfecture du Loiret",
+      "source_url": "https://www.loiret.gouv.fr/Actions-de-l-Etat/Environnement-eau-chasse-peche/Chasse-peche-et-faune-sauvage/Chasse/Especes-susceptibles-d-occasionner-des-degats/Tir-du-sanglier/Tir-de-jour-du-sanglier-en-avril-mai",
+      "zone": "Loiret",
+      "departement": "45",
+      "actors": [
+        "Préfecture du Loiret",
+        "chasseurs",
+        "exploitants agricoles"
+      ],
+      "category": "risque_agricole",
+      "upstream_signal": true,
+      "filiere": "multi_filiere",
+      "impacted_products": [
+        {
+          "product": "cultures de plein champ",
+          "impact_type": "risque_indirect",
+          "impact_confidence": "faible",
+          "explanation": "La régulation vise à limiter les dégâts sur semis, cultures et prairies ; aucune perte quantifiée n’est fournie."
+        },
+        {
+          "product": "céréales et fourrages locaux",
+          "impact_type": "risque_indirect",
+          "impact_confidence": "faible",
+          "explanation": "Dégâts de sangliers sur semis ou prairies -> baisse locale possible de rendement ou de fourrage -> impact indirect sur disponibilité agricole, mais effet grande distribution très incertain."
+        }
+      ],
+      "impact_pathway": "Pression sanglier sur semis, cultures et prairies -> autorisation de tir de régulation en avril-mai -> limitation des dégâts attendue ; si les dégâts persistent, rendement local de céréales/fourrages peut baisser, avec effet très indirect sur produits finis ou alimentation animale.",
+      "time_to_retail_effect": "saison_suivante",
+      "supply_chain_relevance": "Signal officiel de risque agricole local, mais plutôt préventif que perturbateur.",
+      "impact_level": "faible",
+      "impact_explanation": "Pas d’élément de récolte détruite ni de tension produit ; impact potentiel diffus et local.",
+      "freshness_status": "date_ambigue",
+      "reliability": "forte",
+      "why_kept": "Page officielle couvrant la période avril-mai, donc potentiellement active pendant la fenêtre de veille.",
+      "keywords": [
+        "Loiret",
+        "sanglier",
+        "semis",
+        "cultures",
+        "prairies",
+        "régulation"
+      ]
+    }
+  ],
+  "impacted_products_summary": [
+    {
+      "product": "sucre",
+      "filiere": "betterave",
+      "zones": [
+        "Centre-Val de Loire",
+        "Loiret"
+      ],
+      "main_risks": [
+        "jaunisse de la betterave",
+        "vols de pucerons",
+        "baisse possible de rendement"
+      ],
+      "expected_effect": "prix",
+      "risk_level": "modéré",
+      "risk_score": 3,
+      "confidence": "moyenne"
+    },
+    {
+      "product": "produits frais livrés par route",
+      "filiere": "multi_filiere",
+      "zones": [
+        "A10",
+        "Île-de-France sud",
+        "Orléans"
+      ],
+      "main_risks": [
+        "trafic rouge du pont de l’Ascension",
+        "congestion autoroutière",
+        "retards tournées"
+      ],
+      "expected_effect": "delai",
+      "risk_level": "modéré",
+      "risk_score": 2,
+      "confidence": "moyenne"
+    },
+    {
+      "product": "produits biologiques frais",
+      "filiere": "multi_filiere",
+      "zones": [
+        "Rungis",
+        "Île-de-France"
+      ],
+      "main_risks": [
+        "aucune perturbation identifiée",
+        "signal de demande/offre bio soutenue"
+      ],
+      "expected_effect": "aucun_effet_probant",
+      "risk_level": "faible",
+      "risk_score": 1,
+      "confidence": "moyenne"
+    },
+    {
+      "product": "cultures de plein champ locales",
+      "filiere": "cereales",
+      "zones": [
+        "Loiret"
+      ],
+      "main_risks": [
+        "dégâts potentiels de sangliers sur semis et prairies"
+      ],
+      "expected_effect": "aucun_effet_probant",
+      "risk_level": "faible",
+      "risk_score": 1,
+      "confidence": "faible"
+    }
+  ],
+  "discarded_results": [
+    {
+      "title": "Emplois grande distribution (Orléans (45))",
+      "reason": "doublon"
+    },
+    {
+      "title": "Grande Entreprise, Orléans (45) : plus de 600 emplois",
+      "reason": "source_insuffisante"
+    },
+    {
+      "title": "Emplois : Drive, 45100 Orléans",
+      "reason": "doublon"
+    },
+    {
+      "title": "Logistique Orleans, Loiret : plus de 200 emplois",
+      "reason": "doublon"
+    }
+  ],
+  "recommended_queries_next_run": [
+    "site:vinci-autoroutes.com A10 Orléans travaux nuit poids lourds mai 2026",
+    "site:bison-fute.gouv.fr A10 Île-de-France Orléans trafic poids lourds Ascension 2026",
+    "site:draaf.centre-val-de-loire.agriculture.gouv.fr jaunisse betterave pucerons Loiret mai 2026",
+    "site:agriculture.gouv.fr influenza aviaire Loiret Essonne mai 2026",
+    "site:rappel.conso.gouv.fr Rungis Essonne Loiret produits alimentaires mai 2026",
+    "Rungis perturbation livraison froid grève transport mai 2026",
+    "Essonne plateforme logistique grève blocage Chilly-Mazarin Fleury-Mérogis Brétigny mai 2026"
+  ]
+}

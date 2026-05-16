@@ -13,6 +13,9 @@ import {
   Wheat,
   Leaf,
   ShoppingBag,
+  Info,
+  ListChecks,
+  ExternalLink,
 } from 'lucide-react';
 import { useContactModal } from './ContactModalProvider';
 import MiniMap from './MiniMap';
@@ -20,6 +23,13 @@ import MiniMap from './MiniMap';
 const severityIconMap = {
   thermometer: Thermometer,
   truck: Truck,
+  info: Info,
+};
+
+const severityTone = {
+  critical: { container: 'bg-red-light text-red', badge: 'bg-red-light text-red border-red-mid', label: 'Critique' },
+  warning:  { container: 'bg-amber-light text-amber', badge: 'bg-amber-light text-amber border-amber-mid', label: 'Avertissement' },
+  info:     { container: 'bg-canvas-soft text-muted', badge: 'bg-canvas-soft text-ink-soft border-line-strong', label: 'Information' },
 };
 
 const supplierIconMap = {
@@ -43,8 +53,15 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false, 
   const { open: openModal } = useContactModal();
 
   const SeverityIcon = severityIconMap[alert.icon] || Thermometer;
-  const isCritical = alert.severity === 'critical';
+  const tone = severityTone[alert.severity] || severityTone.warning;
   const selected = suppliers.find((s) => s.id === selectedId) || suppliers[0];
+  const confidencePct = typeof alert.confidence === 'number'
+    ? Math.round(alert.confidence * 100)
+    : null;
+  const recommendedActions = alert.recommended_actions || [];
+  const attribution = alert.attribution;
+  const evidence = alert.evidence;
+  const sources = alert.sources || [];
 
   return (
     <div
@@ -57,9 +74,7 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false, 
     >
       <div className="py-[1.1rem] px-[1.35rem] flex items-center gap-4">
         <div
-          className={`w-10 h-10 rounded-[10px] flex-shrink-0 flex items-center justify-center ${
-            isCritical ? 'bg-red-light text-red' : 'bg-amber-light text-amber'
-          }`}
+          className={`w-10 h-10 rounded-[10px] flex-shrink-0 flex items-center justify-center ${tone.container}`}
         >
           <SeverityIcon size={18} />
         </div>
@@ -81,15 +96,16 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false, 
           </div>
         </div>
 
-        <div className="flex items-center gap-3 flex-shrink-0">
+        <div className="flex items-center gap-2 flex-shrink-0">
+          {confidencePct != null && (
+            <span className="text-[0.66rem] font-semibold py-[0.2rem] px-[0.55rem] rounded-full border border-line-strong bg-canvas-soft text-ink-soft">
+              {confidencePct}% confiance
+            </span>
+          )}
           <span
-            className={`text-[0.68rem] font-bold uppercase tracking-[0.07em] py-[0.22rem] px-[0.65rem] rounded-full border ${
-              isCritical
-                ? 'bg-red-light text-red border-red-mid'
-                : 'bg-amber-light text-amber border-amber-mid'
-            }`}
+            className={`text-[0.68rem] font-bold uppercase tracking-[0.07em] py-[0.22rem] px-[0.65rem] rounded-full border ${tone.badge}`}
           >
-            {isCritical ? 'Critique' : 'Avertissement'}
+            {tone.label}
           </span>
           <span
             className={`text-muted flex transition-transform ${
@@ -106,6 +122,67 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false, 
           className="border-t border-line p-[1.35rem] bg-canvas"
           onClick={(e) => e.stopPropagation()}
         >
+          {alert.full_description && (
+            <p className="text-[0.83rem] text-ink-soft mb-[1.1rem] leading-[1.5]">
+              {alert.full_description}
+            </p>
+          )}
+
+          {(evidence || sources.length > 0) && (
+            <div className="mb-[1.1rem] border border-line rounded-lg bg-paper p-[1rem]">
+              <div className="flex items-center gap-2 text-[0.76rem] font-bold text-ink mb-[0.55rem]">
+                <Info size={14} className="text-green" />
+                Pourquoi Mileva le signale
+              </div>
+              {evidence && (
+                <p className="text-[0.78rem] text-ink-soft leading-[1.5]">
+                  {evidence}
+                </p>
+              )}
+              {sources.length > 0 && (
+                <div className="flex flex-wrap gap-2 mt-[0.75rem]">
+                  {sources.slice(0, 4).map((s) => (
+                    <a
+                      key={`${s.name}-${s.url}`}
+                      href={s.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="inline-flex items-center gap-1 text-[0.68rem] font-semibold py-[0.22rem] px-[0.55rem] rounded-full border border-line-strong bg-canvas-soft text-ink-soft hover:border-green-mid hover:text-green"
+                    >
+                      {s.name}
+                      <ExternalLink size={10} />
+                    </a>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+
+          {recommendedActions.length > 0 && (
+            <details className="mb-[1.1rem] border border-line rounded-lg bg-paper" open>
+              <summary className="cursor-pointer list-none flex items-center gap-2 px-[1rem] py-[0.7rem] text-[0.78rem] font-bold text-ink">
+                <ListChecks size={14} className="text-green" />
+                Actions recommandées
+                <span className="ml-auto text-[0.7rem] text-muted font-normal">
+                  {recommendedActions.length}
+                </span>
+              </summary>
+              <ul className="px-[1rem] pb-[0.85rem] pt-[0.1rem] flex flex-col gap-[0.35rem]">
+                {recommendedActions.map((a) => (
+                  <li
+                    key={a.key}
+                    className="text-[0.78rem] text-ink-soft flex items-start gap-2"
+                  >
+                    <span className="text-green mt-[0.35rem] w-[5px] h-[5px] rounded-full bg-green flex-shrink-0" />
+                    {a.label}
+                  </li>
+                ))}
+              </ul>
+            </details>
+          )}
+
+          {suppliers.length > 0 && (
+          <>
           <div className="flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.1em] text-green mb-[1.1rem]">
             <MapPin size={13} />
             Stock disponible à proximité
@@ -177,7 +254,7 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false, 
               <button
                 onClick={(e) => {
                   e.stopPropagation();
-                  openModal(selected.name);
+                  if (selected) openModal(selected.name);
                 }}
                 className="mt-[0.75rem] w-full flex items-center justify-center gap-2 bg-green text-white border-none rounded-lg py-[0.6rem] text-[0.82rem] font-bold cursor-pointer hover:bg-green-bright transition-colors tracking-[0.01em]"
               >
@@ -186,6 +263,14 @@ export default function CrisisCard({ alert, suppliers, defaultExpanded = false, 
               </button>
             </div>
           </div>
+          </>
+          )}
+
+          {attribution && (
+            <div className="mt-[1.1rem] pt-[0.85rem] border-t border-line text-[0.7rem] text-muted">
+              {attribution}
+            </div>
+          )}
         </div>
       )}
     </div>

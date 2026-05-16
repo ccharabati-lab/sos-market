@@ -1,0 +1,190 @@
+{
+  "query_context": {
+    "date_execution": "2026-05-13",
+    "periode_couverte": "2026-05-06 au 2026-05-13",
+    "zone": "Bourg-la-Reine / Antony / Sceaux / Rungis / Orly / Wissous / Massy / Chilly-Mazarin / Fleury-Merogis / Bretigny-sur-Orge / Etampes + Orléans / Loiret / Essonne + axes A10 / A6 / A86 / N20 / N104",
+    "queries_executed": [
+      "Recherche ciblée sur sites officiels Loiret / Essonne / DRAAF / Agriculture.gouv / Bison Futé / VINCI Autoroutes",
+      "Recherche logistique et grande distribution Orléans, Rungis, Essonne, Loiret",
+      "Recherche risques agricoles : sécheresse, sanglier, betterave, influenza aviaire",
+      "Recherche emploi logistique / grande distribution locale (Indeed, France Travail / Mon emploi IDF)"
+    ],
+    "hypotheses": [
+      "Impacts possibles sur les flux A10/A71 autour d'Orléans et Artenay",
+      "Tension ou signal sur l'approvisionnement Rungis et la distribution alimentaire locale",
+      "Pressions agricoles susceptibles d'affecter betteraves, semis et disponibilités produits"
+    ]
+  },
+  "raw_candidates": [
+    {
+      "candidate_id": "C1",
+      "title": "Au Min de Rungis, le bio résiste, dix ans après la création d’un pavillon dédié",
+      "url": "https://www.leparisien.fr/val-de-marne-94/au-min-de-rungis-le-bio-resiste-dix-ans-apres-la-creation-dun-pavillon-dedie-09-05-2026-5N5WR5XL5RBDDN7VBKN3HMJZYY.php",
+      "source": "Le Parisien",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-09",
+      "zone": "Rungis / Val-de-Marne",
+      "snippet": "Le papier indique que le pavillon bio de Rungis continue de progresser malgré un marché chahuté, avec un +13 % de chiffre d’affaires. ([leparisien.fr](https://www.leparisien.fr/val-de-marne-94/au-min-de-rungis-le-bio-resiste-dix-ans-apres-la-creation-dun-pavillon-dedie-09-05-2026-5N5WR5XL5RBDDN7VBKN3HMJZYY.php?utm_source=openai))",
+      "potential_category": "produits / marché de gros",
+      "potential_products": [
+        "produits biologiques",
+        "fruits et légumes",
+        "produits frais"
+      ],
+      "why_potentially_relevant": "Signal direct sur la demande et la disponibilité de produits bio transitant par Rungis."
+    },
+    {
+      "candidate_id": "C2",
+      "title": "A71 sortie Olivet N°2 obligatoire direction Orléans",
+      "url": "https://radio.vinci-autoroutes.com/article/a71-sortie-olivet-n-2-obligatoire-direction-orleans-18155",
+      "source": "Radio VINCI Autoroutes",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-09",
+      "zone": "Orléans / Loiret",
+      "snippet": "Travaux nocturnes sur le viaduc de la Loire : la sortie Olivet devient obligatoire une nuit, avec déviation via le réseau secondaire vers Orléans. ([radio.vinci-autoroutes.com](https://radio.vinci-autoroutes.com/article/a71-sortie-olivet-n-2-obligatoire-direction-orleans-18155?utm_source=openai))",
+      "potential_category": "transport / perturbation routière",
+      "potential_products": [
+        "flux logistiques",
+        "livraisons grande distribution"
+      ],
+      "why_potentially_relevant": "Peut ralentir les dessertes de plateformes et magasins autour d’Orléans."
+    },
+    {
+      "candidate_id": "C3",
+      "title": "Pont de l'Ascension : à quoi s’attendre sur les autoroutes A7, A9, A10 et A63 mercredi et jeudi ?",
+      "url": "https://radio.vinci-autoroutes.com/article/pont-de-l-ascension-a-quoi-s-attendre-sur-a7-a9-a10-et-a63-mercredi-et-jeudi--18173",
+      "source": "Radio VINCI Autoroutes",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-11",
+      "zone": "A10 / Île-de-France / axe centre-sud",
+      "snippet": "VINCI Autoroutes annonce des départs difficiles et rappelle que le 13 mai est classé rouge, avec un jeudi 14 mai orange en Île-de-France. ([radio.vinci-autoroutes.com](https://radio.vinci-autoroutes.com/article/pont-de-l-ascension-a-quoi-s-attendre-sur-a7-a9-a10-et-a63-mercredi-et-jeudi--18173))",
+      "potential_category": "transport / trafic",
+      "potential_products": [
+        "flux de marchandises",
+        "livraisons GMS"
+      ],
+      "why_potentially_relevant": "Peut affecter les approvisionnements par route sur l’A10 et les itinéraires de distribution."
+    },
+    {
+      "candidate_id": "C4",
+      "title": "Emplois grande distribution (Orléans (45))",
+      "url": "https://fr.indeed.com/orl%C3%A9ans-emplois-grande-distribution",
+      "source": "Indeed",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-09",
+      "zone": "Orléans / Loiret",
+      "snippet": "Page de recherche montrant des postes chez E.Leclerc, Auchan et d’autres enseignes, avec mention d’une expérience en logistique de distribution. ([fr.indeed.com](https://fr.indeed.com/orl%C3%A9ans-emplois-grande-distribution?utm_source=openai))",
+      "potential_category": "emploi / grande distribution",
+      "potential_products": [
+        "drive",
+        "préparation de commandes",
+        "distribution alimentaire"
+      ],
+      "why_potentially_relevant": "Indique une activité de recrutement locale dans la distribution, utile pour capter les tensions ou expansions logistiques."
+    },
+    {
+      "candidate_id": "C5",
+      "title": "Grande Entreprise, Orléans (45) : plus de 600 emplois",
+      "url": "https://fr.indeed.com/q-grande-entreprise-l-orl%C3%A9ans-%2845%29-emplois.html",
+      "source": "Indeed",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-11",
+      "zone": "Orléans / Loiret",
+      "snippet": "La page liste des offres à Orléans, dont des postes liés aux process de grande distribution et à l’hygiène-beauté. ([fr.indeed.com](https://fr.indeed.com/q-grande-entreprise-l-orl%C3%A9ans-%2845%29-emplois.html?utm_source=openai))",
+      "potential_category": "emploi / supply chain",
+      "potential_products": [
+        "hygiène-beauté",
+        "produits de grande consommation"
+      ],
+      "why_potentially_relevant": "Signal de besoin de main-d’œuvre dans des chaînes de distribution locales."
+    },
+    {
+      "candidate_id": "C6",
+      "title": "Emplois : Drive, 45100 Orléans",
+      "url": "https://fr.indeed.com/q-drive-l-45100-orl%C3%A9ans-emplois.html",
+      "source": "Indeed",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-12",
+      "zone": "Orléans / Loiret",
+      "snippet": "La page mentionne des postes drive avec référence à une expérience en grande distribution et logistique. ([fr.indeed.com](https://fr.indeed.com/q-drive-l-45100-orl%C3%A9ans-emplois.html?utm_source=openai))",
+      "potential_category": "emploi / distribution",
+      "potential_products": [
+        "drive",
+        "préparation de commandes"
+      ],
+      "why_potentially_relevant": "Peut signaler des besoins opérationnels dans les circuits de distribution locale."
+    },
+    {
+      "candidate_id": "C7",
+      "title": "Logistique Orleans, Loiret : plus de 200 emplois",
+      "url": "https://fr.indeed.com/q-logistique-orleans-l-loiret-emplois.html",
+      "source": "Indeed",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-11",
+      "zone": "Orléans / Loiret",
+      "snippet": "Page de recherche avec des postes chez Le Roy Logistique à Ormes, près d’Orléans, dont chef d’équipe et assistant logistique. ([fr.indeed.com](https://fr.indeed.com/q-logistique-orleans-l-loiret-emplois.html?utm_source=openai))",
+      "potential_category": "emploi / logistique",
+      "potential_products": [
+        "entrepôt",
+        "transport",
+        "distribution"
+      ],
+      "why_potentially_relevant": "Confirme une activité de recrutement logistique locale autour d’Orléans/Ormes."
+    },
+    {
+      "candidate_id": "C8",
+      "title": "Logistique, Essonne : plus de 300 emplois",
+      "url": "https://fr.indeed.com/m/jobs?l=Essonne&q=Logistique",
+      "source": "Indeed",
+      "date_detected": "2026-05-13",
+      "date_publication": "2026-05-13",
+      "zone": "Essonne",
+      "snippet": "La page affiche plusieurs offres logistiques en Essonne, dont des acteurs du transport et de la supply chain. ([fr.indeed.com](https://fr.indeed.com/m/jobs?l=Essonne&q=Logistique&utm_source=openai))",
+      "potential_category": "emploi / logistique",
+      "potential_products": [
+        "transport",
+        "entrepôt",
+        "supply chain"
+      ],
+      "why_potentially_relevant": "Bon indicateur de tension/recrutement dans la logistique francilienne sud."
+    },
+    {
+      "candidate_id": "C9",
+      "title": "Jaunisse de la betterave : « la dynamique s’intensifie » et réactive « le spectre » de 2020",
+      "url": "https://www.pleinchamp.com/actualite/jaunisse-de-la-betterave-la-dynamique-s-intensifie-et-reactive-le-spectre-de-2020",
+      "source": "Pleinchamp",
+      "date_detected": "2026-05-13",
+      "date_publication": "inconnu",
+      "zone": "Centre-Val de Loire / bassin betteravier",
+      "snippet": "L’article signale une situation jugée préoccupante dans le Centre-Val de Loire, avec des vols de pucerons élevés et des déclenchements de T3 déjà nécessaires. ([pleinchamp.com](https://www.pleinchamp.com/actualite/jaunisse-de-la-betterave-la-dynamique-s-intensifie-et-reactive-le-spectre-de-2020?utm_source=openai))",
+      "potential_category": "risque agricole",
+      "potential_products": [
+        "betterave sucrière",
+        "sucre"
+      ],
+      "why_potentially_relevant": "Peut impacter les volumes et la qualité des betteraves alimentant les sucreries et la distribution."
+    },
+    {
+      "candidate_id": "C10",
+      "title": "Tir de jour du sanglier en avril - mai",
+      "url": "https://www.loiret.gouv.fr/Actions-de-l-Etat/Environnement-eau-chasse-peche/Chasse-peche-et-faune-sauvage/Chasse/Especes-susceptibles-d-occasionner-des-degats/Tir-du-sanglier/Tir-de-jour-du-sanglier-en-avril-mai",
+      "source": "Préfecture du Loiret",
+      "date_detected": "2026-05-13",
+      "date_publication": "inconnu",
+      "zone": "Loiret",
+      "snippet": "Page officielle indiquant des tirs de régulation du sanglier entre le 1er avril et le 31 mai pour protéger semis, cultures et prairies. ([loiret.gouv.fr](https://www.loiret.gouv.fr/Actions-de-l-Etat/Environnement-eau-chasse-peche/Chasse-peche-et-faune-sauvage/Chasse/Especes-susceptibles-d-occasionner-des-degats/Tir-du-sanglier/Tir-de-jour-du-sanglier-en-avril-mai))",
+      "potential_category": "risque agricole / protection cultures",
+      "potential_products": [
+        "semis",
+        "cultures de plein champ",
+        "prairies"
+      ],
+      "why_potentially_relevant": "Signal direct de pression faune sauvage sur les cultures locales et donc sur les approvisionnements agricoles."
+    }
+  ],
+  "collection_notes": [
+    "Résultats redondants et hors fenêtre écartés (anciennes pages 2025 ou avant, ou mises à jour avant le 2026-05-06).",
+    "Les items sans date explicite ont été conservés seulement si le signal local est fort et la pertinence opérationnelle élevée.",
+    "Doublons de recrutement/logistique simplifiés en privilégiant les pages les plus récentes et les plus proches du territoire cible."
+  ]
+}
