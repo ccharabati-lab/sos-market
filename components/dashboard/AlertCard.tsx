@@ -330,7 +330,6 @@ export default function AlertCard({
               <div className="grid gap-5 lg:grid-cols-[1.05fr_1fr]">
                 <MiniMap
                   suppliers={suppliers}
-                  mapHints={alert.map_hints}
                   selectedId={selectedId}
                   onSelect={setSelectedId}
                   originLat={originLat}
