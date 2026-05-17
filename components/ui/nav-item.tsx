@@ -12,6 +12,7 @@ export function NavItem({
   active,
   collapsed,
   badge,
+  onClick,
 }: {
   href: string;
   icon: LucideIcon;
@@ -19,10 +20,12 @@ export function NavItem({
   active: boolean;
   collapsed: boolean;
   badge?: number | boolean;
+  onClick?: () => void;
 }) {
   const content = (
     <Link
       href={href}
+      onClick={onClick}
       className={cn(
         'relative flex min-h-11 cursor-pointer items-center gap-3 rounded-xl px-3 text-sm font-semibold transition-all duration-180 ease-out focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2',
         collapsed ? 'w-11 justify-center px-0' : 'w-full',

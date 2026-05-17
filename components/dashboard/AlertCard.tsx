@@ -30,6 +30,7 @@ import {
   type Severity,
 } from '../ui/badges';
 import { PrimaryButton, SecondaryButton } from '../ui/buttons';
+import { useToast } from '../ui/toast-provider';
 import { cn } from '../ui/utils';
 
 const severityIconMap: Record<string, LucideIcon> = {
@@ -148,9 +149,20 @@ export default function AlertCard({
 }) {
   const [expanded, setExpanded] = useState(defaultExpanded);
   const [selectedId, setSelectedId] = useState(suppliers[0]?.id);
+  const [handled, setHandled] = useState(false);
   const suppliersRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
   const { open: openModal } = useContactModal();
+  const { showToast } = useToast();
+
+  function markAsHandled() {
+    setHandled(true);
+    showToast({
+      tone: 'success',
+      title: 'Alerte marquée comme gérée',
+      message: alert.title,
+    });
+  }
 
   useEffect(() => {
     function onKeyDown(event: KeyboardEvent) {
@@ -302,7 +314,9 @@ export default function AlertCard({
                   <PackageSearch size={16} aria-hidden="true" />
                   Voir les fournisseurs disponibles
                 </PrimaryButton>
-                <SecondaryButton type="button">Marquer comme géré</SecondaryButton>
+                <SecondaryButton type="button" onClick={markAsHandled} disabled={handled}>
+                  {handled ? 'Alerte gérée' : 'Marquer comme géré'}
+                </SecondaryButton>
               </div>
             </section>
           </div>

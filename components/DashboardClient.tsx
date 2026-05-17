@@ -15,6 +15,7 @@ import type { LucideIcon } from 'lucide-react';
 import AlertCard from './dashboard/AlertCard';
 import { SkeletonLoader } from './ui/feedback';
 import { CountdownStatCard, GaugeStatCard, NumberStatCard } from './ui/stat-card';
+import { shiftDemoDate } from './ui/utils';
 import {
   fetchAlerts,
   fetchLocalSignals,
@@ -199,7 +200,7 @@ function adaptAlert(c: MilevaAlert) {
     region: c.region,
     region_level: c.regionLevel,
     detected_at: c.detectedAt,
-    start_time: c.startTime,
+    start_time: shiftDemoDate(c.startTime) ?? c.startTime,
     attribution: detectedLabel
       ? `Source : Mileva AI · ${detectedLabel}`
       : 'Source : Mileva AI',
@@ -540,15 +541,24 @@ function riskLabel(score: number): string {
 }
 
 function nearestCriticalDate(alerts: MilevaAlert[]): Date | null {
-  const criticalAlerts = alerts
+  const candidates = alerts
     .filter((alert) => alert.severity === 'critical')
-    .map((alert) => alert.startTime || alert.detectedAt)
+    .map((alert) => shiftDemoDate(alert.startTime) ?? shiftDemoDate(alert.detectedAt))
     .filter(Boolean)
     .map((value) => new Date(value as string))
-    .filter((date) => !Number.isNaN(date.getTime()))
-    .sort((a, b) => Math.abs(a.getTime() - Date.now()) - Math.abs(b.getTime() - Date.now()));
+    .filter((date) => !Number.isNaN(date.getTime()));
 
-  return criticalAlerts[0] ?? null;
+  if (candidates.length === 0) return null;
+
+  const now = Date.now();
+  const future = candidates
+    .filter((d) => d.getTime() >= now)
+    .sort((a, b) => a.getTime() - b.getTime());
+  if (future.length > 0) return future[0];
+
+  return candidates.sort(
+    (a, b) => Math.abs(a.getTime() - now) - Math.abs(b.getTime() - now),
+  )[0];
 }
 
 function ProductRiskCard({ risk }: { risk: ProductRisk }) {

@@ -37,6 +37,7 @@ import {
   SearchInput,
   fieldClass,
 } from './ui/forms';
+import { useToast } from './ui/toast-provider';
 
 type SearchIntent = 'need' | 'offer';
 
@@ -168,6 +169,7 @@ export default function ExchangeWorkspace({
   activeCount = initialListings.length,
 }: ExchangeWorkspaceProps) {
   const { open } = useContactModal() as { open: (supplier: string) => void };
+  const { showToast } = useToast();
   const [activeTab, setActiveTab] = useState<DailyTab>('publish');
   const [intent, setIntent] = useState<SearchIntent>('need');
   const [query, setQuery] = useState('eau');
@@ -288,6 +290,11 @@ export default function ExchangeWorkspace({
     }
 
     setSaveMessage(`${typeLabel(listingType)} publié.`);
+    showToast({
+      tone: 'success',
+      title: 'Publication enregistrée',
+      message: 'Visible par votre réseau dans la minute.',
+    });
     setIntent(listingType === 'need' ? 'need' : 'offer');
     setQuery(productCategory);
     setNotes('');
