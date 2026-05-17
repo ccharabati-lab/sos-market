@@ -10,3 +10,7 @@ yarn-debug.log*
 yarn-error.log*
 .vercel
 *.tsbuildinfo
+
+# Sentry Config File
+.env.sentry-build-plugin
+AGENTS.md
