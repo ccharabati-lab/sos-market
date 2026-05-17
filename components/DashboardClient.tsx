@@ -262,8 +262,8 @@ function adaptSupplier(m: MatchResult) {
     distance_km: Math.round(m.distance_km * 10) / 10,
     availability,
     availability_tone,
-    lat: m.lat,
-    lng: m.lng,
+    lat: m.lat ?? undefined,
+    lng: m.lng ?? undefined,
   };
 }
 
