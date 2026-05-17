@@ -3,14 +3,17 @@
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import {
   AlertCircle,
+  ArrowLeftRight,
   Check,
   Clock,
   Loader2,
+  Map,
   MapPin,
   Package,
   Phone,
   Plus,
   Search,
+  SlidersHorizontal,
   TrendingDown,
   TrendingUp,
 } from 'lucide-react';
@@ -18,6 +21,22 @@ import { supabaseBrowser } from '../lib/supabase-browser';
 import type { Listing, ListingType, Profile } from '../types';
 import MapView, { type MapPin as MapPinDef } from './MapView';
 import { useContactModal } from './ContactModalProvider';
+import DeleteListingButton from './DeleteListingButton';
+import { DailyTabButton, type DailyTab } from './daily/DailyTabs';
+import {
+  CategoryPill,
+  StatePill,
+} from './ui/badges';
+import { PrimaryButton, SecondaryButton } from './ui/buttons';
+import {
+  EmptyState,
+  InlineError,
+} from './ui/feedback';
+import {
+  FieldLabel,
+  SearchInput,
+  fieldClass,
+} from './ui/forms';
 
 type SearchIntent = 'need' | 'offer';
 
@@ -34,6 +53,8 @@ type MatchRow = Listing & {
 interface ExchangeWorkspaceProps {
   userId: string;
   profile: Profile | null;
+  initialListings?: Listing[];
+  activeCount?: number;
 }
 
 const STORE_LAT = 48.6833;
@@ -52,8 +73,7 @@ const CATEGORY_OPTIONS = [
 
 const UNIT_OPTIONS = ['palettes', 'cartons', 'caisses', 'kg', 'unités'];
 
-const inputClass =
-  'w-full bg-canvas border border-line rounded-lg px-3 py-2 text-[0.82rem] text-ink placeholder:text-muted focus:outline-none focus:border-green-bright focus:bg-paper transition-colors';
+const inputClass = fieldClass;
 
 function toRad(deg: number) {
   return (deg * Math.PI) / 180;
@@ -141,14 +161,24 @@ function buildMatches(rows: ListingRow[], intent: SearchIntent, query: string, p
     .slice(0, 8);
 }
 
-export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspaceProps) {
+export default function ExchangeWorkspace({
+  userId,
+  profile,
+  initialListings = [],
+  activeCount = initialListings.length,
+}: ExchangeWorkspaceProps) {
   const { open } = useContactModal() as { open: (supplier: string) => void };
+  const [activeTab, setActiveTab] = useState<DailyTab>('publish');
   const [intent, setIntent] = useState<SearchIntent>('need');
   const [query, setQuery] = useState('eau');
   const [rows, setRows] = useState<ListingRow[]>([]);
+  const [myListings, setMyListings] = useState<Listing[]>(initialListings);
   const [loading, setLoading] = useState(false);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
+  const [sortBy, setSortBy] = useState<'distance' | 'score' | 'freshness'>('score');
+  const [mapFilter, setMapFilter] = useState<'all' | 'need' | 'offer' | 'mine'>('all');
 
   const [listingType, setListingType] = useState<ListingType>('need');
   const [productCategory, setProductCategory] = useState('eau');
@@ -156,19 +186,32 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
   const [quantity, setQuantity] = useState('20');
   const [unit, setUnit] = useState('palettes');
   const [expiresAt, setExpiresAt] = useState('');
+  const [radiusKm, setRadiusKm] = useState('15');
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
 
   const matches = useMemo(
-    () => buildMatches(rows, intent, query, profile, userId),
-    [intent, profile, query, rows, userId],
+    () => {
+      const built = buildMatches(rows, intent, query, profile, userId);
+      return [...built].sort((a, b) => {
+        if (sortBy === 'distance') return a.distance_km - b.distance_km;
+        if (sortBy === 'freshness') {
+          const aTime = a.expires_at ? new Date(a.expires_at).getTime() : Number.POSITIVE_INFINITY;
+          const bTime = b.expires_at ? new Date(b.expires_at).getTime() : Number.POSITIVE_INFINITY;
+          return aTime - bTime;
+        }
+        return b.score - a.score;
+      });
+    },
+    [intent, profile, query, rows, sortBy, userId],
   );
 
   const mapPins: MapPinDef[] = useMemo(
     () =>
       matches
+        .filter((m) => mapFilter === 'all' || mapFilter === m.type || (mapFilter === 'mine' && m.owner_id === userId))
         .filter((m) => m.profile.lat != null && m.profile.lng != null)
         .map((m) => ({
           id: m.id,
@@ -177,7 +220,7 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
           type: m.type,
           label: m.profile.name,
         })),
-    [matches],
+    [mapFilter, matches, userId],
   );
 
   const selected = matches.find((match) => match.id === selectedId) ?? matches[0] ?? null;
@@ -198,7 +241,9 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
       return;
     }
 
-    setRows((data ?? []) as unknown as ListingRow[]);
+    const nextRows = (data ?? []) as unknown as ListingRow[];
+    setRows(nextRows);
+    setMyListings(nextRows.filter((row) => row.owner_id === userId));
     setLoading(false);
   }
 
@@ -250,244 +295,252 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
     setSaving(false);
   }
 
+  const myNeeds = myListings.filter((listing) => listing.type === 'need');
+  const myOffers = myListings.filter((listing) => listing.type === 'offer');
+  const selectedDemand = myNeeds.find((listing) => listing.id === selectedDemandId) ?? myNeeds[0] ?? null;
+  const panelMatches = matches.slice(0, 5);
+
+  function selectDemand(listing: Listing) {
+    setSelectedDemandId(listing.id);
+    setIntent('need');
+    setQuery(listing.product_category);
+    setActiveTab('matches');
+  }
+
+  function handleDeleted(id: string) {
+    setMyListings((current) => current.filter((listing) => listing.id !== id));
+  }
+
   return (
-    <section className="bg-paper border border-line rounded-xl p-5 mb-8">
-      <div className="flex items-start justify-between gap-5 mb-5">
-        <div>
-          <div className="text-[0.72rem] font-bold uppercase tracking-[0.12em] text-green mb-1">
-            Échanges réseau
-          </div>
-          <h2 className="text-[1.05rem] font-extrabold text-ink">
-            Publier un besoin et trouver le stock disponible
-          </h2>
-        </div>
-        <button
-          type="button"
-          onClick={loadListings}
-          disabled={loading}
-          className="inline-flex items-center gap-2 bg-canvas text-ink-soft border border-line-strong rounded-lg px-3 py-2 text-[0.78rem] font-semibold hover:border-green-bright hover:bg-green-light hover:text-green disabled:opacity-60 transition-colors"
-        >
-          {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-          Actualiser
-        </button>
+    <section className="mx-auto w-full max-w-[1280px]">
+      <div className="mb-8 animate-fade-in">
+        <h1 className="font-display text-display text-text-primary">Gestion des stocks quotidienne</h1>
+        <p className="mt-2 text-body-lg text-text-muted">
+          {activeCount === 0
+            ? 'Publiez vos surplus et besoins pour que le réseau les voie en temps réel.'
+            : `${activeCount} publication${activeCount > 1 ? 's' : ''} active${activeCount > 1 ? 's' : ''} dans votre réseau · Mis à jour à l'instant`}
+        </p>
       </div>
 
-      <div className="grid grid-cols-1 xl:grid-cols-[280px_1fr] gap-5 items-start">
-        <form onSubmit={onCreateListing} className="bg-canvas border border-line rounded-[10px] p-4">
-          <div className="flex items-center gap-2 text-[0.76rem] font-bold uppercase tracking-[0.1em] text-muted mb-4">
-            <Plus size={14} />
-            Nouveau signal
-          </div>
+      <div className="mb-6 flex gap-2 overflow-x-auto rounded-xl border border-border-default bg-bg-subtle p-2" role="tablist" aria-label="Gestion des stocks">
+        <DailyTabButton id="publish" active={activeTab === 'publish'} icon={Plus} label="Publier une demande" onClick={setActiveTab} />
+        <DailyTabButton id="matches" active={activeTab === 'matches'} icon={ArrowLeftRight} label="Correspondances" onClick={setActiveTab} />
+        <DailyTabButton id="map" active={activeTab === 'map'} icon={Map} label="Carte du réseau" onClick={setActiveTab} />
+      </div>
 
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            <button
-              type="button"
-              onClick={() => setListingType('need')}
-              className={`flex items-center justify-center gap-2 border rounded-lg py-2 text-[0.78rem] font-bold transition-colors ${
-                listingType === 'need'
-                  ? 'bg-red-light border-red-mid text-red'
-                  : 'bg-paper border-line text-muted hover:border-line-strong'
-              }`}
-            >
-              <TrendingDown size={14} />
-              Besoin
-            </button>
-            <button
-              type="button"
-              onClick={() => setListingType('offer')}
-              className={`flex items-center justify-center gap-2 border rounded-lg py-2 text-[0.78rem] font-bold transition-colors ${
-                listingType === 'offer'
-                  ? 'bg-green-light border-green-mid text-green'
-                  : 'bg-paper border-line text-muted hover:border-line-strong'
-              }`}
-            >
-              <TrendingUp size={14} />
-              Surplus
-            </button>
-          </div>
-
-          <div className="grid grid-cols-2 gap-3">
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[0.72rem] font-semibold text-ink-soft">Catégorie</span>
-              <select
-                value={productCategory}
-                onChange={(e) => setProductCategory(e.target.value)}
-                className={inputClass}
-              >
-                {CATEGORY_OPTIONS.map((category) => (
-                  <option key={category} value={category}>
-                    {category}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[0.72rem] font-semibold text-ink-soft">Quantité</span>
-              <input
-                value={quantity}
-                onChange={(e) => setQuantity(e.target.value)}
-                inputMode="numeric"
-                className={inputClass}
-              />
-            </label>
-          </div>
-
-          <label className="flex flex-col gap-1.5 mt-3">
-            <span className="text-[0.72rem] font-semibold text-ink-soft">Produit</span>
-            <input
-              required
-              value={productName}
-              onChange={(e) => setProductName(e.target.value)}
-              className={inputClass}
-            />
-          </label>
-
-          <div className="grid grid-cols-2 gap-3 mt-3">
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[0.72rem] font-semibold text-ink-soft">Unité</span>
-              <select value={unit} onChange={(e) => setUnit(e.target.value)} className={inputClass}>
-                {UNIT_OPTIONS.map((option) => (
-                  <option key={option} value={option}>
-                    {option}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <label className="flex flex-col gap-1.5">
-              <span className="text-[0.72rem] font-semibold text-ink-soft">Fin dispo.</span>
-              <input
-                type="date"
-                value={expiresAt}
-                onChange={(e) => setExpiresAt(e.target.value)}
-                className={inputClass}
-              />
-            </label>
-          </div>
-
-          <label className="flex flex-col gap-1.5 mt-3">
-            <span className="text-[0.72rem] font-semibold text-ink-soft">Note</span>
-            <textarea
-              value={notes}
-              onChange={(e) => setNotes(e.target.value)}
-              rows={3}
-              placeholder="DLC courte, livraison possible, urgence..."
-              className={`${inputClass} resize-none`}
-            />
-          </label>
-
-          {saveError && (
-            <div className="mt-3 flex items-start gap-2 text-[0.76rem] text-red">
-              <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
-              {saveError}
+      {activeTab === 'publish' && (
+        <div className="grid animate-fade-in gap-6 xl:grid-cols-[440px_1fr]">
+          <form onSubmit={onCreateListing} className="rounded-2xl border border-border-default bg-white p-6 shadow-level-1">
+            <div className="mb-5">
+              <p className="text-caption font-semibold uppercase tracking-[0.08em] text-green">Nouveau signal</p>
+              <h2 className="mt-1 text-h2 text-text-primary">Publier ce que vous cherchez ou proposez</h2>
             </div>
-          )}
 
-          {saveMessage && (
-            <div className="mt-3 flex items-center gap-2 text-[0.76rem] text-green font-semibold">
-              <Check size={14} />
-              {saveMessage}
-            </div>
-          )}
-
-          <button
-            type="submit"
-            disabled={saving}
-            className="mt-4 w-full flex items-center justify-center gap-2 bg-green text-white border-none rounded-lg py-2.5 text-[0.84rem] font-bold cursor-pointer hover:bg-green-bright disabled:opacity-60 transition-colors"
-          >
-            {saving ? <Loader2 size={14} className="animate-spin" /> : <Plus size={14} />}
-            Publier et chercher les matchs
-          </button>
-        </form>
-
-        <div className="flex flex-col gap-4">
-          <div className="bg-canvas border border-line rounded-[10px] p-4">
-            <div className="grid grid-cols-1 lg:grid-cols-[auto_1fr_auto] gap-3 items-end">
-              <div className="flex bg-paper border border-line rounded-lg p-1">
-                <button
-                  type="button"
-                  onClick={() => setIntent('need')}
-                  className={`px-3 py-1.5 rounded-md text-[0.76rem] font-bold transition-colors ${
-                    intent === 'need' ? 'bg-green-light text-green' : 'text-muted hover:text-ink-soft'
-                  }`}
-                >
-                  Je cherche
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setIntent('offer')}
-                  className={`px-3 py-1.5 rounded-md text-[0.76rem] font-bold transition-colors ${
-                    intent === 'offer' ? 'bg-green-light text-green' : 'text-muted hover:text-ink-soft'
-                  }`}
-                >
-                  J&apos;ai un surplus
-                </button>
-              </div>
-
-              <label className="flex flex-col gap-1.5">
-                <span className="text-[0.72rem] font-semibold text-ink-soft">Produit ou catégorie</span>
-                <input
-                  value={query}
-                  onChange={(e) => setQuery(e.target.value)}
-                  placeholder="eau, légumes, pain..."
-                  className={inputClass}
-                />
-              </label>
-
+            <div className="mb-5 grid grid-cols-2 gap-2 rounded-xl border border-border-default bg-bg-subtle p-1">
               <button
                 type="button"
-                onClick={loadListings}
-                disabled={loading}
-                className="inline-flex h-[38px] items-center justify-center gap-2 bg-green text-white rounded-lg px-4 text-[0.8rem] font-bold hover:bg-green-bright disabled:opacity-60 transition-colors"
+                onClick={() => {
+                  setListingType('need');
+                  setIntent('need');
+                }}
+                className={`flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
+                  listingType === 'need' ? 'bg-white text-critical shadow-level-1' : 'text-text-muted hover:text-text-primary'
+                }`}
               >
-                {loading ? <Loader2 size={14} className="animate-spin" /> : <Search size={14} />}
-                Matcher
+                <TrendingDown size={16} aria-hidden="true" />
+                Je cherche
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setListingType('offer');
+                  setIntent('offer');
+                }}
+                className={`flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
+                  listingType === 'offer' ? 'bg-white text-green shadow-level-1' : 'text-text-muted hover:text-text-primary'
+                }`}
+              >
+                <TrendingUp size={16} aria-hidden="true" />
+                Je propose
               </button>
             </div>
 
-            {searchError && (
-              <div className="mt-3 flex items-start gap-2 text-[0.76rem] text-red">
-                <AlertCircle size={14} className="mt-0.5 flex-shrink-0" />
-                {searchError}
+            <div className="grid gap-4 sm:grid-cols-2">
+              <label className="flex flex-col gap-2">
+                <FieldLabel>Catégorie</FieldLabel>
+                <select value={productCategory} onChange={(e) => setProductCategory(e.target.value)} className={inputClass}>
+                  {CATEGORY_OPTIONS.map((category) => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <FieldLabel>Produit</FieldLabel>
+                <input required list="daily-products" value={productName} onChange={(e) => setProductName(e.target.value)} className={inputClass} />
+                <datalist id="daily-products">
+                  <option value="Eaux minérales 1.5 L" />
+                  <option value="Lait demi-écrémé 1 L" />
+                  <option value="Sorbets fruits rouges" />
+                  <option value="Fruits et légumes bio" />
+                </datalist>
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <FieldLabel>Quantité</FieldLabel>
+                <input value={quantity} onChange={(e) => setQuantity(e.target.value)} inputMode="numeric" className={inputClass} />
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <FieldLabel>Unité</FieldLabel>
+                <select value={unit} onChange={(e) => setUnit(e.target.value)} className={inputClass}>
+                  {UNIT_OPTIONS.map((option) => (
+                    <option key={option} value={option}>{option}</option>
+                  ))}
+                </select>
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <FieldLabel>Délai souhaité</FieldLabel>
+                <input type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} className={inputClass} />
+              </label>
+
+              <label className="flex flex-col gap-2">
+                <FieldLabel>Rayon de recherche : {radiusKm} km</FieldLabel>
+                <input type="range" min="5" max="30" step="5" value={radiusKm} onChange={(e) => setRadiusKm(e.target.value)} className="h-11 accent-green" />
+              </label>
+            </div>
+
+            <label className="mt-4 flex flex-col gap-2">
+              <FieldLabel>Notes</FieldLabel>
+              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} placeholder="DLC courte, livraison possible, urgence..." className={`${inputClass} resize-none`} />
+            </label>
+
+            {saveError && <InlineError>{saveError}</InlineError>}
+            {saveMessage && (
+              <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-green" role="status">
+                <Check size={16} aria-hidden="true" />
+                {saveMessage}
               </div>
             )}
-          </div>
 
-          <div className="grid grid-cols-1 lg:grid-cols-[2.4fr_1fr] gap-4">
-            <MapView
-              origin={{ lat: profile?.lat ?? STORE_LAT, lng: profile?.lng ?? STORE_LNG }}
-              pins={mapPins}
-              selectedId={selected?.id ?? null}
-              onSelect={setSelectedId}
-              className="w-full aspect-[16/12] rounded-[10px] overflow-hidden border border-line"
-            />
+            <PrimaryButton type="submit" disabled={saving} className="mt-5 w-full">
+              {saving ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
+              Publier ma demande
+            </PrimaryButton>
+          </form>
 
-            <div className="flex flex-col gap-2 min-h-[250px]">
-              <div className="flex items-center justify-between">
-                <div className="text-[0.76rem] font-bold uppercase tracking-[0.1em] text-muted">
-                  {matches.length} match{matches.length > 1 ? 's' : ''}
-                </div>
-                <div className="text-[0.72rem] text-muted">
-                  cible : {targetTypeFor(intent) === 'offer' ? 'surplus' : 'besoins'}
-                </div>
+          <section className="rounded-2xl border border-border-default bg-white p-6 shadow-level-1">
+            <div className="mb-5 flex items-start justify-between gap-4">
+              <div>
+                <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Mes publications actives</p>
+                <h2 className="mt-1 text-h2 text-text-primary">Demandes et offres visibles par le réseau</h2>
               </div>
+              <SecondaryButton type="button" onClick={loadListings} disabled={loading}>
+                {loading ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
+                Actualiser
+              </SecondaryButton>
+            </div>
 
-              {loading && (
-                <div className="flex items-center gap-2 text-[0.8rem] text-muted py-4">
-                  <Loader2 size={15} className="animate-spin" />
-                  Recherche en cours...
-                </div>
-              )}
+            {myListings.length === 0 ? (
+              <EmptyState title="Aucune publication active" description="Publiez un besoin ou un surplus pour le rendre visible aux magasins et producteurs proches." />
+            ) : (
+              <div className="grid gap-3">
+                {myListings.slice(0, 5).map((listing) => {
+                  const isOffer = listing.type === 'offer';
+                  const Icon = isOffer ? TrendingUp : TrendingDown;
+                  const qty = [listing.quantity, listing.unit].filter(Boolean).join(' ');
+                  return (
+                    <div key={listing.id} className="grid gap-3 rounded-xl border border-border-default bg-bg-subtle p-4 transition-all duration-180 hover:-translate-y-0.5 hover:bg-white hover:shadow-level-1 md:grid-cols-[auto_1fr_auto] md:items-center">
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${isOffer ? 'bg-green-soft text-green' : 'bg-critical-bg text-critical'}`}>
+                        <Icon size={18} aria-hidden="true" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="font-semibold text-text-primary">{listing.product_name}</div>
+                        <div className="mt-1 text-sm text-text-muted">{listing.product_category}{qty ? ` · ${qty}` : ''} · {formatExpiry(listing.expires_at)}</div>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <StatePill tone={isOffer ? 'success' : 'warning'}>{isOffer ? 'En proposition' : 'En recherche'}</StatePill>
+                        <DeleteListingButton listingId={listing.id} productName={listing.product_name} onDeleted={() => handleDeleted(listing.id)} />
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+        </div>
+      )}
 
-              {!loading && matches.length === 0 && (
-                <div className="bg-paper border border-line rounded-lg p-4 text-[0.82rem] text-muted">
-                  Aucun match trouvé. Essayez une catégorie plus large ou publiez le signal pour informer le réseau.
-                </div>
-              )}
+      {activeTab === 'matches' && (
+        <div className="grid animate-fade-in gap-6 xl:grid-cols-[0.85fr_1.15fr]">
+          <section className="rounded-2xl border border-border-default bg-white p-6 shadow-level-1">
+            <div className="mb-5 flex items-center justify-between gap-4">
+              <div>
+                <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Vos demandes</p>
+                <h2 className="mt-1 text-h2 text-text-primary">À approvisionner</h2>
+              </div>
+              <StatePill>{myNeeds.length} demande{myNeeds.length > 1 ? 's' : ''}</StatePill>
+            </div>
 
-              {!loading &&
-                matches.map((match) => {
+            {myNeeds.length === 0 ? (
+              <EmptyState title="Aucune demande publiée" description="Publiez d'abord une demande pour faire apparaître les correspondances du réseau." />
+            ) : (
+              <div className="grid gap-3">
+                {myNeeds.map((listing) => {
+                  const active = selectedDemand?.id === listing.id;
+                  return (
+                    <button
+                      key={listing.id}
+                      type="button"
+                      onClick={() => selectDemand(listing)}
+                      className={`cursor-pointer rounded-xl border p-4 text-left transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
+                        active ? 'border-green bg-green-soft shadow-level-1' : 'border-border-default bg-bg-subtle hover:bg-white hover:shadow-level-1'
+                      }`}
+                    >
+                      <div className="font-semibold text-text-primary">{listing.product_name}</div>
+                      <div className="mt-1 text-sm text-text-muted">{listing.product_category} · {[listing.quantity, listing.unit].filter(Boolean).join(' ') || 'quantité à confirmer'}</div>
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </section>
+
+          <section className="rounded-2xl border border-border-default bg-white p-6 shadow-level-1">
+            <div className="mb-5 grid gap-4 lg:grid-cols-[1fr_auto] lg:items-end">
+              <div>
+                <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Offres correspondantes</p>
+                <h2 className="mt-1 text-h2 text-text-primary">{panelMatches.length} correspondance{panelMatches.length > 1 ? 's' : ''} à contacter</h2>
+              </div>
+              <label className="flex min-w-[220px] flex-col gap-2">
+                <FieldLabel>Trier par</FieldLabel>
+                <select value={sortBy} onChange={(e) => setSortBy(e.target.value as typeof sortBy)} className={inputClass}>
+                  <option value="score">Score de match</option>
+                  <option value="distance">Distance</option>
+                  <option value="freshness">Fraîcheur</option>
+                </select>
+              </label>
+            </div>
+
+            <div className="mb-4 grid gap-3 md:grid-cols-[1fr_auto] md:items-end">
+              <label className="flex flex-col gap-2">
+                <FieldLabel>Produit ou catégorie</FieldLabel>
+                <SearchInput value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery('')} placeholder="eau, légumes, pain..." />
+              </label>
+              <PrimaryButton type="button" onClick={loadListings} disabled={loading}>
+                {loading ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
+                Matcher
+              </PrimaryButton>
+            </div>
+
+            {searchError && <InlineError>{searchError}</InlineError>}
+
+            {panelMatches.length === 0 ? (
+              <EmptyState title="Aucune correspondance pour l'instant" description="Essayez une catégorie plus large ou publiez le signal pour prévenir le réseau." />
+            ) : (
+              <div className="grid gap-3">
+                {panelMatches.map((match) => {
                   const active = selected?.id === match.id;
                   const quantityLabel = [match.quantity, match.unit].filter(Boolean).join(' ');
                   return (
@@ -495,57 +548,108 @@ export default function ExchangeWorkspace({ userId, profile }: ExchangeWorkspace
                       key={match.id}
                       type="button"
                       onClick={() => setSelectedId(match.id)}
-                      className={`text-left bg-paper border rounded-lg p-3 transition-colors ${
-                        active
-                          ? 'border-green-bright bg-green-light'
-                          : 'border-line hover:border-line-strong'
+                      className={`relative cursor-pointer rounded-xl border p-4 text-left transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
+                        active ? 'border-green bg-green-soft shadow-level-1' : 'border-border-default bg-bg-subtle hover:bg-white hover:shadow-level-1'
                       }`}
                     >
-                      <div className="flex items-start gap-3">
-                        <div
-                          className={`w-8 h-8 rounded-lg flex items-center justify-center flex-shrink-0 ${
-                            active ? 'bg-green-mid text-green' : 'bg-canvas-soft text-muted'
-                          }`}
-                        >
-                          <Package size={14} />
+                      {active && <span className="absolute -left-3 top-1/2 h-px w-3 bg-green" aria-hidden="true" />}
+                      <div className="grid gap-3 md:grid-cols-[auto_1fr_auto] md:items-center">
+                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-white text-green">
+                          <Package size={18} aria-hidden="true" />
                         </div>
-                        <div className="min-w-0 flex-1">
-                          <div className="text-[0.84rem] font-bold text-ink truncate">
-                            {match.product_name}
+                        <div className="min-w-0">
+                          <div className="font-semibold text-text-primary">{match.product_name}</div>
+                          <div className="mt-1 text-sm text-text-muted">{match.profile.name} · {quantityLabel || 'quantité à confirmer'}</div>
+                          <div className="mt-2 flex flex-wrap gap-2 text-xs text-text-muted">
+                            <span className="inline-flex items-center gap-1"><MapPin size={13} aria-hidden="true" />{formatDistance(match.distance_km)}</span>
+                            <span className="inline-flex items-center gap-1"><Clock size={13} aria-hidden="true" />{formatExpiry(match.expires_at)}</span>
+                            <span>Prix suggéré : à négocier</span>
                           </div>
-                          <div className="text-[0.73rem] text-muted mt-0.5">
-                            {match.profile.name} · {quantityLabel || 'quantité à confirmer'}
-                          </div>
-                          <div className="flex items-center gap-3 mt-1.5 text-[0.7rem] text-muted">
-                            <span className="inline-flex items-center gap-1">
-                              <MapPin size={12} />
-                              {formatDistance(match.distance_km)}
-                            </span>
-                            <span className="inline-flex items-center gap-1">
-                              <Clock size={12} />
-                              {formatExpiry(match.expires_at)}
-                            </span>
-                          </div>
+                        </div>
+                        <div className="flex flex-col items-start gap-2 md:items-end">
+                          <StatePill tone={match.score >= 80 ? 'success' : 'neutral'}>{match.score} % match</StatePill>
+                          <span className="text-sm font-semibold text-green">Contacter</span>
                         </div>
                       </div>
                     </button>
                   );
                 })}
+              </div>
+            )}
 
-              {selected && (
+            {selected && (
+              <PrimaryButton type="button" onClick={() => open(selected.profile.name)} className="mt-5 w-full">
+                <Phone size={16} aria-hidden="true" />
+                Contacter {selected.profile.name}
+              </PrimaryButton>
+            )}
+          </section>
+        </div>
+      )}
+
+      {activeTab === 'map' && (
+        <div className="animate-fade-in rounded-2xl border border-border-default bg-white p-6 shadow-level-1">
+          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+            <div>
+              <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Carte du réseau</p>
+              <h2 className="mt-1 text-h2 text-text-primary">Paris-Saclay et fournisseurs disponibles</h2>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                ['all', 'Toutes'],
+                ['need', 'Demandes'],
+                ['offer', 'Offres'],
+                ['mine', 'Mon magasin uniquement'],
+              ].map(([value, label]) => (
                 <button
+                  key={value}
                   type="button"
-                  onClick={() => open(selected.profile.name)}
-                  className="mt-auto w-full flex items-center justify-center gap-2 bg-green text-white border-none rounded-lg py-2.5 text-[0.84rem] font-bold cursor-pointer hover:bg-green-bright transition-colors"
+                  onClick={() => setMapFilter(value as typeof mapFilter)}
+                  className={`min-h-9 cursor-pointer rounded-full border px-3 text-sm font-semibold transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
+                    mapFilter === value ? 'border-green bg-green-soft text-green' : 'border-border-default bg-bg-subtle text-text-muted hover:bg-bg-muted hover:text-text-primary'
+                  }`}
                 >
-                  <Phone size={14} />
-                  Contacter {selected.profile.name}
+                  {label}
                 </button>
-              )}
+              ))}
+              {CATEGORY_OPTIONS.slice(0, 4).map((category) => (
+                <CategoryPill key={category} clickable>{category}</CategoryPill>
+              ))}
             </div>
           </div>
+
+          <div className="grid gap-5 xl:grid-cols-[1fr_340px]">
+            <MapView
+              origin={{ lat: profile?.lat ?? STORE_LAT, lng: profile?.lng ?? STORE_LNG }}
+              pins={mapPins}
+              selectedId={selected?.id ?? null}
+              onSelect={setSelectedId}
+              className="w-full min-h-[520px] overflow-hidden rounded-2xl border border-border-default"
+            />
+
+            <aside className="rounded-2xl border border-border-default bg-bg-subtle p-5">
+              {selected ? (
+                <div>
+                  <StatePill tone="success">Vous êtes ici : Intermarché Gif</StatePill>
+                  <h3 className="mt-4 text-lg font-semibold text-text-primary">{selected.profile.name}</h3>
+                  <p className="mt-2 text-sm leading-6 text-text-muted">{selected.product_name} · {[selected.quantity, selected.unit].filter(Boolean).join(' ') || 'quantité à confirmer'}</p>
+                  <div className="mt-4 grid gap-2 text-sm text-text-secondary">
+                    <span>Distance : {formatDistance(selected.distance_km)}</span>
+                    <span>Disponibilité : {formatExpiry(selected.expires_at)}</span>
+                    <span>Score : {selected.score} %</span>
+                  </div>
+                  <PrimaryButton type="button" onClick={() => open(selected.profile.name)} className="mt-5 w-full">
+                    <Phone size={16} aria-hidden="true" />
+                    Contacter
+                  </PrimaryButton>
+                </div>
+              ) : (
+                <EmptyState title="Aucun point sélectionné" description="Cliquez sur une offre ou une demande de la carte pour afficher le détail." />
+              )}
+            </aside>
+          </div>
         </div>
-      </div>
+      )}
     </section>
   );
 }

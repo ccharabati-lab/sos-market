@@ -2,14 +2,35 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --color-bg-base: #ffffff;
+  --color-bg-subtle: #f8f9f7;
+  --color-bg-muted: #f1f3ef;
+  --color-border-default: #e5e7e2;
+  --color-border-emphasized: #cfd2cb;
+  --color-text-primary: #1a1c18;
+  --color-text-secondary: #4a4e45;
+  --color-text-muted: #6b7066;
+  --color-text-disabled: #9aa095;
+  --color-primary-green: #1e6b45;
+  --color-primary-green-dark: #14543a;
+  --color-primary-green-soft: #e8f2ec;
+  --color-critical: #c0312b;
+  --color-critical-bg: #fdf2f1;
+  --color-warning: #b45309;
+  --color-warning-bg: #fdf8ee;
+  --color-info: #1f6fb2;
+  --color-info-bg: #eef4fa;
+}
+
 html {
   scroll-behavior: smooth;
 }
 
 body {
-  font-family: 'DM Sans', sans-serif;
-  background: #f4f6f3;
-  color: #1a1f18;
+  font-family: Inter, 'Geist Sans', 'Inter Tight', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: var(--color-bg-subtle);
+  color: var(--color-text-primary);
   line-height: 1.55;
 }
 
@@ -17,6 +38,38 @@ body {
 *::before,
 *::after {
   box-sizing: border-box;
+}
+
+::selection {
+  background: var(--color-primary-green-soft);
+  color: var(--color-primary-green-dark);
+}
+
+a,
+button,
+summary,
+[role='button'] {
+  touch-action: manipulation;
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-primary-green);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
 }
 
 /* ─── Mapbox markers ──────────────────────────────────────────────── */

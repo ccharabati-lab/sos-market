@@ -1,0 +1,9 @@
+<svg width="220" height="56" viewBox="0 0 220 56" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-labelledby="shieldTitle">
+  <title id="shieldTitle">SOS-Market shield wordmark</title>
+  <path d="M28 6L48 13.5V27.4C48 39.1 40.6 48.1 28 52C15.4 48.1 8 39.1 8 27.4V13.5L28 6Z" fill="#1E6B45"/>
+  <path d="M17.8 30.2C21.1 24.2 26.2 20.9 35.6 19.9" stroke="#FFFFFF" stroke-width="3.2" stroke-linecap="round"/>
+  <path d="M20.5 20.8C23.3 18.1 26.9 16.6 31.8 16" stroke="#FFFFFF" stroke-opacity=".72" stroke-width="2.2" stroke-linecap="round"/>
+  <path d="M21 33.6L27.2 27.5L32.7 32.4L39 22.9" stroke="#FFFFFF" stroke-width="2.8" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="64" y="34" fill="#1A1C18" font-family="Inter, Geist Sans, Arial, sans-serif" font-size="25" font-weight="750" letter-spacing="0">SOS-Market</text>
+  <text x="66" y="48" fill="#6B7066" font-family="Inter, Geist Sans, Arial, sans-serif" font-size="9" font-weight="700" letter-spacing=".08em">ANTICIPER, NE PLUS SUBIR.</text>
+</svg>

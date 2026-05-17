@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from 'react';
 import {
+  Clock,
   TriangleAlert,
-  X,
   Store,
   MapPin,
   ExternalLink,
@@ -12,7 +12,9 @@ import {
   ShieldCheck,
 } from 'lucide-react';
 import type { LucideIcon } from 'lucide-react';
-import CrisisCard from './CrisisCard';
+import AlertCard from './dashboard/AlertCard';
+import { SkeletonLoader } from './ui/feedback';
+import { CountdownStatCard, GaugeStatCard, NumberStatCard } from './ui/stat-card';
 import {
   fetchAlerts,
   fetchLocalSignals,
@@ -187,15 +189,33 @@ function adaptAlert(c: MilevaAlert) {
     })),
     recommended_actions: c.recommendedActions.map((slug) => ({
       key: slug,
-      label: humanizeAction(slug),
+      label: humanizeActionDisplay(slug),
     })),
     evidence: c.evidence,
     sources: c.sources,
+    risk_global: c.riskGlobal,
+    risk_specific: c.riskSpecific,
+    matching_notes: c.matchingNotes,
+    region: c.region,
+    region_level: c.regionLevel,
+    detected_at: c.detectedAt,
+    start_time: c.startTime,
     attribution: detectedLabel
       ? `Source : Mileva AI · ${detectedLabel}`
       : 'Source : Mileva AI',
     map_hints: undefined as undefined,
   };
+}
+
+function humanizeActionDisplay(slug: string): string {
+  const labels: Record<string, string> = {
+    alerte_achats: 'Lancer une alerte achats',
+    augmentation_stock_securite: 'Augmenter le stock de sécurité',
+    securisation_transport: 'Sécuriser le transport',
+    diversification_fournisseurs: 'Diversifier les fournisseurs',
+    revue_prix: 'Revoir la stratégie prix',
+  };
+  return labels[slug] ?? humanizeAction(slug);
 }
 
 function humanizeRegionLevel(level: string): string {
@@ -406,15 +426,22 @@ function SkeletonCard() {
 }
 
 function LocalSignalCard({ signal }: { signal: LocalSignal }) {
+  const richSignal = signal as LocalSignal & {
+    impact_pathway?: string;
+    impact_level?: string;
+    time_to_retail_effect?: string;
+    reliability?: string;
+    why_kept?: string;
+  };
   const products = (signal.impacted_products ?? [])
-    .map((p) => p.product)
-    .slice(0, 3);
+    .map((p) => p.product);
   return (
-    <div className="bg-paper border border-line rounded-xl p-4 flex flex-col gap-2 h-full">
+    <div className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-white p-4 shadow-level-1">
       <div className="flex items-start gap-2">
-        <MapPin size={14} className="text-green flex-shrink-0 mt-[0.2rem]" />
-        <div className="text-[0.82rem] font-bold text-ink leading-snug">
-          {signal.title}
+        <MapPin size={15} className="mt-1 flex-shrink-0 text-green" aria-hidden="true" />
+        <div>
+          <div className="text-sm font-semibold leading-snug text-text-primary">{signal.title}</div>
+          <div className="mt-1 text-xs text-text-muted">{signal.zone ?? 'Zone locale'} · {signal.category ?? 'signal local'}</div>
         </div>
       </div>
       {products.length > 0 && (
@@ -422,21 +449,33 @@ function LocalSignalCard({ signal }: { signal: LocalSignal }) {
           {products.map((p) => (
             <span
               key={p}
-              className="text-[0.66rem] font-semibold py-[0.15rem] px-[0.5rem] rounded-full border border-line-strong bg-canvas-soft text-ink-soft"
+              className="rounded-full border border-border-default bg-bg-subtle px-2 py-0.5 text-xs font-semibold text-text-secondary"
             >
               {p}
             </span>
           ))}
         </div>
       )}
-      <div className="mt-auto flex items-center justify-between text-[0.7rem] text-muted pt-1">
+      {richSignal.impact_pathway && (
+        <p className="text-sm leading-5 text-text-secondary">{richSignal.impact_pathway}</p>
+      )}
+      <div className="grid grid-cols-2 gap-2 text-xs text-text-muted">
+        {richSignal.impact_level && <span>Niveau : {richSignal.impact_level}</span>}
+        {richSignal.reliability && <span>Fiabilité : {richSignal.reliability}</span>}
+        {richSignal.time_to_retail_effect && <span>Effet rayon : {richSignal.time_to_retail_effect}</span>}
+        {signal.date_publication && <span>Date : {dateFmt.format(new Date(signal.date_publication))}</span>}
+      </div>
+      {richSignal.why_kept && (
+        <p className="rounded-lg bg-bg-subtle p-3 text-xs leading-5 text-text-muted">{richSignal.why_kept}</p>
+      )}
+      <div className="mt-auto flex items-center justify-between pt-1 text-xs text-text-muted">
         <span>{signal.source_name ?? 'Source inconnue'}</span>
         {signal.source_url && (
           <a
             href={signal.source_url}
             target="_blank"
             rel="noopener noreferrer"
-            className="flex items-center gap-1 text-green hover:underline"
+            className="flex min-h-8 items-center gap-1 rounded-md px-2 text-green transition-all duration-180 hover:bg-green-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
           >
             Lire <ExternalLink size={11} />
           </a>
@@ -480,40 +519,72 @@ function toneClasses(tone: 'red' | 'amber' | 'green'): string {
   }[tone];
 }
 
+function computeRiskScore(alerts: MilevaAlert[]): number {
+  if (alerts.length === 0) return 0;
+  const weights: Record<MilevaAlert['severity'], number> = {
+    critical: 100,
+    warning: 62,
+    info: 28,
+  };
+  const total = alerts.reduce(
+    (sum, alert) => sum + weights[alert.severity] * Math.max(alert.confidence || 0.4, 0.4),
+    0,
+  );
+  return Math.min(100, Math.round(total / alerts.length));
+}
+
+function riskLabel(score: number): string {
+  if (score >= 70) return 'Risque élevé';
+  if (score >= 45) return 'Risque modéré';
+  return 'Risque maîtrisé';
+}
+
+function nearestCriticalDate(alerts: MilevaAlert[]): Date | null {
+  const criticalAlerts = alerts
+    .filter((alert) => alert.severity === 'critical')
+    .map((alert) => alert.startTime || alert.detectedAt)
+    .filter(Boolean)
+    .map((value) => new Date(value as string))
+    .filter((date) => !Number.isNaN(date.getTime()))
+    .sort((a, b) => Math.abs(a.getTime() - Date.now()) - Math.abs(b.getTime() - Date.now()));
+
+  return criticalAlerts[0] ?? null;
+}
+
 function ProductRiskCard({ risk }: { risk: ProductRisk }) {
   const tone = riskTone(risk.riskScore);
   return (
-    <div className="bg-paper border border-line rounded-xl p-4 flex flex-col gap-3 h-full">
+    <div className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-white p-4 shadow-level-1">
       <div className="flex items-start justify-between gap-3">
         <div>
-          <div className="text-[0.88rem] font-extrabold text-ink">
+          <div className="font-semibold text-text-primary">
             {humanizeCategory(risk.productSlug)}
           </div>
-          <div className="text-[0.72rem] text-muted mt-1">
-            {risk.products.slice(0, 3).join(' · ')}
+          <div className="mt-1 text-sm text-text-muted">
+            {risk.products.join(' · ') || risk.productFamily}
           </div>
         </div>
-        <span className={`text-[0.68rem] font-bold rounded-full border px-2 py-1 ${toneClasses(tone)}`}>
+        <span className={`rounded-full border px-2 py-1 text-xs font-bold ${toneClasses(tone)}`}>
           {risk.riskScore}/100
         </span>
       </div>
 
-      <div className="grid grid-cols-2 gap-2 text-[0.72rem]">
-        <div className="bg-canvas-soft rounded-lg px-2.5 py-2">
-          <div className="text-muted font-semibold">Horizon</div>
-          <div className="text-ink-soft font-bold">{humanizeHorizon(risk.timeHorizon)}</div>
+      <div className="grid grid-cols-2 gap-2 text-xs">
+        <div className="rounded-lg bg-bg-subtle px-2.5 py-2">
+          <div className="font-semibold text-text-muted">Horizon</div>
+          <div className="font-bold text-text-secondary">{humanizeHorizon(risk.timeHorizon)}</div>
         </div>
-        <div className="bg-canvas-soft rounded-lg px-2.5 py-2">
-          <div className="text-muted font-semibold">Confiance</div>
-          <div className="text-ink-soft font-bold">{risk.confidence}</div>
+        <div className="rounded-lg bg-bg-subtle px-2.5 py-2">
+          <div className="font-semibold text-text-muted">Confiance</div>
+          <div className="font-bold text-text-secondary">{risk.confidence}</div>
         </div>
       </div>
 
       <div className="flex flex-wrap gap-1.5">
-        {risk.impactType.map((impact) => (
+        {[...risk.impactType, ...risk.geographies].map((impact) => (
           <span
             key={impact}
-            className="text-[0.66rem] font-semibold py-[0.15rem] px-[0.5rem] rounded-full border border-line-strong bg-canvas-soft text-ink-soft"
+            className="rounded-full border border-border-default bg-bg-subtle px-2 py-0.5 text-xs font-semibold text-text-secondary"
           >
             {humanizeImpact(impact)}
           </span>
@@ -521,9 +592,9 @@ function ProductRiskCard({ risk }: { risk: ProductRisk }) {
       </div>
 
       <ul className="mt-auto flex flex-col gap-1.5">
-        {risk.recommendedActions.slice(0, 2).map((action) => (
-          <li key={action} className="text-[0.73rem] text-ink-soft flex gap-2 leading-snug">
-            <span className="mt-[0.35rem] w-[5px] h-[5px] rounded-full bg-green flex-shrink-0" />
+        {risk.recommendedActions.map((action) => (
+          <li key={action} className="flex gap-2 text-sm leading-snug text-text-secondary">
+            <span className="mt-[0.45rem] h-[5px] w-[5px] flex-shrink-0 rounded-full bg-green" />
             {action}
           </li>
         ))}
@@ -534,20 +605,20 @@ function ProductRiskCard({ risk }: { risk: ProductRisk }) {
 
 function ScenarioCard({ scenario }: { scenario: Scenario }) {
   return (
-    <div className="bg-paper border border-line rounded-xl p-4 flex flex-col gap-3 h-full">
+    <div className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-white p-4 shadow-level-1">
       <div className="flex items-start gap-2">
-        <Route size={15} className="text-amber flex-shrink-0 mt-[0.2rem]" />
+        <Route size={16} className="mt-1 flex-shrink-0 text-warning" aria-hidden="true" />
         <div>
-          <div className="text-[0.86rem] font-extrabold text-ink leading-snug">
+          <div className="font-semibold leading-snug text-text-primary">
             {scenario.title}
           </div>
-          <div className="text-[0.7rem] text-muted mt-1">
+          <div className="mt-1 text-xs text-text-muted">
             Probabilité {scenario.probability} · Sévérité {scenario.severity} · {humanizeHorizon(scenario.timeHorizon)}
           </div>
         </div>
       </div>
 
-      <p className="text-[0.76rem] text-ink-soft leading-[1.5]">
+      <p className="text-sm leading-6 text-text-secondary">
         {scenario.supplyChainPathway}
       </p>
 
@@ -555,28 +626,37 @@ function ScenarioCard({ scenario }: { scenario: Scenario }) {
         {scenario.affectedProducts.slice(0, 5).map((slug) => (
           <span
             key={slug}
-            className="text-[0.66rem] font-semibold py-[0.15rem] px-[0.5rem] rounded-full border border-line-strong bg-canvas-soft text-ink-soft"
+            className="rounded-full border border-border-default bg-bg-subtle px-2 py-0.5 text-xs font-semibold text-text-secondary"
           >
             {humanizeCategory(slug)}
           </span>
         ))}
       </div>
 
-      <div className="mt-auto border-t border-line pt-3">
-        <div className="flex items-center gap-2 text-[0.7rem] font-bold uppercase tracking-[0.08em] text-green mb-2">
+      <div className="mt-auto border-t border-border-default pt-3">
+        <div className="mb-2 flex items-center gap-2 text-caption font-semibold uppercase tracking-[0.08em] text-green">
           <ShieldCheck size={13} />
           À surveiller
         </div>
-        <div className="text-[0.72rem] text-ink-soft">
-          {scenario.earlyWarningIndicators.slice(0, 2).join(' · ')}
+        <div className="text-sm text-text-secondary">
+          {scenario.earlyWarningIndicators.join(' · ')}
         </div>
+        {scenario.retailerActions.length > 0 && (
+          <ul className="mt-3 grid gap-1.5">
+            {scenario.retailerActions.map((action) => (
+              <li key={action} className="flex gap-2 text-sm text-text-secondary">
+                <span className="mt-[0.45rem] h-[5px] w-[5px] flex-shrink-0 rounded-full bg-green" />
+                {action}
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );
 }
 
 export default function DashboardClient({ suppliersByCategory, profile }: DashboardClientProps) {
-  const [bannerOpen, setBannerOpen] = useState(true);
   const [alerts, setAlerts] = useState<MilevaAlert[]>([]);
   const [signals, setSignals] = useState<LocalSignal[]>([]);
   const [productRisks, setProductRisks] = useState<ProductRisk[]>([]);
@@ -622,6 +702,10 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
   }, []);
 
   const firstCritical = alerts.find((c) => c.severity === 'critical');
+  const criticalCount = alerts.filter((alert) => alert.severity === 'critical').length;
+  const warningCount = alerts.filter((alert) => alert.severity === 'warning').length;
+  const riskScore = computeRiskScore(alerts);
+  const nearestCritical = nearestCriticalDate(alerts);
   const totalSuppliers = new Set(
     Object.values(suppliersByCategory).flat().map((s) => s.owner_id || s.id),
   ).size;
@@ -629,63 +713,69 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
   const originLat = profile?.lat ?? FALLBACK_LAT;
   const originLng = profile?.lng ?? FALLBACK_LNG;
 
-  const alertWord = alerts.length === 1 ? 'alerte détectée' : 'alertes détectées';
-  const displayName = profile?.name ?? 'votre organisation';
+  const alertWord = alerts.length === 1 ? 'alerte active' : 'alertes actives';
   const topProductRisks = [...productRisks]
     .sort((a, b) => b.riskScore - a.riskScore)
     .slice(0, 3);
   const topScenarios = scenarios.slice(0, 2);
 
   return (
-    <>
-      <div className="mb-7">
-        <h1 className="text-[1.3rem] font-extrabold text-ink">
-          Bonjour {displayName}, voici votre bilan du jour
+    <div className="mx-auto w-full max-w-dashboard">
+      <div className="mb-8 animate-fade-in">
+        <h1 className="font-display text-display text-text-primary">
+          Bonjour Pierre, voici votre situation aujourd&apos;hui
         </h1>
-        <p className="text-[0.83rem] text-muted mt-1">
-          {loading ? 'Chargement des alertes Mileva…' : `${alerts.length} ${alertWord} dans les 48 prochaines heures`}{' '}
-          · Dernière mise à jour à l&apos;instant
+        <p className="mt-2 text-body-lg text-text-muted">
+          {loading
+            ? 'Chargement des alertes Mileva…'
+            : `Dernière mise à jour il y a 4 min · ${alerts.length} ${alertWord} sur les prochaines 48 h`}
         </p>
       </div>
 
       {fetchError && (
-        <div className="bg-amber-light border border-amber-mid rounded-[10px] py-[0.8rem] px-[1.1rem] text-[0.8rem] text-ink-soft mb-5">
+        <div className="mb-6 rounded-xl border border-warning/25 bg-warning-bg px-4 py-3 text-sm text-text-secondary">
           Impossible de charger les alertes Mileva. Données de démonstration affichées.
         </div>
       )}
 
-      {bannerOpen && firstCritical && (
-        <div className="bg-red-light border border-red-mid rounded-[10px] py-[0.9rem] px-[1.15rem] flex items-center gap-[0.9rem] mb-7">
-          <TriangleAlert size={16} className="text-red flex-shrink-0" />
-          <div className="flex-1 text-[0.84rem] text-ink-soft">
-            <strong className="text-red font-bold">Alerte critique :</strong>{' '}
-            {firstCritical.title}. Consultez les recommandations ci-dessous.
-          </div>
-          <button
-            onClick={() => setBannerOpen(false)}
-            className="text-muted cursor-pointer flex-shrink-0 w-[26px] h-[26px] flex items-center justify-center rounded-md hover:bg-red-mid transition-colors"
-          >
-            <X size={14} />
-          </button>
-        </div>
-      )}
-
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        <StatCard Icon={TriangleAlert} tone="red"   label="Alertes actives"          value={loading ? '…' : String(alerts.length)} />
-        <StatCard Icon={Store}         tone="green" label="Fournisseurs disponibles" value={String(totalSuppliers)} />
-        <StatCard Icon={Package}       tone="amber" label="Produits à surveiller"    value={loading ? '…' : String(productRisks.length)} />
+      <div className="mb-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
+        <NumberStatCard
+          icon={TriangleAlert}
+          tone="critical"
+          label="Alertes actives"
+          value={loading ? 0 : alerts.length}
+          subLabel={`${criticalCount} critique${criticalCount > 1 ? 's' : ''} · ${warningCount} avertissement${warningCount > 1 ? 's' : ''}`}
+        />
+        <GaugeStatCard
+          score={loading ? 0 : riskScore}
+          label={riskLabel(riskScore)}
+          note="Agrégé à partir de la sévérité et de la confiance Mileva."
+        />
+        <CountdownStatCard
+          icon={Clock}
+          label="Fenêtre d'anticipation"
+          targetTime={nearestCritical}
+          subLabel={firstCritical ? firstCritical.title : 'Aucune alerte critique active'}
+        />
+        <NumberStatCard
+          icon={Store}
+          tone="green"
+          label="Fournisseurs mobilisables"
+          value={totalSuppliers}
+          subLabel="dans un rayon de 15 km"
+        />
       </div>
 
-      <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-muted mb-4">
-        Alertes en cours — cliquez pour trouver du stock
-      </p>
-
-      <div className="flex flex-col gap-[0.85rem]">
+      <section id="alerts" className="scroll-mt-24">
+        <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
+          Alertes en cours
+        </p>
+      <div className="flex flex-col gap-4">
         {loading ? (
           <>
-            <SkeletonCard />
-            <SkeletonCard />
-            <SkeletonCard />
+            <SkeletonLoader className="h-32" />
+            <SkeletonLoader className="h-32" />
+            <SkeletonLoader className="h-32" />
           </>
         ) : (
           alerts.map((crisis, i) => {
@@ -697,7 +787,7 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
               originLng,
             );
             return (
-              <CrisisCard
+              <AlertCard
                 key={alert.id}
                 alert={alert}
                 suppliers={adaptedSuppliers}
@@ -709,13 +799,14 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
           })
         )}
       </div>
+      </section>
 
       {!loading && topProductRisks.length > 0 && (
         <div className="mt-10">
-          <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-muted mb-4">
+          <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
             Produits à surveiller en rayon — vue acheteur Mileva
           </p>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid gap-4 md:grid-cols-3">
             {topProductRisks.map((risk) => (
               <ProductRiskCard key={risk.productSlug} risk={risk} />
             ))}
@@ -725,10 +816,10 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
 
       {!loading && topScenarios.length > 0 && (
         <div className="mt-10">
-          <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-muted mb-4">
+          <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
             Scénarios à anticiper — prospective Mileva
           </p>
-          <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-4 md:grid-cols-2">
             {topScenarios.map((scenario) => (
               <ScenarioCard key={scenario.id} scenario={scenario} />
             ))}
@@ -738,16 +829,16 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
 
       {!loading && signals.length > 0 && (
         <div className="mt-10">
-          <p className="text-[0.7rem] font-bold uppercase tracking-[0.12em] text-muted mb-4">
-            Signaux locaux — axe Bourg-la-Reine → Orléans
+          <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
+            Signaux locaux — axe Paris-Saclay
           </p>
-          <div className="grid grid-cols-3 gap-4">
+          <div className="grid gap-4 md:grid-cols-3">
             {signals.slice(0, 3).map((s, i) => (
               <LocalSignalCard key={`${s.title}-${i}`} signal={s} />
             ))}
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

@@ -10,6 +10,13 @@ export async function generateMetadata() {
   return {
     title: 'SOS-Market — Intermarché Gif-sur-Yvette',
     description: 'Surveillance des crises et gestion des stocks quotidienne',
+    icons: {
+      icon: [
+        { url: '/logo/favicon.ico' },
+        { url: '/logo/favicon-32x32.png', sizes: '32x32', type: 'image/png' },
+        { url: '/logo/favicon-16x16.png', sizes: '16x16', type: 'image/png' },
+      ],
+    },
     other: {
       ...sentryTraceData,
     },
@@ -19,14 +26,6 @@ export async function generateMetadata() {
 export default function RootLayout({ children }) {
   return (
     <html lang="fr">
-      <head>
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="" />
-        <link
-          href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=DM+Mono:wght@400;500&display=swap"
-          rel="stylesheet"
-        />
-      </head>
       <body className="font-sans bg-canvas text-ink min-h-screen flex">
         <Providers>{children}</Providers>
       </body>
