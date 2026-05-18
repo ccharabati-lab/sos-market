@@ -151,7 +151,7 @@ export default function AlertCard({
   const [handled, setHandled] = useState(false);
   const suppliersRef = useRef<HTMLDivElement>(null);
   const panelId = useId();
-  const { open: openModal } = useContactModal();
+  const { open: openModal } = useContactModal() as { open: (supplier: string) => void };
   const { showToast } = useToast();
 
   function markAsHandled() {
