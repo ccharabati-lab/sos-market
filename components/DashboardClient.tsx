@@ -756,14 +756,14 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
       </div>
       </section>
 
-      {!loading && topProductRisks.length > 0 && (
+      {!loading && signals.length > 0 && (
         <div className="mt-10">
           <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
-            Produits à surveiller en rayon — vue acheteur Mileva
+            Signaux locaux — axe Paris-Saclay
           </p>
           <div className="grid gap-4 md:grid-cols-3">
-            {topProductRisks.map((risk) => (
-              <ProductRiskCard key={risk.productSlug} risk={risk} />
+            {signals.slice(0, 3).map((s, i) => (
+              <LocalSignalCard key={`${s.title}-${i}`} signal={s} />
             ))}
           </div>
         </div>
@@ -782,14 +782,15 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
         </div>
       )}
 
-      {!loading && signals.length > 0 && (
+      {/* TEMP HIDDEN per Carlos: Produits à surveiller hidden for v1 demo, restore post-June 12 */}
+      {false && !loading && topProductRisks.length > 0 && (
         <div className="mt-10">
           <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
-            Signaux locaux — axe Paris-Saclay
+            Produits à surveiller en rayon — vue acheteur Mileva
           </p>
           <div className="grid gap-4 md:grid-cols-3">
-            {signals.slice(0, 3).map((s, i) => (
-              <LocalSignalCard key={`${s.title}-${i}`} signal={s} />
+            {topProductRisks.map((risk) => (
+              <ProductRiskCard key={risk.productSlug} risk={risk} />
             ))}
           </div>
         </div>

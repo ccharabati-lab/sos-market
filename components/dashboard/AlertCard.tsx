@@ -133,6 +133,11 @@ function sourceMeta(alert: DashboardAlert) {
   return pieces.join(' · ');
 }
 
+function riskMilevaLabel(alert: DashboardAlert) {
+  const raw = [alert.risk_global, alert.risk_specific].filter(Boolean).join(' · ');
+  return raw.replace(/\s·\s[A-Z]{2}-\d+$/, '') || 'Non codé';
+}
+
 export default function AlertCard({
   alert,
   suppliers,
@@ -259,7 +264,7 @@ export default function AlertCard({
                 </div>
                 <div className="rounded-lg bg-bg-subtle p-3">
                   <div className="text-caption uppercase tracking-[0.08em] text-text-muted">Risque Mileva</div>
-                  <div className="mt-1 font-semibold text-text-primary">{[alert.risk_global, alert.risk_specific].filter(Boolean).join(' · ') || 'Non codé'}</div>
+                  <div className="mt-1 font-semibold text-text-primary">{riskMilevaLabel(alert)}</div>
                 </div>
                 <div className="rounded-lg bg-bg-subtle p-3">
                   <div className="text-caption uppercase tracking-[0.08em] text-text-muted">Début estimé</div>

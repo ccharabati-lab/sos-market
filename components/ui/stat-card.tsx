@@ -83,7 +83,7 @@ export function GaugeStatCard({
     <article className={cn('animate-fade-in rounded-xl border border-border-default border-l-[3px] bg-white p-5 shadow-level-1 transition-all duration-180 hover:-translate-y-0.5 hover:shadow-level-2', tone)}>
       <div className="flex items-center gap-4">
         <div className="relative h-[120px] w-[120px]" aria-label={`Niveau de risque ${display} sur 100`}>
-          <svg viewBox="0 0 120 120" className="h-full w-full -rotate-90">
+          <svg viewBox="0 0 120 120" className="h-full w-full">
             <circle cx="60" cy="60" r={radius} fill="none" stroke="#F1F3EF" strokeWidth="10" />
             <circle
               cx="60"
@@ -95,8 +95,33 @@ export function GaugeStatCard({
               strokeLinecap="round"
               strokeDasharray={circumference}
               strokeDashoffset={offset}
+              transform="rotate(-90 60 60)"
               className="transition-[stroke-dashoffset] duration-1000 ease-out motion-reduce:transition-none"
             />
+            <text
+              x="60"
+              y="54"
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="#1A1C18"
+              fontFamily="inherit"
+              fontSize="24"
+              fontWeight="700"
+            >
+              {display}
+            </text>
+            <text
+              x="60"
+              y="77"
+              textAnchor="middle"
+              dominantBaseline="central"
+              fill="#6B7066"
+              fontFamily="inherit"
+              fontSize="12"
+              fontWeight="600"
+            >
+              /100
+            </text>
             <defs>
               <linearGradient id="riskGradient" x1="0" x2="1" y1="0" y2="1">
                 <stop offset="0%" stopColor="#1E6B45" />
@@ -105,10 +130,6 @@ export function GaugeStatCard({
               </linearGradient>
             </defs>
           </svg>
-          <div className="absolute inset-0 flex flex-col items-center justify-center">
-            <span className="text-3xl font-bold text-text-primary tabular-nums">{display}</span>
-            <span className="text-xs font-semibold text-text-muted">/100</span>
-          </div>
         </div>
         <div className="min-w-0">
           <div className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Niveau de risque global</div>
