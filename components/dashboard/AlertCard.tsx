@@ -85,7 +85,6 @@ type DashboardAlert = {
   region_level?: string;
   detected_at?: string;
   start_time?: string;
-  map_hints?: unknown;
 };
 
 export type DashboardSupplier = {

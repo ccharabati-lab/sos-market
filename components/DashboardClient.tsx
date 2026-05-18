@@ -11,7 +11,6 @@ import {
   Route,
   ShieldCheck,
 } from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import AlertCard from './dashboard/AlertCard';
 import { SkeletonLoader } from './ui/feedback';
 import { CountdownStatCard, GaugeStatCard, NumberStatCard } from './ui/stat-card';
@@ -204,7 +203,6 @@ function adaptAlert(c: MilevaAlert) {
     attribution: detectedLabel
       ? `Source : Mileva AI · ${detectedLabel}`
       : 'Source : Mileva AI',
-    map_hints: undefined as undefined,
   };
 }
 
@@ -334,41 +332,6 @@ function roleLabelFor(m: MatchResult): string {
   return 'Supermarché';
 }
 
-interface StatCardProps {
-  Icon: LucideIcon;
-  tone: 'red' | 'green' | 'amber';
-  label: string;
-  value: string;
-}
-
-function StatCard({ Icon, tone, label, value }: StatCardProps) {
-  const iconTone = {
-    red:   'bg-red-light text-red',
-    green: 'bg-green-light text-green',
-    amber: 'bg-amber-light text-amber',
-  }[tone];
-  const valueTone = {
-    red:   'text-red',
-    green: 'text-green',
-    amber: 'text-amber',
-  }[tone];
-  return (
-    <div className="bg-paper border border-line rounded-xl py-[1.1rem] px-[1.3rem] flex items-center gap-4">
-      <div className={`w-10 h-10 rounded-[10px] flex-shrink-0 flex items-center justify-center ${iconTone}`}>
-        <Icon size={18} />
-      </div>
-      <div>
-        <div className="text-[0.72rem] text-muted font-semibold uppercase tracking-[0.06em]">
-          {label}
-        </div>
-        <div className={`text-[1.55rem] font-extrabold leading-[1.1] mt-[0.1rem] ${valueTone}`}>
-          {value}
-        </div>
-      </div>
-    </div>
-  );
-}
-
 function suppliersForCrisis(
   crisis: MilevaAlert,
   suppliersByCategory: Record<string, MatchResult[]>,
@@ -406,24 +369,6 @@ function supplierPriority(m: MatchResult): number {
   if (label === 'Producteur') return 1;
   if (label === 'Restaurant') return 2;
   return 3;
-}
-
-function SkeletonCard() {
-  return (
-    <div className="bg-paper border border-line rounded-xl py-[1.1rem] px-[1.35rem] flex items-center gap-4 animate-pulse">
-      <div className="w-10 h-10 rounded-[10px] bg-canvas-soft flex-shrink-0" />
-      <div className="flex-1 flex flex-col gap-2">
-        <div className="h-3.5 w-2/3 rounded bg-canvas-soft" />
-        <div className="h-2.5 w-1/2 rounded bg-canvas-soft" />
-        <div className="flex gap-2 mt-1">
-          <div className="h-4 w-16 rounded-full bg-canvas-soft" />
-          <div className="h-4 w-20 rounded-full bg-canvas-soft" />
-          <div className="h-4 w-14 rounded-full bg-canvas-soft" />
-        </div>
-      </div>
-      <div className="h-5 w-20 rounded-full bg-canvas-soft flex-shrink-0" />
-    </div>
-  );
 }
 
 function LocalSignalCard({ signal }: { signal: LocalSignal }) {
