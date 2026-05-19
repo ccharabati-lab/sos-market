@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useMemo, useRef } from 'react';
-import { RotateCcw } from 'lucide-react';
 import mapboxgl from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
 
@@ -18,14 +17,12 @@ function pinClassName(selected) {
     .join(' ');
 }
 
-export default function MiniMap({ suppliers, selectedId, onSelect, originLat, originLng }) {
+export default function MiniMap({ suppliers, selectedId, originLat, originLng }) {
   const containerRef = useRef(null);
   const mapRef = useRef(null);
   const originMarkerRef = useRef(null);
   const markersRef = useRef(new Map());
-  const initialBoundsRef = useRef(null);
-  const onSelectRef = useRef(onSelect);
-  onSelectRef.current = onSelect;
+  const hasFitInitialViewRef = useRef(false);
 
   const pins = useMemo(
     () =>
@@ -67,7 +64,7 @@ export default function MiniMap({ suppliers, selectedId, onSelect, originLat, or
       originMarkerRef.current = null;
       map.remove();
       mapRef.current = null;
-      initialBoundsRef.current = null;
+      hasFitInitialViewRef.current = false;
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -101,20 +98,18 @@ export default function MiniMap({ suppliers, selectedId, onSelect, originLat, or
       if (existing) {
         existing.marker.setLngLat([pin.lng, pin.lat]);
         existing.el.className = pinClassName(isSelected);
+        existing.el.style.cursor = 'default';
         if (pin.label) existing.el.title = pin.label;
       } else {
         const el = document.createElement('div');
         el.className = pinClassName(isSelected);
+        el.style.cursor = 'default';
         const inner = document.createElement('div');
         inner.className = 'sos-pin-inner';
         inner.innerHTML = ARROW_UP;
+        inner.style.cursor = 'default';
         el.appendChild(inner);
         if (pin.label) el.title = pin.label;
-        el.addEventListener('click', (event) => {
-          event.stopPropagation();
-          onSelectRef.current?.(pin.id);
-          map.flyTo({ center: [pin.lng, pin.lat], zoom: 14, duration: 800, essential: true });
-        });
 
         const marker = new mapboxgl.Marker({ element: el, anchor: 'center' })
           .setLngLat([pin.lng, pin.lat])
@@ -131,36 +126,19 @@ export default function MiniMap({ suppliers, selectedId, onSelect, originLat, or
       }
     });
 
-    if (!initialBoundsRef.current && pins.length > 0) {
+    if (!hasFitInitialViewRef.current && pins.length > 0) {
       const bounds = new mapboxgl.LngLatBounds();
       bounds.extend([originLng, originLat]);
       pins.forEach((pin) => bounds.extend([pin.lng, pin.lat]));
-      initialBoundsRef.current = bounds;
+      hasFitInitialViewRef.current = true;
       map.fitBounds(bounds, { padding: 50, maxZoom: 13, duration: 600 });
-    } else if (!initialBoundsRef.current) {
+    } else if (!hasFitInitialViewRef.current) {
       map.easeTo({ center: [originLng, originLat], zoom: 11, duration: 600 });
     }
   }, [pins, selectedId, originLat, originLng]);
 
-  function resetView() {
-    const map = mapRef.current;
-    const bounds = initialBoundsRef.current;
-    if (!map || !bounds) return;
-    map.fitBounds(bounds, { padding: 50, maxZoom: 13, duration: 600, essential: true });
-  }
-
   return (
     <div className="relative w-full aspect-[16/11] overflow-hidden rounded-[10px] border border-line-strong">
-      {TOKEN && (
-        <button
-          type="button"
-          onClick={resetView}
-          className="absolute left-2 top-2 z-10 inline-flex min-h-8 cursor-pointer items-center gap-1.5 rounded-md border border-gray-200 bg-white px-2.5 py-1.5 text-[0.75rem] font-semibold text-gray-700 shadow-sm transition-colors hover:border-gray-300 hover:bg-gray-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1e6b45] focus-visible:ring-offset-2"
-        >
-          <RotateCcw size={14} aria-hidden="true" />
-          Réinitialiser la vue
-        </button>
-      )}
       <div ref={containerRef} className="h-full w-full" />
     </div>
   );
