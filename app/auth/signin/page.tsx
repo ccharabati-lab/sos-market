@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { supabaseBrowser } from '../../../lib/supabase-browser';
 
@@ -37,6 +38,17 @@ export default function SignInPage() {
 
   return (
     <div className="w-full max-w-md bg-paper border border-line rounded-2xl p-8 shadow-[0_4px_24px_rgba(0,0,0,0.04)]">
+      <div className="mb-7 flex justify-center">
+        <Image
+          src="/logo/sos-market-shield-wordmark.svg"
+          alt="SOS-Market — Anticiper, ne plus subir."
+          width={220}
+          height={56}
+          priority
+          className="h-14 w-auto"
+        />
+      </div>
+
       <div className="mb-6">
         <h1 className="text-xl font-extrabold text-ink">Se connecter</h1>
         <p className="text-[0.85rem] text-muted mt-1">

@@ -185,6 +185,11 @@ export default function AlertCard({
   const hiddenCategoryCount = Math.max(alert.affected_products.length - visibleCategories.length, 0);
   const detectedDate = formatDate(alert.detected_at);
   const startDate = formatDate(alert.start_time);
+  const hoverBorderClass = {
+    critical: 'hover:border-critical/60',
+    warning: 'hover:border-warning/60',
+    info: 'hover:border-info/60',
+  }[alert.severity];
 
   function scrollToSuppliers() {
     setExpanded(true);
@@ -196,8 +201,9 @@ export default function AlertCard({
   return (
     <article
       className={cn(
-        'overflow-hidden rounded-2xl border bg-white shadow-level-1 transition-all duration-180 ease-out hover:-translate-y-0.5 hover:shadow-level-2',
+        'overflow-hidden rounded-2xl border bg-white shadow-level-1 transition-all duration-180 ease-out hover:-translate-y-1 hover:shadow-level-3',
         severity.borderClass,
+        hoverBorderClass,
         alert.severity === 'critical' && 'animate-critical-pulse motion-reduce:animate-none',
       )}
     >
