@@ -16,12 +16,12 @@ import {
   SlidersHorizontal,
   TrendingDown,
   TrendingUp,
+  Trash2,
 } from 'lucide-react';
 import { supabaseBrowser } from '../lib/supabase-browser';
 import type { Listing, ListingType, Profile } from '../types';
 import MapView, { type MapPin as MapPinDef } from './MapView';
 import { useContactModal } from './ContactModalProvider';
-import DeleteListingButton from './DeleteListingButton';
 import { DailyTabButton, type DailyTab } from './daily/DailyTabs';
 import {
   CategoryPill,
@@ -315,7 +315,13 @@ export default function ExchangeWorkspace({
   }
 
   function handleDeleted(id: string) {
+    // TODO: wire Supabase deletion after the demo; this v1 flow is state-only.
     setMyListings((current) => current.filter((listing) => listing.id !== id));
+    setRows((current) => current.filter((listing) => listing.id !== id));
+    showToast({
+      tone: 'success',
+      title: 'Publication supprimée',
+    });
   }
 
   return (
@@ -468,7 +474,14 @@ export default function ExchangeWorkspace({
                       </div>
                       <div className="flex items-center gap-2">
                         <StatePill tone={isOffer ? 'success' : 'warning'}>{isOffer ? 'En proposition' : 'En recherche'}</StatePill>
-                        <DeleteListingButton listingId={listing.id} productName={listing.product_name} onDeleted={() => handleDeleted(listing.id)} />
+                        <button
+                          type="button"
+                          onClick={() => handleDeleted(listing.id)}
+                          title="Retirer ce signal"
+                          className="inline-flex items-center justify-center w-7 h-7 rounded-md text-muted hover:text-red hover:bg-red-light border border-transparent hover:border-red-mid disabled:opacity-60 transition-colors"
+                        >
+                          <Trash2 size={13} aria-hidden="true" />
+                        </button>
                       </div>
                     </div>
                   );
