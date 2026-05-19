@@ -341,7 +341,6 @@ export default function AlertCard({
                 <MiniMap
                   suppliers={suppliers}
                   selectedId={selectedId}
-                  onSelect={setSelectedId}
                   originLat={originLat}
                   originLng={originLng}
                 />
