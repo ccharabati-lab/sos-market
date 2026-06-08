@@ -190,7 +190,7 @@ Below the wordmark in marketing contexts (NOT in-app): **"Anticiper, ne plus sub
 **Section order top to bottom:**
 
 #### Greeting block
-- H1: `Bonjour Pierre, voici votre situation aujourd'hui`
+- H1: `Bonjour Olivier, voici votre situation aujourd'hui`
 - Subline (muted): `Dernière mise à jour il y a 4 min · 2 alertes actives sur les prochaines 48 h`
 
 #### Stat cards row (4 cards, equal width, grid)

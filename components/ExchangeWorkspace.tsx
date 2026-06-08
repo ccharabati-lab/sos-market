@@ -2,32 +2,25 @@
 
 import { useEffect, useMemo, useState, type FormEvent } from 'react';
 import {
-  AlertCircle,
   ArrowLeftRight,
   Check,
   Clock,
   Loader2,
-  Map,
   MapPin,
   Package,
   Phone,
   Plus,
   Search,
-  SlidersHorizontal,
   TrendingDown,
   TrendingUp,
   Trash2,
 } from 'lucide-react';
 import { supabaseBrowser } from '../lib/supabase-browser';
 import type { Listing, ListingType, Profile } from '../types';
-import MapView, { type MapPin as MapPinDef } from './MapView';
 import { useContactModal } from './ContactModalProvider';
 import { DailyTabButton, type DailyTab } from './daily/DailyTabs';
-import {
-  CategoryPill,
-  StatePill,
-} from './ui/badges';
-import { PrimaryButton, SecondaryButton } from './ui/buttons';
+import { StatePill } from './ui/badges';
+import { PrimaryButton } from './ui/buttons';
 import {
   EmptyState,
   InlineError,
@@ -60,17 +53,6 @@ interface ExchangeWorkspaceProps {
 
 const STORE_LAT = 48.6833;
 const STORE_LNG = 2.1333;
-
-const CATEGORY_OPTIONS = [
-  'eau',
-  'boissons',
-  'légumes',
-  'fruits',
-  'pain',
-  'produits laitiers',
-  'céréales',
-  'épicerie',
-];
 
 const UNIT_OPTIONS = ['palettes', 'cartons', 'caisses', 'kg', 'unités'];
 
@@ -180,7 +162,6 @@ export default function ExchangeWorkspace({
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
   const [sortBy, setSortBy] = useState<'distance' | 'score' | 'freshness'>('score');
-  const [mapFilter, setMapFilter] = useState<'all' | 'need' | 'offer' | 'mine'>('all');
 
   const [listingType, setListingType] = useState<ListingType>('need');
   const [productCategory, setProductCategory] = useState('eau');
@@ -208,21 +189,6 @@ export default function ExchangeWorkspace({
       });
     },
     [intent, profile, query, rows, sortBy, userId],
-  );
-
-  const mapPins: MapPinDef[] = useMemo(
-    () =>
-      matches
-        .filter((m) => mapFilter === 'all' || mapFilter === m.type || (mapFilter === 'mine' && m.owner_id === userId))
-        .filter((m) => m.profile.lat != null && m.profile.lng != null)
-        .map((m) => ({
-          id: m.id,
-          lat: m.profile.lat as number,
-          lng: m.profile.lng as number,
-          type: m.type,
-          label: m.profile.name,
-        })),
-    [mapFilter, matches, userId],
   );
 
   const selected = matches.find((match) => match.id === selectedId) ?? matches[0] ?? null;
@@ -329,7 +295,6 @@ export default function ExchangeWorkspace({
       <div className="mb-6 flex gap-2 overflow-x-auto rounded-xl border border-border-default bg-bg-subtle p-2" role="tablist" aria-label="Gestion des stocks">
         <DailyTabButton id="publish" active={activeTab === 'publish'} icon={Plus} label="Publier une demande" onClick={setActiveTab} />
         <DailyTabButton id="matches" active={activeTab === 'matches'} icon={ArrowLeftRight} label="Acheter" onClick={setActiveTab} />
-        <DailyTabButton id="map" active={activeTab === 'map'} icon={Map} label="Carte du réseau" onClick={setActiveTab} />
       </div>
 
       {activeTab === 'publish' && (
@@ -371,15 +336,6 @@ export default function ExchangeWorkspace({
 
             <div className="grid gap-4 sm:grid-cols-2">
               <label className="flex flex-col gap-2">
-                <FieldLabel>Catégorie</FieldLabel>
-                <select value={productCategory} onChange={(e) => setProductCategory(e.target.value)} className={inputClass}>
-                  {CATEGORY_OPTIONS.map((category) => (
-                    <option key={category} value={category}>{category}</option>
-                  ))}
-                </select>
-              </label>
-
-              <label className="flex flex-col gap-2">
                 <FieldLabel>Produit</FieldLabel>
                 <input required list="daily-products" value={productName} onChange={(e) => setProductName(e.target.value)} className={inputClass} />
                 <datalist id="daily-products">
@@ -415,11 +371,6 @@ export default function ExchangeWorkspace({
               </label>
             </div>
 
-            <label className="mt-4 flex flex-col gap-2">
-              <FieldLabel>Notes</FieldLabel>
-              <textarea value={notes} onChange={(e) => setNotes(e.target.value)} rows={4} placeholder="DLC courte, livraison possible, urgence..." className={`${inputClass} resize-none`} />
-            </label>
-
             {saveError && <InlineError>{saveError}</InlineError>}
             {saveMessage && (
               <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-green" role="status">
@@ -429,8 +380,8 @@ export default function ExchangeWorkspace({
             )}
 
             <PrimaryButton type="submit" disabled={saving} className="mt-5 w-full">
-              {saving ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Plus size={16} aria-hidden="true" />}
-              Publier ma demande
+              {saving && <Loader2 size={16} className="animate-spin" aria-hidden="true" />}
+              + Publier ma demande
             </PrimaryButton>
           </form>
 
@@ -440,10 +391,6 @@ export default function ExchangeWorkspace({
                 <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Mes publications actives</p>
                 <h2 className="mt-1 text-h2 text-text-primary">Demandes et offres visibles par le réseau</h2>
               </div>
-              <SecondaryButton type="button" onClick={loadListings} disabled={loading}>
-                {loading ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
-                Actualiser
-              </SecondaryButton>
             </div>
 
             {myListings.length === 0 ? (
@@ -597,69 +544,6 @@ export default function ExchangeWorkspace({
         </div>
       )}
 
-      {activeTab === 'map' && (
-        <div className="animate-fade-in rounded-2xl border border-border-default bg-white p-6 shadow-level-1">
-          <div className="mb-5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
-            <div>
-              <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Carte du réseau</p>
-              <h2 className="mt-1 text-h2 text-text-primary">Paris-Saclay et fournisseurs disponibles</h2>
-            </div>
-            <div className="flex flex-wrap gap-2">
-              {[
-                ['all', 'Toutes'],
-                ['need', 'Demandes'],
-                ['offer', 'Offres'],
-                ['mine', 'Mon magasin uniquement'],
-              ].map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  onClick={() => setMapFilter(value as typeof mapFilter)}
-                  className={`min-h-9 cursor-pointer rounded-full border px-3 text-sm font-semibold transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
-                    mapFilter === value ? 'border-green bg-green-soft text-green' : 'border-border-default bg-bg-subtle text-text-muted hover:bg-bg-muted hover:text-text-primary'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
-              {CATEGORY_OPTIONS.slice(0, 4).map((category) => (
-                <CategoryPill key={category} clickable>{category}</CategoryPill>
-              ))}
-            </div>
-          </div>
-
-          <div className="grid gap-5 xl:grid-cols-[1fr_340px]">
-            <MapView
-              origin={{ lat: profile?.lat ?? STORE_LAT, lng: profile?.lng ?? STORE_LNG }}
-              pins={mapPins}
-              selectedId={selected?.id ?? null}
-              onSelect={setSelectedId}
-              className="w-full min-h-[520px] overflow-hidden rounded-2xl border border-border-default"
-            />
-
-            <aside className="rounded-2xl border border-border-default bg-bg-subtle p-5">
-              {selected ? (
-                <div>
-                  <StatePill tone="success">Vous êtes ici : Intermarché Gif</StatePill>
-                  <h3 className="mt-4 text-lg font-semibold text-text-primary">{selected.profile.name}</h3>
-                  <p className="mt-2 text-sm leading-6 text-text-muted">{selected.product_name} · {[selected.quantity, selected.unit].filter(Boolean).join(' ') || 'quantité à confirmer'}</p>
-                  <div className="mt-4 grid gap-2 text-sm text-text-secondary">
-                    <span>Distance : {formatDistance(selected.distance_km)}</span>
-                    <span>Disponibilité : {formatExpiry(selected.expires_at)}</span>
-                    <span>Score : {selected.score} %</span>
-                  </div>
-                  <PrimaryButton type="button" onClick={() => open(selected.profile.name)} className="mt-5 w-full">
-                    <Phone size={16} aria-hidden="true" />
-                    Contacter
-                  </PrimaryButton>
-                </div>
-              ) : (
-                <EmptyState title="Aucun point sélectionné" description="Cliquez sur une offre ou une demande de la carte pour afficher le détail." />
-              )}
-            </aside>
-          </div>
-        </div>
-      )}
     </section>
   );
 }

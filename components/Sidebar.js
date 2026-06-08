@@ -5,11 +5,10 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
-  BarChart2,
   Bell,
-  LayoutDashboard,
   LogOut,
   Map,
+  Newspaper,
   Package,
   PanelLeftClose,
   PanelLeftOpen,
@@ -22,11 +21,10 @@ import { supabaseBrowser } from '../lib/supabase-browser';
 import { useToast } from './ui/toast-provider';
 
 const navItems = [
-  { href: '/dashboard', icon: LayoutDashboard, label: 'Tableau de bord' },
-  { href: '/dashboard#alerts', icon: Bell, label: 'Alertes', badge: 1 },
+  { href: '/dashboard', icon: Bell, label: 'Alertes', badge: 1 },
   { href: '/daily', icon: Package, label: 'Stock quotidien' },
   { href: '/network', icon: Map, label: 'Carte réseau' },
-  { href: '/reports', icon: BarChart2, label: 'Prévisions' },
+  { href: '/reports', icon: Newspaper, label: 'Prévisions' },
 ];
 
 export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose }) {

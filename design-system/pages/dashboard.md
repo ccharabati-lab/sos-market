@@ -10,7 +10,7 @@ Applies to `/dashboard`. This file overrides `design-system/MASTER.md` where spe
 
 ## Required Blocks
 
-- H1: `Bonjour Pierre, voici votre situation aujourd'hui`.
+- H1: `Bonjour Olivier, voici votre situation aujourd'hui`.
 - Subline: `Dernière mise à jour il y a 4 min · 2 alertes actives sur les prochaines 48 h`.
 - Four equal stat cards:
   - Alertes actives.

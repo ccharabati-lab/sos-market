@@ -1,22 +1,6 @@
 'use client';
 
 import { useEffect, useId, useRef, useState } from 'react';
-import {
-  ChevronDown,
-  Droplets,
-  Factory,
-  Info,
-  Leaf,
-  MapPin,
-  Package,
-  PackageSearch,
-  Phone,
-  ShoppingBag,
-  Thermometer,
-  Truck,
-  Wheat,
-} from 'lucide-react';
-import type { LucideIcon } from 'lucide-react';
 import MiniMap from '../MiniMap';
 import { useContactModal } from '../ContactModalProvider';
 import {
@@ -32,21 +16,6 @@ import {
 import { PrimaryButton, SecondaryButton } from '../ui/buttons';
 import { useToast } from '../ui/toast-provider';
 import { cn } from '../ui/utils';
-
-const severityIconMap: Record<string, LucideIcon> = {
-  thermometer: Thermometer,
-  truck: Truck,
-  info: Info,
-};
-
-const supplierIconMap: Record<string, LucideIcon> = {
-  factory: Factory,
-  droplets: Droplets,
-  package: Package,
-  wheat: Wheat,
-  leaf: Leaf,
-  'shopping-bag': ShoppingBag,
-};
 
 type AlertCategory = {
   label: string;
@@ -177,7 +146,6 @@ export default function AlertCard({
     return () => window.removeEventListener('keydown', onKeyDown);
   }, []);
 
-  const SeverityIcon = severityIconMap[alert.icon] || Thermometer;
   const severity = severityMeta[alert.severity] || severityMeta.warning;
   const confidencePct = typeof alert.confidence === 'number' ? Math.round(alert.confidence * 100) : null;
   const selected = suppliers.find((supplier) => supplier.id === selectedId) || suppliers[0];
@@ -212,12 +180,8 @@ export default function AlertCard({
         onClick={() => setExpanded((current) => !current)}
         aria-expanded={expanded}
         aria-controls={panelId}
-        className="grid w-full cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-4 p-5 text-left transition-all duration-180 hover:bg-bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
+        className="grid w-full cursor-pointer grid-cols-[1fr_auto] items-center gap-4 p-5 text-left transition-all duration-180 hover:bg-bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
       >
-        <div className={cn('flex h-12 w-12 items-center justify-center rounded-xl', severity.panelClass)}>
-          <SeverityIcon size={21} aria-hidden="true" />
-        </div>
-
         <div className="min-w-0">
           <h3 className="text-lg font-semibold leading-[26px] text-text-primary">{alert.title}</h3>
           <p className="mt-1 text-sm leading-5 text-text-muted">{sourceMeta(alert)}</p>
@@ -237,7 +201,6 @@ export default function AlertCard({
         <div className="flex flex-col items-end gap-2">
           <SeverityBadge severity={alert.severity} />
           <span className="text-sm font-semibold text-text-secondary">{timeStatus(alert.start_time)}</span>
-          <ChevronDown className={cn('text-text-muted transition-transform duration-180', expanded && 'rotate-180')} size={18} aria-hidden="true" />
         </div>
       </button>
 
@@ -252,7 +215,6 @@ export default function AlertCard({
               {alert.evidence && (
                 <div className="mt-4 rounded-xl border border-border-default bg-bg-subtle p-4">
                   <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-text-primary">
-                    <Info size={16} className="text-green" aria-hidden="true" />
                     Pourquoi Mileva le signale
                   </div>
                   <p className="text-sm leading-6 text-text-secondary">{alert.evidence}</p>
@@ -321,7 +283,6 @@ export default function AlertCard({
 
               <div className="mt-4 grid gap-2">
                 <PrimaryButton type="button" onClick={scrollToSuppliers} disabled={suppliers.length === 0}>
-                  <PackageSearch size={16} aria-hidden="true" />
                   Voir les fournisseurs disponibles
                 </PrimaryButton>
                 <SecondaryButton type="button" onClick={markAsHandled} disabled={handled}>
@@ -334,7 +295,6 @@ export default function AlertCard({
           {suppliers.length > 0 && (
             <section ref={suppliersRef} className="mt-5 rounded-xl border border-border-default bg-white p-5">
               <div className="mb-4 flex items-center gap-2 text-caption font-semibold uppercase tracking-[0.08em] text-green">
-                <MapPin size={15} aria-hidden="true" />
                 Stock disponible à proximité
               </div>
               <div className="grid gap-5 lg:grid-cols-[1.05fr_1fr]">
@@ -347,7 +307,6 @@ export default function AlertCard({
 
                 <div className="flex flex-col gap-2">
                   {suppliers.map((supplier) => {
-                    const SupplierIcon = supplierIconMap[supplier.icon] || Package;
                     const active = supplier.id === selectedId;
                     return (
                       <button
@@ -355,13 +314,10 @@ export default function AlertCard({
                         type="button"
                         onClick={() => setSelectedId(supplier.id)}
                         className={cn(
-                          'grid cursor-pointer grid-cols-[auto_1fr_auto] items-center gap-3 rounded-xl border p-3 text-left transition-all duration-180 hover:-translate-y-0.5 hover:shadow-level-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2',
+                          'grid cursor-pointer grid-cols-[1fr_auto] items-center gap-3 rounded-xl border p-3 text-left transition-all duration-180 hover:-translate-y-0.5 hover:shadow-level-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2',
                           active ? 'border-green bg-green-soft' : 'border-border-default bg-white hover:border-border-emphasized',
                         )}
                       >
-                        <span className={cn('flex h-9 w-9 items-center justify-center rounded-lg', active ? 'bg-white text-green' : 'bg-bg-muted text-text-muted')}>
-                          <SupplierIcon size={16} aria-hidden="true" />
-                        </span>
                         <span className="min-w-0">
                           <span className="flex items-center gap-2">
                             <span className="truncate text-sm font-semibold text-text-primary">{supplier.name}</span>
@@ -384,7 +340,6 @@ export default function AlertCard({
                   })}
 
                   <PrimaryButton type="button" className="mt-2" onClick={() => selected && openModal(selected.name)}>
-                    <Phone size={16} aria-hidden="true" />
                     Contacter le fournisseur sélectionné
                   </PrimaryButton>
                 </div>

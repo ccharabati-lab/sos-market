@@ -1,7 +1,7 @@
 'use client';
 
 import { useMemo, useState } from 'react';
-import { ArrowDownToLine, ArrowUpFromLine, MapPin } from 'lucide-react';
+import { MapPin } from 'lucide-react';
 import MapView, { type MapPin as PinDef } from '../../components/MapView';
 import type { Listing, Profile } from '../../types';
 
@@ -174,12 +174,11 @@ function ListingRow({
       }`}
     >
       <div
-        className={`w-9 h-9 rounded-[10px] flex-shrink-0 flex items-center justify-center ${
-          isOffer ? 'bg-green-light text-green' : 'bg-amber-light text-amber'
+        className={`w-9 h-9 rounded-[10px] flex-shrink-0 ${
+          isOffer ? 'bg-green-light' : 'bg-amber-light'
         }`}
-      >
-        {isOffer ? <ArrowUpFromLine size={15} /> : <ArrowDownToLine size={15} />}
-      </div>
+        aria-hidden="true"
+      />
 
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-2 mb-0.5">

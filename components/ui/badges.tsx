@@ -46,11 +46,9 @@ export const severityMeta: Record<Severity, {
 
 export function SeverityBadge({ severity, className }: { severity: Severity; className?: string }) {
   const meta = severityMeta[severity];
-  const Icon = meta.icon;
 
   return (
-    <span className={cn('inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-caption font-semibold uppercase tracking-[0.08em]', meta.badgeClass, className)}>
-      <Icon size={13} aria-hidden="true" />
+    <span className={cn('inline-flex items-center rounded-full border px-2.5 py-1 text-caption font-semibold uppercase tracking-[0.08em]', meta.badgeClass, className)}>
       {meta.label}
     </span>
   );

@@ -13,7 +13,7 @@
 1. **Crisis alerts** — AI-predicted disruption warnings (powered by Mileva, our predictive-AI partner). Tells the store manager: *"a heatwave is coming in 48h, expect a run on bottled water and ice cream."*
 2. **Daily stock exchange** — a matching system that connects the store with nearby suppliers/producers/other stores who have what they need (or who can take their surplus).
 
-**Target user:** the store manager of an Intermarché (or similar mid-size supermarket). Demo persona is **Pierre Martin**, Intermarché Gif-sur-Yvette.
+**Target user:** the store manager of an Intermarché (or similar mid-size supermarket). Demo persona is **Olivier**, Intermarché Gif-sur-Yvette.
 
 **Delivery context:** this is a student consulting/engineering project at CentraleSupélec × McGill. Final presentation is **June 12, 2026**. Deliverable is a working proof-of-concept (not a production product). Optimize for *demo-able and credible*, not *scalable*.
 
@@ -216,7 +216,7 @@ Until the API is live, use the hardcoded demo data in `/lib/mileva/demo-data.ts`
 
 ### Deferred (don't work on these for June 12 unless asked)
 - Custom domain `sos-market.fr`
-- Authentication / multi-store accounts (demo is single-store as Pierre Martin)
+- Authentication / multi-store accounts (demo is single-store as Olivier)
 - Payment / subscription flow (€6k/store/year is in the pitch, not in the product)
 - Mobile native app
 - Real-time chat between users
@@ -240,12 +240,12 @@ Until the API is live, use the hardcoded demo data in `/lib/mileva/demo-data.ts`
 
 The demo runs ~5 minutes. The flow:
 
-1. Open `sos-market.vercel.app/dashboard` as Pierre Martin (Intermarché Gif-sur-Yvette).
+1. Open `sos-market.vercel.app/dashboard` as Olivier (Intermarché Gif-sur-Yvette).
 2. A **critical heatwave alert** is visible at the top, flagged by Mileva.
-3. Pierre clicks into it. He sees affected categories (water, ice cream, dairy) and a list of **nearby suppliers with available stock**, ranked by distance + availability.
-4. Pierre selects one — "Brasserie Éco-Vallée, 8.4 km, livraison J+1." Clicks "Contacter."
+3. Olivier clicks into it. He sees affected categories (water, ice cream, dairy) and a list of **nearby suppliers with available stock**, ranked by distance + availability.
+4. Olivier selects one — "Brasserie Éco-Vallée, 8.4 km, livraison J+1." Clicks "Contacter."
 5. A modal appears: call / email / message + "Envoyer une demande de devis." Confirmation: *"Demande envoyée. Brasserie Éco-Vallée a été notifié."*
-6. Optionally: navigate to `/daily` to show the surplus side — Pierre has too much of something else, sees who nearby wants it.
+6. Optionally: navigate to `/daily` to show the surplus side — Olivier has too much of something else, sees who nearby wants it.
 
 **Anything that doesn't directly serve this script is out of scope until after June 12.**
 

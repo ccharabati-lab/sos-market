@@ -2,18 +2,13 @@
 
 import { useEffect, useState } from 'react';
 import {
-  Clock,
-  TriangleAlert,
-  Store,
   MapPin,
   ExternalLink,
-  Package,
   Route,
   ShieldCheck,
 } from 'lucide-react';
 import AlertCard from './dashboard/AlertCard';
 import { SkeletonLoader } from './ui/feedback';
-import { CountdownStatCard, GaugeStatCard, NumberStatCard } from './ui/stat-card';
 import { shiftDemoDate } from './ui/utils';
 import {
   fetchAlerts,
@@ -465,47 +460,6 @@ function toneClasses(tone: 'red' | 'amber' | 'green'): string {
   }[tone];
 }
 
-function computeRiskScore(alerts: MilevaAlert[]): number {
-  if (alerts.length === 0) return 0;
-  const weights: Record<MilevaAlert['severity'], number> = {
-    critical: 100,
-    warning: 62,
-    info: 28,
-  };
-  const total = alerts.reduce(
-    (sum, alert) => sum + weights[alert.severity] * Math.max(alert.confidence || 0.4, 0.4),
-    0,
-  );
-  return Math.min(100, Math.round(total / alerts.length));
-}
-
-function riskLabel(score: number): string {
-  if (score >= 70) return 'Risque élevé';
-  if (score >= 45) return 'Risque modéré';
-  return 'Risque maîtrisé';
-}
-
-function nearestCriticalDate(alerts: MilevaAlert[]): Date | null {
-  const candidates = alerts
-    .filter((alert) => alert.severity === 'critical')
-    .map((alert) => shiftDemoDate(alert.startTime) ?? shiftDemoDate(alert.detectedAt))
-    .filter(Boolean)
-    .map((value) => new Date(value as string))
-    .filter((date) => !Number.isNaN(date.getTime()));
-
-  if (candidates.length === 0) return null;
-
-  const now = Date.now();
-  const future = candidates
-    .filter((d) => d.getTime() >= now)
-    .sort((a, b) => a.getTime() - b.getTime());
-  if (future.length > 0) return future[0];
-
-  return candidates.sort(
-    (a, b) => Math.abs(a.getTime() - now) - Math.abs(b.getTime() - now),
-  )[0];
-}
-
 function ProductRiskCard({ risk }: { risk: ProductRisk }) {
   const tone = riskTone(risk.riskScore);
   return (
@@ -656,17 +610,35 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
     };
   }, []);
 
-  const firstCritical = alerts.find((c) => c.severity === 'critical');
-  const criticalCount = alerts.filter((alert) => alert.severity === 'critical').length;
-  const warningCount = alerts.filter((alert) => alert.severity === 'warning').length;
-  const riskScore = computeRiskScore(alerts);
-  const nearestCritical = nearestCriticalDate(alerts);
-  const totalSuppliers = new Set(
-    Object.values(suppliersByCategory).flat().map((s) => s.owner_id || s.id),
-  ).size;
-
   const originLat = profile?.lat ?? FALLBACK_LAT;
   const originLng = profile?.lng ?? FALLBACK_LNG;
+
+  const severityRank: Record<string, number> = { critical: 0, warning: 1, info: 2 };
+  const sortBySeverity = (list: MilevaAlert[]) =>
+    [...list].sort((a, b) => (severityRank[a.severity] ?? 9) - (severityRank[b.severity] ?? 9));
+  const localAlerts = sortBySeverity(alerts.filter((a) => a.regionLevel === 'local'));
+  const globalAlerts = sortBySeverity(alerts.filter((a) => a.regionLevel !== 'local'));
+  const firstAlertId = (localAlerts[0] ?? globalAlerts[0])?.id;
+
+  const renderAlertCard = (crisis: MilevaAlert) => {
+    const alert = adaptAlert(crisis);
+    const adaptedSuppliers = withDemoSupplierFallback(
+      crisis,
+      suppliersForCrisis(crisis, suppliersByCategory).map(adaptSupplier),
+      originLat,
+      originLng,
+    );
+    return (
+      <AlertCard
+        key={alert.id}
+        alert={alert}
+        suppliers={adaptedSuppliers}
+        defaultExpanded={alert.id === firstAlertId}
+        originLat={originLat}
+        originLng={originLng}
+      />
+    );
+  };
 
   const topProductRisks = [...productRisks]
     .sort((a, b) => b.riskScore - a.riskScore)
@@ -687,70 +659,37 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
         </div>
       )}
 
-      <div className="mb-10 grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-        <NumberStatCard
-          icon={TriangleAlert}
-          tone="critical"
-          label="Alertes actives"
-          value={loading ? 0 : alerts.length}
-          subLabel={`${criticalCount} critique${criticalCount > 1 ? 's' : ''} · ${warningCount} avertissement${warningCount > 1 ? 's' : ''}`}
-        />
-        <GaugeStatCard
-          score={loading ? 0 : riskScore}
-          label={riskLabel(riskScore)}
-          note="Agrégé à partir de la sévérité et de la confiance Mileva."
-        />
-        <CountdownStatCard
-          icon={Clock}
-          label="Fenêtre d'anticipation"
-          targetTime={nearestCritical}
-          subLabel={firstCritical ? firstCritical.title : 'Aucune alerte critique active'}
-        />
-        <NumberStatCard
-          icon={Store}
-          tone="green"
-          label="Fournisseurs mobilisables"
-          value={totalSuppliers}
-          subLabel="dans un rayon de 15 km"
-        />
-      </div>
-
       <section id="alerts" className="scroll-mt-24">
-        <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
-          Alertes en cours
-        </p>
-      <div className="flex flex-col gap-4">
         {loading ? (
-          <>
+          <div className="flex flex-col gap-4">
             <SkeletonLoader className="h-32" />
             <SkeletonLoader className="h-32" />
             <SkeletonLoader className="h-32" />
-          </>
+          </div>
         ) : (
-          alerts.map((crisis, i) => {
-            const alert = adaptAlert(crisis);
-            const adaptedSuppliers = withDemoSupplierFallback(
-              crisis,
-              suppliersForCrisis(crisis, suppliersByCategory).map(adaptSupplier),
-              originLat,
-              originLng,
-            );
-            return (
-              <AlertCard
-                key={alert.id}
-                alert={alert}
-                suppliers={adaptedSuppliers}
-                defaultExpanded={i === 0}
-                originLat={originLat}
-                originLng={originLng}
-              />
-            );
-          })
+          <div className="flex flex-col gap-8">
+            {localAlerts.length > 0 && (
+              <div>
+                <p className="mb-3 text-sm lowercase text-text-muted">local</p>
+                <div className="flex flex-col gap-4">
+                  {localAlerts.map(renderAlertCard)}
+                </div>
+              </div>
+            )}
+            {globalAlerts.length > 0 && (
+              <div>
+                <p className="mb-3 text-sm lowercase text-text-muted">global</p>
+                <div className="flex flex-col gap-4">
+                  {globalAlerts.map(renderAlertCard)}
+                </div>
+              </div>
+            )}
+          </div>
         )}
-      </div>
       </section>
 
-      {!loading && signals.length > 0 && (
+      {/* PARKED for §5 Prévisions: « Signaux locaux » data wiring kept intact (fetchLocalSignals → signals), relocated out of Alertes per renovation spec §2.1. Restore/move to /reports in a later phase. */}
+      {false && !loading && signals.length > 0 && (
         <div className="mt-10">
           <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
             Signaux locaux — axe Paris-Saclay
