@@ -14,6 +14,7 @@ export interface MapPin {
   lat: number;
   lng: number;
   type: 'offer' | 'need';
+  intent?: 'buy' | 'sell';
   label?: string;
 }
 
@@ -25,14 +26,11 @@ interface MapViewProps {
   className?: string;
 }
 
-const ARROW_UP = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="17 11 12 6 7 11"/><polyline points="17 18 12 13 7 18"/></svg>';
-const ARROW_DOWN = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="7 6 12 11 17 6"/><polyline points="7 13 12 18 17 13"/></svg>';
-
-function pinClassName(type: 'offer' | 'need', selected: boolean) {
+function pinClassName(intent: 'buy' | 'sell', selected: boolean) {
   return [
-    'sos-pin',
-    type === 'offer' ? 'sos-pin-offer' : 'sos-pin-need',
-    selected ? 'sos-pin-selected' : '',
+    'sos-network-pin',
+    intent === 'buy' ? 'sos-network-pin-buy' : 'sos-network-pin-sell',
+    selected ? 'sos-network-pin-selected' : '',
   ]
     .filter(Boolean)
     .join(' ');
@@ -108,18 +106,18 @@ export default function MapView({
     pins.forEach((pin) => {
       seen.add(pin.id);
       const isSelected = pin.id === selectedId;
+      const intent = pin.intent ?? (pin.type === 'need' ? 'buy' : 'sell');
       const existing = markersRef.current.get(pin.id);
 
       if (existing) {
         existing.marker.setLngLat([pin.lng, pin.lat]);
-        existing.el.className = pinClassName(pin.type, isSelected);
+        existing.el.className = pinClassName(intent, isSelected);
         if (pin.label) existing.el.title = pin.label;
       } else {
         const el = document.createElement('div');
-        el.className = pinClassName(pin.type, isSelected);
+        el.className = pinClassName(intent, isSelected);
         const inner = document.createElement('div');
-        inner.className = 'sos-pin-inner';
-        inner.innerHTML = pin.type === 'offer' ? ARROW_UP : ARROW_DOWN;
+        inner.className = 'sos-network-pin-inner';
         el.appendChild(inner);
         if (pin.label) el.title = pin.label;
         el.addEventListener('click', (e) => {

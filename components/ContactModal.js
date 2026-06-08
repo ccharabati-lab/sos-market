@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import { Phone, Mail, MessageCircle, Send, Check, X } from 'lucide-react';
 import { useContactModal } from './ContactModalProvider';
 
@@ -11,6 +12,18 @@ const channelOptions = [
 
 export default function ContactModal() {
   const { isOpen, supplier, stage, close, confirm } = useContactModal();
+
+  useEffect(() => {
+    if (!isOpen) return;
+
+    function onKeyDown(event) {
+      if (event.key === 'Escape') close();
+    }
+
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+  }, [close, isOpen]);
+
   if (!isOpen) return null;
 
   const sent = stage === 'sent';
@@ -25,7 +38,7 @@ export default function ContactModal() {
       <div className="bg-paper border border-line rounded-[14px] p-7 w-[90%] max-w-[380px] shadow-[0_20px_60px_rgba(0,0,0,0.12)] animate-pop">
         <div className="flex items-start justify-between mb-[0.3rem]">
           <h3 className="text-base font-extrabold">
-            {sent ? 'Demande envoyée ✓' : supplier}
+            {sent ? 'Demande envoyée' : supplier}
           </h3>
           <button
             onClick={close}

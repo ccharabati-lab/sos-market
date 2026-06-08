@@ -172,6 +172,55 @@ summary,
   transform: scale(1.2);
 }
 
+.sos-network-pin {
+  cursor: pointer;
+}
+
+.sos-network-pin-inner {
+  position: relative;
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+  border: 2px solid;
+  background-clip: padding-box;
+  box-shadow: 0 2px 8px rgba(26, 28, 24, 0.18);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+  transform-origin: center center;
+}
+
+.sos-network-pin-inner::after {
+  content: '';
+  position: absolute;
+  inset: 9px;
+  border-radius: 9999px;
+  background: currentColor;
+}
+
+.sos-network-pin:hover .sos-network-pin-inner {
+  transform: scale(1.12);
+}
+
+.sos-network-pin-buy .sos-network-pin-inner {
+  background: var(--color-primary-green-soft);
+  border-color: var(--color-primary-green);
+  color: var(--color-primary-green);
+}
+
+.sos-network-pin-sell .sos-network-pin-inner {
+  background: var(--color-critical-bg);
+  border-color: var(--color-critical);
+  color: var(--color-critical);
+}
+
+.sos-network-pin-selected .sos-network-pin-inner {
+  transform: scale(1.2);
+  box-shadow: 0 0 0 3px rgba(26, 31, 24, 0.25), 0 4px 12px rgba(26, 28, 24, 0.2);
+}
+
+.sos-network-pin-selected:hover .sos-network-pin-inner {
+  transform: scale(1.2);
+}
+
 /* Mapbox attribution placement: tiny, bottom-right, easy to ignore */
 .mapboxgl-ctrl-attrib.mapboxgl-compact {
   font-size: 9px;
