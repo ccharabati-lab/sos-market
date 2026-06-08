@@ -326,18 +326,9 @@ export default function ExchangeWorkspace({
 
   return (
     <section className="mx-auto w-full max-w-[1280px]">
-      <div className="mb-8 animate-fade-in">
-        <h1 className="font-display text-display text-text-primary">Gestion des stocks quotidienne</h1>
-        <p className="mt-2 text-body-lg text-text-muted">
-          {activeCount === 0
-            ? 'Publiez vos surplus et besoins pour que le réseau les voie en temps réel.'
-            : `${activeCount} publication${activeCount > 1 ? 's' : ''} active${activeCount > 1 ? 's' : ''} dans votre réseau · Mis à jour à l'instant`}
-        </p>
-      </div>
-
       <div className="mb-6 flex gap-2 overflow-x-auto rounded-xl border border-border-default bg-bg-subtle p-2" role="tablist" aria-label="Gestion des stocks">
         <DailyTabButton id="publish" active={activeTab === 'publish'} icon={Plus} label="Publier une demande" onClick={setActiveTab} />
-        <DailyTabButton id="matches" active={activeTab === 'matches'} icon={ArrowLeftRight} label="Correspondances" onClick={setActiveTab} />
+        <DailyTabButton id="matches" active={activeTab === 'matches'} icon={ArrowLeftRight} label="Acheter" onClick={setActiveTab} />
         <DailyTabButton id="map" active={activeTab === 'map'} icon={Map} label="Carte du réseau" onClick={setActiveTab} />
       </div>
 
@@ -361,7 +352,7 @@ export default function ExchangeWorkspace({
                 }`}
               >
                 <TrendingDown size={16} aria-hidden="true" />
-                Je cherche
+                J&apos;achète
               </button>
               <button
                 type="button"
@@ -374,7 +365,7 @@ export default function ExchangeWorkspace({
                 }`}
               >
                 <TrendingUp size={16} aria-hidden="true" />
-                Je propose
+                Je vends
               </button>
             </div>
 
@@ -498,7 +489,6 @@ export default function ExchangeWorkspace({
             <div className="mb-5 flex items-center justify-between gap-4">
               <div>
                 <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Vos demandes</p>
-                <h2 className="mt-1 text-h2 text-text-primary">À approvisionner</h2>
               </div>
               <StatePill>{myNeeds.length} demande{myNeeds.length > 1 ? 's' : ''}</StatePill>
             </div>

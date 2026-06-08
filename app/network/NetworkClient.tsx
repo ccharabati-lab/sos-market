@@ -66,16 +66,16 @@ export default function NetworkClient({ profile, rows }: NetworkClientProps) {
       </div>
 
       <div className="flex gap-2 mb-5">
-        <FilterTab active={filter === 'all'} onClick={() => setFilter('all')} label={`Tout (${rows.length})`} />
+        <FilterTab active={filter === 'all'} onClick={() => setFilter('all')} label="Tout" />
         <FilterTab
           active={filter === 'offer'}
           onClick={() => setFilter('offer')}
-          label={`Offres (${offerCount})`}
+          label="J'achète"
         />
         <FilterTab
           active={filter === 'need'}
           onClick={() => setFilter('need')}
-          label={`Demandes (${needCount})`}
+          label="Je vends"
         />
       </div>
 

@@ -668,7 +668,6 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
   const originLat = profile?.lat ?? FALLBACK_LAT;
   const originLng = profile?.lng ?? FALLBACK_LNG;
 
-  const alertWord = alerts.length === 1 ? 'alerte active' : 'alertes actives';
   const topProductRisks = [...productRisks]
     .sort((a, b) => b.riskScore - a.riskScore)
     .slice(0, 3);
@@ -678,13 +677,8 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
     <div className="mx-auto w-full max-w-dashboard">
       <div className="mb-8 animate-fade-in">
         <h1 className="font-display text-display text-text-primary">
-          Bonjour Pierre, voici votre situation aujourd&apos;hui
+          Bonjour Olivier, voici vos prévisions
         </h1>
-        <p className="mt-2 text-body-lg text-text-muted">
-          {loading
-            ? 'Chargement des alertes Mileva…'
-            : `Dernière mise à jour il y a 4 min · ${alerts.length} ${alertWord} sur les prochaines 48 h`}
-        </p>
       </div>
 
       {fetchError && (

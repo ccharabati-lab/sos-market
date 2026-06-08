@@ -56,9 +56,9 @@ export default function ReportsPage() {
   return (
     <section className="mx-auto w-full max-w-[1280px]">
       <div className="mb-8">
-        <h1 className="font-display text-display text-text-primary">Rapports</h1>
+        <h1 className="font-display text-display text-text-primary">Vos prévisions</h1>
         <p className="mt-2 text-body-lg text-text-muted">
-          Analyses détaillées de votre activité et des risques anticipés.
+          Le point du jour
         </p>
       </div>
 

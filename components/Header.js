@@ -100,7 +100,7 @@ export default function Header({ onOpenMobileNav }) {
             Intermarché — Gif-sur-Yvette
           </div>
           <div className="hidden truncate text-xs text-text-muted sm:block">
-            Gérant : Pierre Martin · 3 rue de la Vallée, 91190
+            Gérant : Olivier · 3 rue de la Vallée, 91190
           </div>
         </div>
       </div>

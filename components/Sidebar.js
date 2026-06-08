@@ -26,7 +26,7 @@ const navItems = [
   { href: '/dashboard#alerts', icon: Bell, label: 'Alertes', badge: 1 },
   { href: '/daily', icon: Package, label: 'Stock quotidien' },
   { href: '/network', icon: Map, label: 'Carte réseau' },
-  { href: '/reports', icon: BarChart2, label: 'Rapports' },
+  { href: '/reports', icon: BarChart2, label: 'Prévisions' },
 ];
 
 export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onMobileClose }) {
@@ -180,7 +180,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onMob
             onClick={() => setPopoverOpen((open) => !open)}
             aria-haspopup="menu"
             aria-expanded={popoverOpen}
-            title="Intermarché — Gif-sur-Yvette · Pierre Martin"
+            title="Intermarché — Gif-sur-Yvette · Olivier"
             className={`flex min-h-11 cursor-pointer items-center gap-3 rounded-xl border border-border-default bg-bg-subtle p-2 text-left transition-all duration-180 hover:border-border-emphasized hover:bg-bg-muted focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
               collapsed && !isMobile ? 'md:w-11 md:justify-center w-full' : 'w-full'
             }`}
@@ -191,7 +191,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onMob
             {(!collapsed || isMobile) && (
               <div className="min-w-0">
                 <div className="truncate text-sm font-semibold text-text-primary">Intermarché Gif</div>
-                <div className="truncate text-xs text-text-muted">Pierre Martin</div>
+                <div className="truncate text-xs text-text-muted">Olivier</div>
               </div>
             )}
           </button>
@@ -204,7 +204,7 @@ export default function Sidebar({ collapsed, onToggle, mobileOpen = false, onMob
             >
               <div className="rounded-lg bg-bg-subtle px-3 py-2">
                 <div className="text-sm font-semibold text-text-primary">Intermarché Gif-sur-Yvette</div>
-                <div className="text-xs text-text-muted">Pierre Martin · Gérant</div>
+                <div className="text-xs text-text-muted">Olivier · Gérant</div>
               </div>
               <div className="mt-2 flex flex-col gap-1">
                 <button
