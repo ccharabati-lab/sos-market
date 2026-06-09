@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   fetchAlerts,
   fetchLocalSignals,
@@ -200,7 +200,7 @@ function AlertForecastEntry({ alert }: { alert: CrisisAlert }) {
   );
 }
 
-function ForecastBlock({ title, children }: { title: string; children: string }) {
+function ForecastBlock({ title, children }: { title: string; children: ReactNode }) {
   return (
     <section className="rounded-lg bg-bg-subtle p-4">
       <h3 className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
