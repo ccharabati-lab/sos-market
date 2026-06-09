@@ -34,6 +34,20 @@ import { useToast } from './ui/toast-provider';
 
 type SearchIntent = 'need' | 'offer';
 
+const QUALITY_LABELS = [
+  'AB',
+  'Eurofeuille',
+  'Label Rouge',
+  'AOP',
+  'AOC',
+  'IGP',
+  'STG',
+  'HVE',
+  'Demeter',
+] as const;
+
+type QualityLabel = (typeof QUALITY_LABELS)[number];
+
 type ListingRow = Listing & {
   profiles: Profile | null;
 };
@@ -175,6 +189,7 @@ export default function ExchangeWorkspace({
   const [radiusKm, setRadiusKm] = useState('15');
   const [unlimitedDistance, setUnlimitedDistance] = useState(false);
   const [notes, setNotes] = useState('');
+  const [selectedLabels, setSelectedLabels] = useState<QualityLabel[]>([]);
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
   const [saveError, setSaveError] = useState<string | null>(null);
@@ -328,6 +343,7 @@ export default function ExchangeWorkspace({
       unit: unit.trim() || null,
       expires_at: expiresAt || null,
       notes: notes.trim() || null,
+      labels: selectedLabels,
       available_from: new Date().toISOString().slice(0, 10),
     });
 
@@ -346,6 +362,7 @@ export default function ExchangeWorkspace({
     setIntent(listingType === 'need' ? 'need' : 'offer');
     setQuery(productCategory);
     setNotes('');
+    setSelectedLabels([]);
     await loadListings(currentUserId);
     setSaving(false);
   }
@@ -371,6 +388,14 @@ export default function ExchangeWorkspace({
       tone: 'success',
       title: 'Publication supprimée',
     });
+  }
+
+  function toggleLabel(label: QualityLabel) {
+    setSelectedLabels((current) =>
+      current.includes(label)
+        ? current.filter((item) => item !== label)
+        : [...current, label],
+    );
   }
 
   return (
@@ -447,33 +472,61 @@ export default function ExchangeWorkspace({
                 <FieldLabel>Délai souhaité</FieldLabel>
                 <input type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} className={inputClass} />
               </label>
+            </div>
 
-              <div className="flex flex-col gap-2">
-                <div className="flex items-center justify-between gap-3">
-                  <FieldLabel>
-                    Rayon de recherche : {unlimitedDistance ? 'illimité' : `${radiusKm} km`}
-                  </FieldLabel>
-                  <label className="inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-text-secondary">
-                    <input
-                      type="checkbox"
-                      checked={unlimitedDistance}
-                      onChange={(e) => setUnlimitedDistance(e.target.checked)}
-                      className="h-4 w-4 rounded border-border-default accent-green"
-                    />
-                    Distance illimitée
-                  </label>
-                </div>
-                <input
-                  type="range"
-                  min="0"
-                  max="100"
-                  step="5"
-                  value={radiusKm}
-                  onChange={(e) => setRadiusKm(e.target.value)}
-                  disabled={unlimitedDistance}
-                  className="h-11 accent-green disabled:cursor-not-allowed disabled:opacity-45"
-                />
+            <section className="mt-5 flex flex-col gap-2" aria-labelledby="quality-labels-heading">
+              <FieldLabel>
+                <span id="quality-labels-heading">Labels (optionnel)</span>
+              </FieldLabel>
+              <div className="flex flex-wrap gap-2">
+                {QUALITY_LABELS.map((label) => {
+                  const selected = selectedLabels.includes(label);
+
+                  return (
+                    <button
+                      key={label}
+                      type="button"
+                      aria-pressed={selected}
+                      onClick={() => toggleLabel(label)}
+                      className={`inline-flex min-h-8 items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-400 focus-visible:ring-offset-2 ${
+                        selected
+                          ? 'border-[0.5px] border-text-primary bg-gray-100 text-text-primary'
+                          : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50 hover:text-text-primary'
+                      }`}
+                    >
+                      {selected && <Check size={12} aria-hidden="true" />}
+                      {label}
+                    </button>
+                  );
+                })}
               </div>
+            </section>
+
+            <div className="mt-5 flex flex-col gap-2">
+              <div className="flex items-center justify-between gap-3">
+                <FieldLabel>
+                  Rayon de recherche : {unlimitedDistance ? 'illimité' : `${radiusKm} km`}
+                </FieldLabel>
+                <label className="inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-text-secondary">
+                  <input
+                    type="checkbox"
+                    checked={unlimitedDistance}
+                    onChange={(e) => setUnlimitedDistance(e.target.checked)}
+                    className="h-4 w-4 rounded border-border-default accent-green"
+                  />
+                  Distance illimitée
+                </label>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="100"
+                step="5"
+                value={radiusKm}
+                onChange={(e) => setRadiusKm(e.target.value)}
+                disabled={unlimitedDistance}
+                className="h-11 accent-green disabled:cursor-not-allowed disabled:opacity-45"
+              />
             </div>
 
             {saveError && <InlineError>{saveError}</InlineError>}

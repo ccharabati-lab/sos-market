@@ -24,6 +24,7 @@ export interface Listing extends Record<string, unknown> {
   available_from: string | null;
   expires_at: string | null;
   notes: string | null;
+  labels: string[];
   created_at: string;
 }
 
