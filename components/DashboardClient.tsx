@@ -113,6 +113,11 @@ const DEMO_CRISIS_SUPPLIERS = [
   },
 ];
 
+const dateFmt = new Intl.DateTimeFormat('fr-FR', {
+  day: '2-digit',
+  month: '2-digit',
+});
+
 const fullDateFmt = new Intl.DateTimeFormat('fr-FR', {
   day: 'numeric',
   month: 'long',
