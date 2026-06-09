@@ -155,10 +155,12 @@ export default function ExchangeWorkspace({
   const [activeTab, setActiveTab] = useState<DailyTab>('publish');
   const [intent, setIntent] = useState<SearchIntent>('need');
   const [query, setQuery] = useState('eau');
-  const [currentUserId, setCurrentUserId] = useState(userId);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [rows, setRows] = useState<ListingRow[]>([]);
   const [myListings, setMyListings] = useState<Listing[]>(initialListings);
   const [loading, setLoading] = useState(false);
+  const [sessionLoading, setSessionLoading] = useState(true);
+  const [myListingsLoading, setMyListingsLoading] = useState(true);
   const [searchError, setSearchError] = useState<string | null>(null);
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const [selectedDemandId, setSelectedDemandId] = useState<string | null>(null);
@@ -179,6 +181,8 @@ export default function ExchangeWorkspace({
 
   const matches = useMemo(
     () => {
+      if (!currentUserId) return [];
+
       const built = buildMatches(rows, intent, query, profile, currentUserId);
       return [...built].sort((a, b) => {
         if (sortBy === 'distance') return a.distance_km - b.distance_km;
@@ -195,15 +199,28 @@ export default function ExchangeWorkspace({
 
   const selected = matches.find((match) => match.id === selectedId) ?? matches[0] ?? null;
 
-  async function loadListings() {
-    setLoading(true);
-    setSearchError(null);
-
+  async function resolveSessionUserId() {
     const {
       data: { user: sessionUser },
+      error,
     } = await supabaseBrowser.auth.getUser();
-    const effectiveUserId = sessionUser?.id ?? currentUserId;
-    setCurrentUserId(effectiveUserId);
+
+    if (error) {
+      setSearchError(error.message);
+    }
+
+    return userId || sessionUser?.id || null;
+  }
+
+  async function loadListings(ownerId: string) {
+    if (!ownerId) {
+      setMyListingsLoading(true);
+      return;
+    }
+
+    setLoading(true);
+    setMyListingsLoading(true);
+    setSearchError(null);
 
     const [networkListings, ownListings] = await Promise.all([
       supabaseBrowser
@@ -214,12 +231,13 @@ export default function ExchangeWorkspace({
       supabaseBrowser
         .from('listings')
         .select('*')
-        .eq('owner_id', effectiveUserId)
+        .eq('owner_id', ownerId)
         .order('created_at', { ascending: false }),
     ]);
 
     if (networkListings.error || ownListings.error) {
       setSearchError(networkListings.error?.message ?? ownListings.error?.message ?? 'Chargement impossible.');
+      setMyListingsLoading(false);
       setLoading(false);
       return;
     }
@@ -227,13 +245,57 @@ export default function ExchangeWorkspace({
     const nextRows = (networkListings.data ?? []) as unknown as ListingRow[];
     setRows(nextRows);
     setMyListings((ownListings.data ?? []) as Listing[]);
+    setMyListingsLoading(false);
     setLoading(false);
   }
 
   useEffect(() => {
-    loadListings();
+    let active = true;
+
+    async function boot() {
+      setSessionLoading(true);
+      const resolvedUserId = await resolveSessionUserId();
+      if (!active) return;
+
+      if (!resolvedUserId) {
+        setCurrentUserId(null);
+        setMyListings([]);
+        setSessionLoading(false);
+        setMyListingsLoading(true);
+        return;
+      }
+
+      setCurrentUserId(resolvedUserId);
+      setSessionLoading(false);
+      await loadListings(resolvedUserId);
+    }
+
+    void boot();
+
+    const {
+      data: { subscription },
+    } = supabaseBrowser.auth.onAuthStateChange((_event, session) => {
+      const nextUserId = userId || session?.user?.id || null;
+
+      if (!nextUserId) {
+        setCurrentUserId(null);
+        setMyListings([]);
+        setSessionLoading(false);
+        setMyListingsLoading(true);
+        return;
+      }
+
+      setCurrentUserId(nextUserId);
+      setSessionLoading(false);
+      void loadListings(nextUserId);
+    });
+
+    return () => {
+      active = false;
+      subscription.unsubscribe();
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
     setSelectedId(matches[0]?.id ?? null);
@@ -246,6 +308,11 @@ export default function ExchangeWorkspace({
 
     if (!profile) {
       setSaveError('Votre profil organisation est manquant. Reconnectez-vous ou recréez le profil avant de publier.');
+      return;
+    }
+
+    if (!currentUserId) {
+      setSaveError('Session en cours de chargement. Réessayez dans un instant.');
       return;
     }
 
@@ -279,7 +346,7 @@ export default function ExchangeWorkspace({
     setIntent(listingType === 'need' ? 'need' : 'offer');
     setQuery(productCategory);
     setNotes('');
-    await loadListings();
+    await loadListings(currentUserId);
     setSaving(false);
   }
 
@@ -287,6 +354,7 @@ export default function ExchangeWorkspace({
   const myOffers = myListings.filter((listing) => listing.type === 'offer');
   const selectedDemand = myNeeds.find((listing) => listing.id === selectedDemandId) ?? myNeeds[0] ?? null;
   const panelMatches = matches.slice(0, 5);
+  const myListingsPending = sessionLoading || myListingsLoading || !currentUserId;
 
   function selectDemand(listing: Listing) {
     setSelectedDemandId(listing.id);
@@ -430,7 +498,12 @@ export default function ExchangeWorkspace({
               </div>
             </div>
 
-            {myListings.length === 0 ? (
+            {myListingsPending ? (
+              <div className="flex min-h-32 items-center justify-center gap-2 rounded-xl border border-dashed border-border-default bg-bg-subtle p-6 text-sm font-semibold text-text-muted">
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                Chargement des publications...
+              </div>
+            ) : myListings.length === 0 ? (
               <EmptyState title="Aucune publication active" description="Publiez un besoin ou un surplus pour le rendre visible aux magasins et producteurs proches." />
             ) : (
               <div className="grid gap-3">
@@ -482,10 +555,19 @@ export default function ExchangeWorkspace({
               <div>
                 <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Vos demandes</p>
               </div>
-              <StatePill>{myNeeds.length} demande{myNeeds.length > 1 ? 's' : ''}</StatePill>
+              <StatePill>
+                {myListingsPending
+                  ? 'Chargement'
+                  : `${myNeeds.length} demande${myNeeds.length > 1 ? 's' : ''}`}
+              </StatePill>
             </div>
 
-            {myNeeds.length === 0 ? (
+            {myListingsPending ? (
+              <div className="flex min-h-32 items-center justify-center gap-2 rounded-xl border border-dashed border-border-default bg-bg-subtle p-6 text-sm font-semibold text-text-muted">
+                <Loader2 size={16} className="animate-spin" aria-hidden="true" />
+                Chargement des demandes...
+              </div>
+            ) : myNeeds.length === 0 ? (
               <EmptyState title="Aucune demande publiée" description="Publiez d'abord une demande pour faire apparaître les correspondances du réseau." />
             ) : (
               <div className="grid gap-3">
@@ -530,7 +612,13 @@ export default function ExchangeWorkspace({
                 <FieldLabel>Produit ou catégorie</FieldLabel>
                 <SearchInput value={query} onChange={(e) => setQuery(e.target.value)} onClear={() => setQuery('')} placeholder="eau, légumes, pain..." />
               </label>
-              <PrimaryButton type="button" onClick={loadListings} disabled={loading}>
+              <PrimaryButton
+                type="button"
+                onClick={() => {
+                  if (currentUserId) void loadListings(currentUserId);
+                }}
+                disabled={loading || !currentUserId}
+              >
                 {loading ? <Loader2 size={16} className="animate-spin" aria-hidden="true" /> : <Search size={16} aria-hidden="true" />}
                 Matcher
               </PrimaryButton>
