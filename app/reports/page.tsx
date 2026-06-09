@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useMemo, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import {
   fetchAlerts,
   fetchLocalSignals,
@@ -11,7 +11,7 @@ import {
   type Scenario,
 } from '../../lib/mileva';
 import { DEMO_CRISIS_ALERTS } from '../../lib/demo-data';
-import { SeverityBadge, type Severity } from '../../components/ui/badges';
+import { SeverityBadge } from '../../components/ui/badges';
 import { SkeletonLoader } from '../../components/ui/feedback';
 
 const fullDateFmt = new Intl.DateTimeFormat('fr-FR', {
@@ -20,7 +20,7 @@ const fullDateFmt = new Intl.DateTimeFormat('fr-FR', {
   year: 'numeric',
 });
 
-const severityRank: Record<CrisisAlert['severity'], number> = {
+const severityRank: Record<string, number> = {
   critical: 0,
   warning: 1,
   info: 2,
@@ -170,6 +170,11 @@ export default function ReportsPage() {
 }
 
 function AlertForecastEntry({ alert }: { alert: CrisisAlert }) {
+  const severity = alert.severity === 'critical' || alert.severity === 'warning' || alert.severity === 'info'
+    ? alert.severity
+    : 'info';
+  const sourcesLine = `${sourceNames(alert)} · ${formatDate(alert.detectedAt)}`;
+
   return (
     <article
       id={`alert-${alert.id}`}
@@ -177,7 +182,7 @@ function AlertForecastEntry({ alert }: { alert: CrisisAlert }) {
     >
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">
         <div className="min-w-0">
-          <SeverityBadge severity={alert.severity as Severity} className="mb-3" />
+          <SeverityBadge severity={severity} className="mb-3" />
           <h2 className="text-h2 text-text-primary">{alert.title}</h2>
         </div>
         <div className="rounded-full border border-border-default bg-bg-subtle px-3 py-1 text-xs font-semibold text-text-muted">
@@ -193,14 +198,14 @@ function AlertForecastEntry({ alert }: { alert: CrisisAlert }) {
           {whyText(alert)}
         </ForecastBlock>
         <ForecastBlock title="Sources">
-          {sourceNames(alert)} · {formatDate(alert.detectedAt)}
+          {sourcesLine}
         </ForecastBlock>
       </div>
     </article>
   );
 }
 
-function ForecastBlock({ title, children }: { title: string; children: ReactNode }) {
+function ForecastBlock({ title, children }: { title: string; children: string }) {
   return (
     <section className="rounded-lg bg-bg-subtle p-4">
       <h3 className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
