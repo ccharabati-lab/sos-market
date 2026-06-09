@@ -1,6 +1,7 @@
 import { redirect } from 'next/navigation';
 import { createServerSupabase } from '../../lib/supabase-server';
 import { DEMO_CRISIS_ALERTS } from '../../lib/demo-data';
+import milevaAlertsFile from '../../public/data/global_supply_risks/global_supply_risk_alerts_20260513.json';
 import NetworkClient from './NetworkClient';
 import type { CrisisAlert, Listing, Profile } from '../../types';
 
@@ -16,6 +17,12 @@ type SolutionAlert = {
   id: string;
   title: string;
   affectedCategories: string[];
+};
+
+type RawMilevaAlert = {
+  alert_id: string;
+  title: string;
+  affected_categories?: string[];
 };
 
 function firstParam(value?: string | string[]) {
@@ -34,6 +41,18 @@ function demoAlertById(id: string): SolutionAlert | null {
     id: alert.id,
     title: alert.title,
     affectedCategories: alert.affectedCategories,
+  };
+}
+
+function milevaAlertById(id: string): SolutionAlert | null {
+  const alerts = (milevaAlertsFile as { alerts?: RawMilevaAlert[] }).alerts ?? [];
+  const alert = alerts.find((item) => item.alert_id === id);
+  if (!alert) return null;
+
+  return {
+    id: alert.alert_id,
+    title: alert.title,
+    affectedCategories: alert.affected_categories ?? [],
   };
 }
 
@@ -85,6 +104,7 @@ export default async function NetworkPage({ searchParams }: NetworkPageProps) {
 
     solutionAlert =
       solutionAlert ??
+      milevaAlertById(alertId) ??
       demoAlertById(alertId) ?? {
         id: alertId,
         title: 'Alerte introuvable',
@@ -92,5 +112,12 @@ export default async function NetworkPage({ searchParams }: NetworkPageProps) {
       };
   }
 
-  return <NetworkClient profile={profile} rows={rows} solutionAlert={solutionAlert} />;
+  return (
+    <NetworkClient
+      userId={user.id}
+      profile={profile}
+      rows={rows}
+      solutionAlert={solutionAlert}
+    />
+  );
 }

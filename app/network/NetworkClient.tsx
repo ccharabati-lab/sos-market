@@ -24,6 +24,7 @@ type NetworkRow = Listing & {
 };
 
 interface NetworkClientProps {
+  userId: string;
   profile: Profile | null;
   rows: Array<Listing & { profiles: Profile }>;
   solutionAlert?: SolutionAlert | null;
@@ -43,6 +44,8 @@ const CATEGORY_ALIASES: Record<string, string[]> = {
   produits_laitiers: ['produits laitiers', 'laitier', 'lait', 'yaourt', 'fromage', 'creme'],
   fruits_legumes: ['fruits', 'legumes', 'fruits et legumes', 'primeur'],
   epicerie_seche: ['epicerie', 'epicerie seche', 'lentilles', 'sec'],
+  pain_viennoiserie: ['pain', 'viennoiserie', 'farine', 'cereales'],
+  brsa: ['boisson', 'boissons', 'soda', 'sodas', 'jus'],
 };
 
 function toRad(deg: number) {
@@ -125,7 +128,12 @@ function solvesAlert(row: Listing, terms: string[]) {
   return terms.some((term) => haystack.includes(term));
 }
 
-export default function NetworkClient({ profile, rows, solutionAlert = null }: NetworkClientProps) {
+export default function NetworkClient({
+  userId,
+  profile,
+  rows,
+  solutionAlert = null,
+}: NetworkClientProps) {
   const [filter, setFilter] = useState<FilterMode>('all');
   const [selectedId, setSelectedId] = useState<string | null>(null);
   const { open } = useContactModal() as { open: (supplier: string) => void };
@@ -150,14 +158,14 @@ export default function NetworkClient({ profile, rows, solutionAlert = null }: N
   const visible = useMemo(() => {
     if (solutionMode) {
       return rankedRows.filter(
-        (row) => row.owner_id !== profile?.id && solvesAlert(row, alertTerms),
+        (row) => row.owner_id !== userId && solvesAlert(row, alertTerms),
       );
     }
 
     if (filter === 'available') return rankedRows.filter((row) => row.type === 'offer');
     if (filter === 'wanted') return rankedRows.filter((row) => row.type === 'need');
     return rankedRows;
-  }, [alertTerms, filter, profile?.id, rankedRows, solutionMode]);
+  }, [alertTerms, filter, rankedRows, solutionMode, userId]);
 
   const selected = visible.find((row) => row.id === selectedId) ?? visible[0] ?? null;
   const selectedForMap = selected?.id ?? null;

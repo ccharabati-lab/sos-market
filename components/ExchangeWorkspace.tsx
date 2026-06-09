@@ -155,6 +155,7 @@ export default function ExchangeWorkspace({
   const [activeTab, setActiveTab] = useState<DailyTab>('publish');
   const [intent, setIntent] = useState<SearchIntent>('need');
   const [query, setQuery] = useState('eau');
+  const [currentUserId, setCurrentUserId] = useState(userId);
   const [rows, setRows] = useState<ListingRow[]>([]);
   const [myListings, setMyListings] = useState<Listing[]>(initialListings);
   const [loading, setLoading] = useState(false);
@@ -178,7 +179,7 @@ export default function ExchangeWorkspace({
 
   const matches = useMemo(
     () => {
-      const built = buildMatches(rows, intent, query, profile, userId);
+      const built = buildMatches(rows, intent, query, profile, currentUserId);
       return [...built].sort((a, b) => {
         if (sortBy === 'distance') return a.distance_km - b.distance_km;
         if (sortBy === 'freshness') {
@@ -189,7 +190,7 @@ export default function ExchangeWorkspace({
         return b.score - a.score;
       });
     },
-    [intent, profile, query, rows, sortBy, userId],
+    [currentUserId, intent, profile, query, rows, sortBy],
   );
 
   const selected = matches.find((match) => match.id === selectedId) ?? matches[0] ?? null;
@@ -198,21 +199,34 @@ export default function ExchangeWorkspace({
     setLoading(true);
     setSearchError(null);
 
-    const { data, error } = await supabaseBrowser
-      .from('listings')
-      .select('*, profiles(*)')
-      .order('created_at', { ascending: false })
-      .limit(80);
+    const {
+      data: { user: sessionUser },
+    } = await supabaseBrowser.auth.getUser();
+    const effectiveUserId = sessionUser?.id ?? currentUserId;
+    setCurrentUserId(effectiveUserId);
 
-    if (error) {
-      setSearchError(error.message);
+    const [networkListings, ownListings] = await Promise.all([
+      supabaseBrowser
+        .from('listings')
+        .select('*, profiles(*)')
+        .order('created_at', { ascending: false })
+        .limit(80),
+      supabaseBrowser
+        .from('listings')
+        .select('*')
+        .eq('owner_id', effectiveUserId)
+        .order('created_at', { ascending: false }),
+    ]);
+
+    if (networkListings.error || ownListings.error) {
+      setSearchError(networkListings.error?.message ?? ownListings.error?.message ?? 'Chargement impossible.');
       setLoading(false);
       return;
     }
 
-    const nextRows = (data ?? []) as unknown as ListingRow[];
+    const nextRows = (networkListings.data ?? []) as unknown as ListingRow[];
     setRows(nextRows);
-    setMyListings(nextRows.filter((row) => row.owner_id === userId));
+    setMyListings((ownListings.data ?? []) as Listing[]);
     setLoading(false);
   }
 
@@ -239,7 +253,7 @@ export default function ExchangeWorkspace({
 
     const parsedQuantity = quantity.trim() ? Number.parseInt(quantity, 10) : null;
     const { error } = await supabaseBrowser.from('listings').insert({
-      owner_id: userId,
+      owner_id: currentUserId,
       type: listingType,
       product_category: productCategory.trim(),
       product_name: productName.trim(),
