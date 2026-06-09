@@ -107,6 +107,11 @@ function formatExpiry(date: string | null) {
   );
 }
 
+function listingInfoLine(listing: Listing) {
+  const qty = [listing.quantity, listing.unit].filter(Boolean).join(' ');
+  return [qty || 'quantité à confirmer', formatExpiry(listing.expires_at)].join(' · ');
+}
+
 function typeLabel(type: ListingType) {
   return type === 'offer' ? 'Surplus disponible' : 'Besoin signalé';
 }
@@ -398,6 +403,24 @@ export default function ExchangeWorkspace({
     );
   }
 
+  function renderLabelChips(labels: string[] | null | undefined) {
+    const visibleLabels = labels ?? [];
+    if (visibleLabels.length === 0) return null;
+
+    return (
+      <div className="mt-2 flex flex-wrap gap-1.5">
+        {visibleLabels.map((label) => (
+          <span
+            key={label}
+            className="inline-block max-w-36 truncate rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium leading-5 text-gray-600"
+          >
+            {label}
+          </span>
+        ))}
+      </div>
+    );
+  }
+
   return (
     <section className="mx-auto w-full max-w-[1280px]">
       <div className="mb-6 flex gap-2 overflow-x-auto rounded-xl border border-border-default bg-bg-subtle p-2" role="tablist" aria-label="Gestion des stocks">
@@ -563,7 +586,6 @@ export default function ExchangeWorkspace({
                 {myListings.slice(0, 5).map((listing) => {
                   const isBuying = listing.type === 'need';
                   const Icon = isBuying ? TrendingUp : TrendingDown;
-                  const qty = [listing.quantity, listing.unit].filter(Boolean).join(' ');
                   return (
                     <div key={listing.id} className="grid gap-3 rounded-xl border border-border-default bg-bg-subtle p-4 transition-all duration-180 hover:-translate-y-0.5 hover:bg-white hover:shadow-level-1 md:grid-cols-[auto_1fr_auto] md:items-center">
                       <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${isBuying ? 'bg-green-soft text-green' : 'bg-critical-bg text-critical'}`}>
@@ -571,7 +593,8 @@ export default function ExchangeWorkspace({
                       </div>
                       <div className="min-w-0">
                         <div className="font-semibold text-text-primary">{listing.product_name}</div>
-                        <div className="mt-1 text-sm text-text-muted">{listing.product_category}{qty ? ` · ${qty}` : ''} · {formatExpiry(listing.expires_at)}</div>
+                        <div className="mt-1 text-sm text-text-muted">{listingInfoLine(listing)}</div>
+                        {renderLabelChips(listing.labels)}
                       </div>
                       <div className="flex items-center gap-2">
                         <span
@@ -636,7 +659,7 @@ export default function ExchangeWorkspace({
                       }`}
                     >
                       <div className="font-semibold text-text-primary">{listing.product_name}</div>
-                      <div className="mt-1 text-sm text-text-muted">{listing.product_category} · {[listing.quantity, listing.unit].filter(Boolean).join(' ') || 'quantité à confirmer'}</div>
+                      <div className="mt-1 text-sm text-text-muted">{listingInfoLine(listing)}</div>
                     </button>
                   );
                 })}
@@ -685,7 +708,6 @@ export default function ExchangeWorkspace({
               <div className="grid gap-3">
                 {panelMatches.map((match) => {
                   const active = selected?.id === match.id;
-                  const quantityLabel = [match.quantity, match.unit].filter(Boolean).join(' ');
                   return (
                     <button
                       key={match.id}
@@ -702,7 +724,8 @@ export default function ExchangeWorkspace({
                         </div>
                         <div className="min-w-0">
                           <div className="font-semibold text-text-primary">{match.product_name}</div>
-                          <div className="mt-1 text-sm text-text-muted">{match.profile.name} · {quantityLabel || 'quantité à confirmer'}</div>
+                          <div className="mt-1 text-sm text-text-muted">{match.profile.name} · {listingInfoLine(match)}</div>
+                          {renderLabelChips(match.labels)}
                           <div className="mt-2 flex flex-wrap gap-2 text-xs text-text-muted">
                             <span className="inline-flex items-center gap-1"><MapPin size={13} aria-hidden="true" />{formatDistance(match.distance_km)}</span>
                             <span className="inline-flex items-center gap-1"><Clock size={13} aria-hidden="true" />{formatExpiry(match.expires_at)}</span>
