@@ -91,10 +91,10 @@ summary,
   position: absolute;
   inset: 0;
   border-radius: 9999px;
-  background: #28a060;
+  background: #1a1f18;
   box-shadow:
     0 0 0 4px #ffffff,
-    0 0 0 6px rgba(40, 160, 96, 0.6),
+    0 0 0 6px rgba(26, 31, 24, 0.6),
     0 2px 8px rgba(0, 0, 0, 0.25);
   animation: sos-origin-pulse 2.4s ease-in-out infinite;
 }
@@ -121,11 +121,11 @@ summary,
 
   0%,
   100% {
-    box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px rgba(40, 160, 96, 0.55), 0 2px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 0 4px #ffffff, 0 0 0 6px rgba(26, 31, 24, 0.55), 0 2px 8px rgba(0, 0, 0, 0.25);
   }
 
   50% {
-    box-shadow: 0 0 0 4px #ffffff, 0 0 0 11px rgba(40, 160, 96, 0.0), 0 2px 8px rgba(0, 0, 0, 0.25);
+    box-shadow: 0 0 0 4px #ffffff, 0 0 0 11px rgba(26, 31, 24, 0.0), 0 2px 8px rgba(0, 0, 0, 0.25);
   }
 }
 

@@ -10,7 +10,7 @@ import type { Listing, ListingType, Profile } from '../../types';
 const FALLBACK_LAT = 48.6833;
 const FALLBACK_LNG = 2.1333;
 
-type FilterMode = 'all' | 'buy' | 'sell';
+type FilterMode = 'all' | 'available' | 'wanted';
 
 type SolutionAlert = {
   id: string;
@@ -89,11 +89,11 @@ function quantityLabel(row: Listing) {
 }
 
 function intentForType(type: ListingType): 'buy' | 'sell' {
-  return type === 'need' ? 'buy' : 'sell';
+  return type === 'offer' ? 'buy' : 'sell';
 }
 
 function intentLabel(type: ListingType) {
-  return intentForType(type) === 'buy' ? "J'achète" : 'Je vends';
+  return type === 'offer' ? 'Disponible' : 'Recherché';
 }
 
 function dateLabel(row: Listing) {
@@ -154,8 +154,8 @@ export default function NetworkClient({ profile, rows, solutionAlert = null }: N
       );
     }
 
-    if (filter === 'buy') return rankedRows.filter((row) => row.type === 'need');
-    if (filter === 'sell') return rankedRows.filter((row) => row.type === 'offer');
+    if (filter === 'available') return rankedRows.filter((row) => row.type === 'offer');
+    if (filter === 'wanted') return rankedRows.filter((row) => row.type === 'need');
     return rankedRows;
   }, [alertTerms, filter, profile?.id, rankedRows, solutionMode]);
 
@@ -177,8 +177,8 @@ export default function NetworkClient({ profile, rows, solutionAlert = null }: N
     [visible],
   );
 
-  const buyCount = rankedRows.filter((r) => r.type === 'need').length;
-  const sellCount = rankedRows.filter((r) => r.type === 'offer').length;
+  const availableCount = rankedRows.filter((r) => r.type === 'offer').length;
+  const wantedCount = rankedRows.filter((r) => r.type === 'need').length;
 
   function contact(row: NetworkRow) {
     open(row.profiles.name);
@@ -208,8 +208,9 @@ export default function NetworkClient({ profile, rows, solutionAlert = null }: N
           <h1 className="text-h1 text-text-primary">Carte réseau</h1>
           <p className="mt-1 text-body-sm text-text-muted">
             {rankedRows.length} annonce{rankedRows.length > 1 ? 's' : ''} active
-            {rankedRows.length > 1 ? 's' : ''} autour de vous · {buyCount} achat
-            {buyCount > 1 ? 's' : ''}, {sellCount} vente{sellCount > 1 ? 's' : ''}.
+            {rankedRows.length > 1 ? 's' : ''} autour de vous · {availableCount} disponible
+            {availableCount > 1 ? 's' : ''}, {wantedCount} recherché
+            {wantedCount > 1 ? 's' : ''}.
           </p>
         </div>
       )}
@@ -217,8 +218,8 @@ export default function NetworkClient({ profile, rows, solutionAlert = null }: N
       {!solutionMode && (
         <div className="mb-5 flex flex-wrap gap-2">
           <FilterChip active={filter === 'all'} onClick={() => setFilter('all')} label="Tout" />
-          <FilterChip active={filter === 'buy'} onClick={() => setFilter('buy')} label="J'achète" tone="buy" />
-          <FilterChip active={filter === 'sell'} onClick={() => setFilter('sell')} label="Je vends" tone="sell" />
+          <FilterChip active={filter === 'available'} onClick={() => setFilter('available')} label="Disponible" tone="buy" />
+          <FilterChip active={filter === 'wanted'} onClick={() => setFilter('wanted')} label="Recherché" tone="sell" />
         </div>
       )}
 
@@ -232,8 +233,8 @@ export default function NetworkClient({ profile, rows, solutionAlert = null }: N
               </span>
             </div>
             <div className="flex gap-3 text-xs text-text-muted">
-              <LegendDot tone="buy" label="J'achète" />
-              <LegendDot tone="sell" label="Je vends" />
+              <LegendDot tone="buy" label="Disponible" />
+              <LegendDot tone="sell" label="Recherché" />
             </div>
           </div>
 

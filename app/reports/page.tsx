@@ -73,6 +73,10 @@ function humanizeHorizon(value: string): string {
   return labels[value] ?? value.replace(/_/g, ' ');
 }
 
+function alertAnchorId(id: string) {
+  return `alert-${id}`;
+}
+
 export default function ReportsPage() {
   const [alerts, setAlerts] = useState<CrisisAlert[]>([]);
   const [signals, setSignals] = useState<LocalSignal[]>([]);
@@ -111,6 +115,18 @@ export default function ReportsPage() {
 
   const orderedAlerts = useMemo(() => sortAlerts(alerts), [alerts]);
   const topScenarios = scenarios.slice(0, 3);
+
+  useEffect(() => {
+    if (loading || typeof window === 'undefined') return;
+
+    const hash = window.location.hash.slice(1);
+    if (!hash) return;
+
+    const targetId = decodeURIComponent(hash);
+    window.requestAnimationFrame(() => {
+      document.getElementById(targetId)?.scrollIntoView({ block: 'start' });
+    });
+  }, [loading, orderedAlerts.length]);
 
   return (
     <section className="mx-auto w-full max-w-dashboard">
@@ -177,7 +193,7 @@ function AlertForecastEntry({ alert }: { alert: CrisisAlert }) {
 
   return (
     <article
-      id={`alert-${alert.id}`}
+      id={alertAnchorId(alert.id)}
       className="scroll-mt-24 rounded-xl border border-border-default bg-white p-5 shadow-level-1"
     >
       <div className="mb-5 flex flex-wrap items-start justify-between gap-3">

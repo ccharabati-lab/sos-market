@@ -170,6 +170,7 @@ export default function ExchangeWorkspace({
   const [unit, setUnit] = useState('palettes');
   const [expiresAt, setExpiresAt] = useState('');
   const [radiusKm, setRadiusKm] = useState('15');
+  const [unlimitedDistance, setUnlimitedDistance] = useState(false);
   const [notes, setNotes] = useState('');
   const [saving, setSaving] = useState(false);
   const [saveMessage, setSaveMessage] = useState<string | null>(null);
@@ -313,10 +314,10 @@ export default function ExchangeWorkspace({
                   setIntent('need');
                 }}
                 className={`flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
-                  listingType === 'need' ? 'bg-white text-critical shadow-level-1' : 'text-text-muted hover:text-text-primary'
+                  listingType === 'need' ? 'bg-white text-green shadow-level-1' : 'text-text-muted hover:text-text-primary'
                 }`}
               >
-                <TrendingDown size={16} aria-hidden="true" />
+                <TrendingUp size={16} aria-hidden="true" />
                 J&apos;achète
               </button>
               <button
@@ -326,10 +327,10 @@ export default function ExchangeWorkspace({
                   setIntent('offer');
                 }}
                 className={`flex min-h-11 cursor-pointer items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-all duration-180 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2 ${
-                  listingType === 'offer' ? 'bg-white text-green shadow-level-1' : 'text-text-muted hover:text-text-primary'
+                  listingType === 'offer' ? 'bg-white text-critical shadow-level-1' : 'text-text-muted hover:text-text-primary'
                 }`}
               >
-                <TrendingUp size={16} aria-hidden="true" />
+                <TrendingDown size={16} aria-hidden="true" />
                 Je vends
               </button>
             </div>
@@ -365,10 +366,32 @@ export default function ExchangeWorkspace({
                 <input type="date" value={expiresAt} onChange={(e) => setExpiresAt(e.target.value)} className={inputClass} />
               </label>
 
-              <label className="flex flex-col gap-2">
-                <FieldLabel>Rayon de recherche : {radiusKm} km</FieldLabel>
-                <input type="range" min="5" max="30" step="5" value={radiusKm} onChange={(e) => setRadiusKm(e.target.value)} className="h-11 accent-green" />
-              </label>
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between gap-3">
+                  <FieldLabel>
+                    Rayon de recherche : {unlimitedDistance ? 'illimité' : `${radiusKm} km`}
+                  </FieldLabel>
+                  <label className="inline-flex cursor-pointer items-center gap-2 text-xs font-semibold text-text-secondary">
+                    <input
+                      type="checkbox"
+                      checked={unlimitedDistance}
+                      onChange={(e) => setUnlimitedDistance(e.target.checked)}
+                      className="h-4 w-4 rounded border-border-default accent-green"
+                    />
+                    Distance illimitée
+                  </label>
+                </div>
+                <input
+                  type="range"
+                  min="0"
+                  max="100"
+                  step="5"
+                  value={radiusKm}
+                  onChange={(e) => setRadiusKm(e.target.value)}
+                  disabled={unlimitedDistance}
+                  className="h-11 accent-green disabled:cursor-not-allowed disabled:opacity-45"
+                />
+              </div>
             </div>
 
             {saveError && <InlineError>{saveError}</InlineError>}
@@ -398,12 +421,12 @@ export default function ExchangeWorkspace({
             ) : (
               <div className="grid gap-3">
                 {myListings.slice(0, 5).map((listing) => {
-                  const isOffer = listing.type === 'offer';
-                  const Icon = isOffer ? TrendingUp : TrendingDown;
+                  const isBuying = listing.type === 'need';
+                  const Icon = isBuying ? TrendingUp : TrendingDown;
                   const qty = [listing.quantity, listing.unit].filter(Boolean).join(' ');
                   return (
                     <div key={listing.id} className="grid gap-3 rounded-xl border border-border-default bg-bg-subtle p-4 transition-all duration-180 hover:-translate-y-0.5 hover:bg-white hover:shadow-level-1 md:grid-cols-[auto_1fr_auto] md:items-center">
-                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${isOffer ? 'bg-green-soft text-green' : 'bg-critical-bg text-critical'}`}>
+                      <div className={`flex h-10 w-10 items-center justify-center rounded-xl ${isBuying ? 'bg-green-soft text-green' : 'bg-critical-bg text-critical'}`}>
                         <Icon size={18} aria-hidden="true" />
                       </div>
                       <div className="min-w-0">
@@ -411,7 +434,15 @@ export default function ExchangeWorkspace({
                         <div className="mt-1 text-sm text-text-muted">{listing.product_category}{qty ? ` · ${qty}` : ''} · {formatExpiry(listing.expires_at)}</div>
                       </div>
                       <div className="flex items-center gap-2">
-                        <StatePill tone={isOffer ? 'success' : 'warning'}>{isOffer ? 'En proposition' : 'En recherche'}</StatePill>
+                        <span
+                          className={`inline-flex rounded-full border px-2.5 py-1 text-xs font-semibold ${
+                            isBuying
+                              ? 'border-green/20 bg-green-soft text-green'
+                              : 'border-critical/20 bg-critical-bg text-critical'
+                          }`}
+                        >
+                          {isBuying ? "J'achète" : 'Je vends'}
+                        </span>
                         <button
                           type="button"
                           onClick={() => handleDeleted(listing.id)}
@@ -525,7 +556,6 @@ export default function ExchangeWorkspace({
                         </div>
                         <div className="flex flex-col items-start gap-2 md:items-end">
                           <StatePill tone={match.score >= 80 ? 'success' : 'neutral'}>{match.score} % match</StatePill>
-                          <span className="text-sm font-semibold text-green">Contacter</span>
                         </div>
                       </div>
                     </button>

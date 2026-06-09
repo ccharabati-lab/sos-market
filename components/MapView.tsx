@@ -106,7 +106,7 @@ export default function MapView({
     pins.forEach((pin) => {
       seen.add(pin.id);
       const isSelected = pin.id === selectedId;
-      const intent = pin.intent ?? (pin.type === 'need' ? 'buy' : 'sell');
+      const intent = pin.intent ?? (pin.type === 'offer' ? 'buy' : 'sell');
       const existing = markersRef.current.get(pin.id);
 
       if (existing) {

@@ -48,6 +48,10 @@ function briefDescription(alert: DashboardAlert) {
   return `${text.slice(0, 177).trim()}...`;
 }
 
+function alertAnchorId(id: string) {
+  return `alert-${id}`;
+}
+
 function categoryChips(alert: DashboardAlert) {
   const categories = (alert.affectedCategories ?? []).filter(Boolean);
   const visible = categories.slice(0, 4);
@@ -129,7 +133,7 @@ export default function AlertCard({ alert }: { alert: DashboardAlert }) {
           </div>
 
           <Link
-            href={`/reports#alert-${encodeURIComponent(alert.id)}`}
+            href={`/reports#${encodeURIComponent(alertAnchorId(alert.id))}`}
             className="inline-flex min-h-10 items-center justify-center rounded-md px-4 text-sm font-semibold text-text-secondary transition-colors hover:bg-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
           >
             Plus d&apos;infos
