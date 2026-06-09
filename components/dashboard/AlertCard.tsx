@@ -1,31 +1,9 @@
 'use client';
 
-import { useEffect, useId, useRef, useState } from 'react';
-import MiniMap from '../MiniMap';
-import { useContactModal } from '../ContactModalProvider';
-import {
-  ActionItem,
-  SourceLink,
-} from '../ui/action-source';
-import {
-  CategoryPill,
-  SeverityBadge,
-  severityMeta,
-  type Severity,
-} from '../ui/badges';
-import { PrimaryButton, SecondaryButton } from '../ui/buttons';
-import { useToast } from '../ui/toast-provider';
+import Link from 'next/link';
+import { useId, useState } from 'react';
+import type { Severity } from '../ui/badges';
 import { cn } from '../ui/utils';
-
-type AlertCategory = {
-  label: string;
-  tone: 'red' | 'amber' | 'neutral';
-};
-
-type AlertAction = {
-  key: string;
-  label: string;
-};
 
 type AlertSource = {
   name: string;
@@ -40,316 +18,89 @@ type DashboardAlert = {
   title: string;
   description: string;
   full_description?: string;
-  icon: string;
-  confidence?: number;
-  affected_products: AlertCategory[];
-  recommended_actions?: AlertAction[];
-  evidence?: string;
   sources?: AlertSource[];
-  attribution?: string;
-  risk_global?: string;
-  risk_specific?: string;
-  matching_notes?: string;
-  region?: string;
-  region_level?: string;
-  detected_at?: string;
-  start_time?: string;
 };
 
-export type DashboardSupplier = {
-  id: string;
-  name: string;
-  icon: string;
-  role_label?: string;
-  stock_detail: string;
-  distance_km: number;
-  availability: string;
-  availability_tone: 'ok' | 'warn';
-  lat?: number;
-  lng?: number;
+const severityStyles: Record<Severity, {
+  card: string;
+}> = {
+  critical: {
+    card: 'border-critical bg-critical-bg',
+  },
+  warning: {
+    card: 'border-warning bg-warning-bg',
+  },
+  info: {
+    card: 'border-info bg-info-bg',
+  },
 };
 
-function formatDate(value?: string) {
-  if (!value) return null;
-  return new Intl.DateTimeFormat('fr-FR', {
-    day: 'numeric',
-    month: 'long',
-    year: 'numeric',
-  }).format(new Date(value));
+function sourceLine(alert: DashboardAlert) {
+  const names = (alert.sources ?? []).map((source) => source.name).filter(Boolean);
+  return names.length > 0 ? names.join(' · ') : 'Mileva';
 }
 
-function timeStatus(value?: string) {
-  if (!value) return 'fenêtre à confirmer';
-  const target = new Date(value);
-  const diff = target.getTime() - Date.now();
-  const absHours = Math.abs(diff) / 36e5;
-  const days = Math.floor(absHours / 24);
-  const hours = Math.round(absHours % 24);
-
-  if (diff >= 0) {
-    if (days > 0) return `dans ${days} j ${hours} h`;
-    return `dans ${Math.max(1, Math.round(absHours))} h`;
-  }
-
-  if (days > 0) return `signal actif depuis ${days} j`;
-  return `signal actif depuis ${Math.max(1, Math.round(absHours))} h`;
+function briefDescription(alert: DashboardAlert) {
+  const text = alert.full_description || alert.description;
+  if (text.length <= 180) return text;
+  return `${text.slice(0, 177).trim()}...`;
 }
 
-function sourceMeta(alert: DashboardAlert) {
-  const source = alert.sources?.[0]?.name ?? 'Mileva';
-  const pieces = [`Détecté via ${source}`];
-  if (alert.region) pieces.push(alert.region);
-  return pieces.join(' · ');
-}
-
-function riskMilevaLabel(alert: DashboardAlert) {
-  const raw = [alert.risk_global, alert.risk_specific].filter(Boolean).join(' · ');
-  return raw.replace(/\s·\s[A-Z]{2}-\d+$/, '') || 'Non codé';
-}
-
-export default function AlertCard({
-  alert,
-  suppliers,
-  defaultExpanded = false,
-  originLat,
-  originLng,
-}: {
-  alert: DashboardAlert;
-  suppliers: DashboardSupplier[];
-  defaultExpanded?: boolean;
-  originLat: number;
-  originLng: number;
-}) {
-  const [expanded, setExpanded] = useState(defaultExpanded);
-  const [selectedId, setSelectedId] = useState(suppliers[0]?.id);
-  const [handled, setHandled] = useState(false);
-  const suppliersRef = useRef<HTMLDivElement>(null);
+export default function AlertCard({ alert }: { alert: DashboardAlert }) {
+  const [expanded, setExpanded] = useState(false);
   const panelId = useId();
-  const { open: openModal } = useContactModal() as { open: (supplier: string) => void };
-  const { showToast } = useToast();
-
-  function markAsHandled() {
-    setHandled(true);
-    showToast({
-      tone: 'success',
-      title: 'Alerte marquée comme gérée',
-      message: alert.title,
-    });
-  }
-
-  useEffect(() => {
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === 'Escape') setExpanded(false);
-    }
-
-    window.addEventListener('keydown', onKeyDown);
-    return () => window.removeEventListener('keydown', onKeyDown);
-  }, []);
-
-  const severity = severityMeta[alert.severity] || severityMeta.warning;
-  const confidencePct = typeof alert.confidence === 'number' ? Math.round(alert.confidence * 100) : null;
-  const selected = suppliers.find((supplier) => supplier.id === selectedId) || suppliers[0];
-  const visibleCategories = alert.affected_products.slice(0, 4);
-  const hiddenCategoryCount = Math.max(alert.affected_products.length - visibleCategories.length, 0);
-  const detectedDate = formatDate(alert.detected_at);
-  const startDate = formatDate(alert.start_time);
-  const hoverBorderClass = {
-    critical: 'hover:border-critical/60',
-    warning: 'hover:border-warning/60',
-    info: 'hover:border-info/60',
-  }[alert.severity];
-
-  function scrollToSuppliers() {
-    setExpanded(true);
-    requestAnimationFrame(() => {
-      suppliersRef.current?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    });
-  }
+  const style = severityStyles[alert.severity] ?? severityStyles.warning;
 
   return (
     <article
       className={cn(
-        'overflow-hidden rounded-2xl border bg-white shadow-level-1 transition-all duration-180 ease-out hover:-translate-y-1 hover:shadow-level-3',
-        severity.borderClass,
-        hoverBorderClass,
-        alert.severity === 'critical' && 'animate-critical-pulse motion-reduce:animate-none',
+        'overflow-hidden rounded-xl border-2 shadow-level-1 transition-all duration-180',
+        style.card,
       )}
     >
-      <button
-        type="button"
-        onClick={() => setExpanded((current) => !current)}
-        aria-expanded={expanded}
-        aria-controls={panelId}
-        className="grid w-full cursor-pointer grid-cols-[1fr_auto] items-center gap-4 p-5 text-left transition-all duration-180 hover:bg-bg-subtle focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
-      >
-        <div className="min-w-0">
-          <h3 className="text-lg font-semibold leading-[26px] text-text-primary">{alert.title}</h3>
-          <p className="mt-1 text-sm leading-5 text-text-muted">{sourceMeta(alert)}</p>
-          <div className="mt-3 flex flex-wrap items-center gap-2">
-            {confidencePct != null && (
-              <span className="rounded-full border border-border-default bg-bg-subtle px-2.5 py-1 text-xs font-semibold text-text-secondary">
-                {confidencePct} % confiance
-              </span>
-            )}
-            {visibleCategories.map((category) => (
-              <CategoryPill key={category.label}>{category.label}</CategoryPill>
-            ))}
-            {hiddenCategoryCount > 0 && <CategoryPill>+{hiddenCategoryCount} autres</CategoryPill>}
-          </div>
-        </div>
+      <div className="grid gap-3 p-4 md:grid-cols-[1fr_auto] md:items-center">
+        <button
+          type="button"
+          onClick={() => setExpanded((current) => !current)}
+          aria-expanded={expanded}
+          aria-controls={panelId}
+          className={cn(
+            '-m-2 cursor-pointer rounded-lg p-2 text-left transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2',
+            'hover:bg-white/45',
+          )}
+        >
+          <h2 className="text-lg font-semibold leading-6 text-text-primary">{alert.title}</h2>
+          <p className="mt-1 text-sm leading-5 text-text-secondary">{alert.description}</p>
+        </button>
 
-        <div className="flex flex-col items-end gap-2">
-          <SeverityBadge severity={alert.severity} />
-          <span className="text-sm font-semibold text-text-secondary">{timeStatus(alert.start_time)}</span>
-        </div>
-      </button>
+        <Link
+          href={`/network?alert=${encodeURIComponent(alert.id)}`}
+          className="inline-flex min-h-11 items-center justify-center rounded-md bg-green px-4 text-sm font-semibold text-white transition-colors hover:bg-green-dark focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
+        >
+          Solution
+        </Link>
+      </div>
 
       {expanded && (
-        <div id={panelId} className="animate-fade-in border-t border-border-default bg-bg-subtle p-5">
-          <div className="grid gap-5 lg:grid-cols-[1.15fr_0.85fr]">
-            <section className="rounded-xl border border-border-default bg-white p-5">
-              <div className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Détails & sources</div>
-              {alert.full_description && (
-                <p className="mt-3 text-sm leading-6 text-text-secondary">{alert.full_description}</p>
-              )}
-              {alert.evidence && (
-                <div className="mt-4 rounded-xl border border-border-default bg-bg-subtle p-4">
-                  <div className="mb-2 flex items-center gap-2 text-sm font-semibold text-text-primary">
-                    Pourquoi Mileva le signale
-                  </div>
-                  <p className="text-sm leading-6 text-text-secondary">{alert.evidence}</p>
-                </div>
-              )}
-
-              <div className="mt-5 grid gap-3 text-sm sm:grid-cols-2">
-                <div className="rounded-lg bg-bg-subtle p-3">
-                  <div className="text-caption uppercase tracking-[0.08em] text-text-muted">Région</div>
-                  <div className="mt-1 font-semibold text-text-primary">{alert.region || 'Non précisée'}</div>
-                </div>
-                <div className="rounded-lg bg-bg-subtle p-3">
-                  <div className="text-caption uppercase tracking-[0.08em] text-text-muted">Détection</div>
-                  <div className="mt-1 font-semibold text-text-primary">{detectedDate || 'Date inconnue'}</div>
-                </div>
-                <div className="rounded-lg bg-bg-subtle p-3">
-                  <div className="text-caption uppercase tracking-[0.08em] text-text-muted">Risque Mileva</div>
-                  <div className="mt-1 font-semibold text-text-primary">{riskMilevaLabel(alert)}</div>
-                </div>
-                <div className="rounded-lg bg-bg-subtle p-3">
-                  <div className="text-caption uppercase tracking-[0.08em] text-text-muted">Début estimé</div>
-                  <div className="mt-1 font-semibold text-text-primary">{startDate || 'À confirmer'}</div>
-                </div>
-              </div>
-
-              {alert.matching_notes && (
-                <p className="mt-4 rounded-lg border border-border-default bg-white p-3 text-sm leading-6 text-text-secondary">
-                  {alert.matching_notes}
-                </p>
-              )}
-
-              <div className="mt-5">
-                <div className="mb-3 text-sm font-semibold text-text-primary">Sources</div>
-                <div className="grid gap-2">
-                  {(alert.sources ?? []).length > 0 ? (
-                    alert.sources?.map((source) => (
-                      <SourceLink key={`${source.name}-${source.url}`} name={source.name} url={source.url} type={source.type} />
-                    ))
-                  ) : (
-                    <p className="text-sm text-text-muted">Aucune source externe fournie.</p>
-                  )}
-                </div>
-              </div>
-
-              <div className="mt-5">
-                <div className="mb-3 text-sm font-semibold text-text-primary">Catégories impactées</div>
-                <div className="flex flex-wrap gap-2">
-                  {alert.affected_products.map((category) => (
-                    <CategoryPill key={category.label}>{category.label}</CategoryPill>
-                  ))}
-                </div>
-              </div>
-            </section>
-
-            <section className="rounded-xl border border-border-default bg-white p-5">
-              <div className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">Actions recommandées</div>
-              <ul className="mt-3 grid gap-2">
-                {(alert.recommended_actions ?? []).length > 0 ? (
-                  alert.recommended_actions?.map((action) => (
-                    <ActionItem key={action.key}>{action.label}</ActionItem>
-                  ))
-                ) : (
-                  <ActionItem>Aucune action spécifique fournie par Mileva.</ActionItem>
-                )}
-              </ul>
-
-              <div className="mt-4 grid gap-2">
-                <PrimaryButton type="button" onClick={scrollToSuppliers} disabled={suppliers.length === 0}>
-                  Voir les fournisseurs disponibles
-                </PrimaryButton>
-                <SecondaryButton type="button" onClick={markAsHandled} disabled={handled}>
-                  {handled ? 'Alerte gérée' : 'Marquer comme géré'}
-                </SecondaryButton>
-              </div>
-            </section>
+        <div
+          id={panelId}
+          className="grid gap-4 border-t border-current/15 bg-white/70 p-4 md:grid-cols-[1fr_auto] md:items-center"
+        >
+          <div>
+            <p className="text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
+              Détails & sources
+            </p>
+            <p className="mt-2 text-sm leading-6 text-text-secondary">
+              {briefDescription(alert)} Sources&nbsp;: {sourceLine(alert)}.
+            </p>
           </div>
 
-          {suppliers.length > 0 && (
-            <section ref={suppliersRef} className="mt-5 rounded-xl border border-border-default bg-white p-5">
-              <div className="mb-4 flex items-center gap-2 text-caption font-semibold uppercase tracking-[0.08em] text-green">
-                Stock disponible à proximité
-              </div>
-              <div className="grid gap-5 lg:grid-cols-[1.05fr_1fr]">
-                <MiniMap
-                  suppliers={suppliers}
-                  selectedId={selectedId}
-                  originLat={originLat}
-                  originLng={originLng}
-                />
-
-                <div className="flex flex-col gap-2">
-                  {suppliers.map((supplier) => {
-                    const active = supplier.id === selectedId;
-                    return (
-                      <button
-                        key={supplier.id}
-                        type="button"
-                        onClick={() => setSelectedId(supplier.id)}
-                        className={cn(
-                          'grid cursor-pointer grid-cols-[1fr_auto] items-center gap-3 rounded-xl border p-3 text-left transition-all duration-180 hover:-translate-y-0.5 hover:shadow-level-1 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2',
-                          active ? 'border-green bg-green-soft' : 'border-border-default bg-white hover:border-border-emphasized',
-                        )}
-                      >
-                        <span className="min-w-0">
-                          <span className="flex items-center gap-2">
-                            <span className="truncate text-sm font-semibold text-text-primary">{supplier.name}</span>
-                            {supplier.role_label && (
-                              <span className="rounded-full bg-white px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.08em] text-green">
-                                {supplier.role_label}
-                              </span>
-                            )}
-                          </span>
-                          <span className="mt-0.5 block truncate text-sm text-text-muted">{supplier.stock_detail}</span>
-                        </span>
-                        <span className="text-right text-sm">
-                          <span className="block font-semibold text-green">{supplier.distance_km} km</span>
-                          <span className={cn('block text-xs', supplier.availability_tone === 'warn' ? 'text-warning' : 'text-text-muted')}>
-                            {supplier.availability}
-                          </span>
-                        </span>
-                      </button>
-                    );
-                  })}
-
-                  <PrimaryButton type="button" className="mt-2" onClick={() => selected && openModal(selected.name)}>
-                    Contacter le fournisseur sélectionné
-                  </PrimaryButton>
-                </div>
-              </div>
-            </section>
-          )}
-
-          {alert.attribution && (
-            <div className="mt-4 text-right font-mono text-xs text-text-muted">{alert.attribution}</div>
-          )}
+          <Link
+            href={`/reports#alert-${encodeURIComponent(alert.id)}`}
+            className="inline-flex min-h-10 items-center justify-center rounded-md px-4 text-sm font-semibold text-text-secondary transition-colors hover:bg-white hover:text-text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
+          >
+            Plus d&apos;infos
+          </Link>
         </div>
       )}
     </article>
