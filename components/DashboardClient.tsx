@@ -52,6 +52,7 @@ function adaptAlert(alert: MilevaAlert) {
     title: alert.title,
     description: metaLine(alert),
     full_description: alert.description,
+    affectedCategories: alert.affectedCategories,
     sources: alert.sources,
   };
 }

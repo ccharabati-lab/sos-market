@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { useId, useState } from 'react';
+import { humanizeCategory } from '../../lib/mileva';
 import type { Severity } from '../ui/badges';
 import { cn } from '../ui/utils';
 
@@ -18,6 +19,7 @@ type DashboardAlert = {
   title: string;
   description: string;
   full_description?: string;
+  affectedCategories?: string[];
   sources?: AlertSource[];
 };
 
@@ -46,10 +48,21 @@ function briefDescription(alert: DashboardAlert) {
   return `${text.slice(0, 177).trim()}...`;
 }
 
+function categoryChips(alert: DashboardAlert) {
+  const categories = (alert.affectedCategories ?? []).filter(Boolean);
+  const visible = categories.slice(0, 4);
+  const hiddenCount = categories.length - visible.length;
+  return {
+    visible: visible.map((category) => humanizeCategory(category)),
+    hiddenCount,
+  };
+}
+
 export default function AlertCard({ alert }: { alert: DashboardAlert }) {
   const [expanded, setExpanded] = useState(false);
   const panelId = useId();
   const style = severityStyles[alert.severity] ?? severityStyles.warning;
+  const chips = categoryChips(alert);
 
   return (
     <article
@@ -70,6 +83,26 @@ export default function AlertCard({ alert }: { alert: DashboardAlert }) {
           )}
         >
           <h2 className="text-lg font-semibold leading-6 text-text-primary">{alert.title}</h2>
+          {chips.visible.length > 0 && (
+            <div
+              className="mt-2 flex max-w-full flex-nowrap gap-1.5 overflow-hidden"
+              aria-label="Produits concernés"
+            >
+              {chips.visible.map((category) => (
+                <span
+                  key={category}
+                  className="inline-block max-w-36 shrink-0 truncate rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium leading-5 text-gray-600"
+                >
+                  {category}
+                </span>
+              ))}
+              {chips.hiddenCount > 0 && (
+                <span className="inline-flex shrink-0 items-center rounded-full border border-gray-200 bg-gray-100 px-2 py-0.5 text-xs font-medium leading-5 text-gray-600">
+                  +{chips.hiddenCount}
+                </span>
+              )}
+            </div>
+          )}
           <p className="mt-1 text-sm leading-5 text-text-secondary">{alert.description}</p>
         </button>
 
