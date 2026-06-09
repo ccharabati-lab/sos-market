@@ -1,27 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import {
-  MapPin,
-  ExternalLink,
-  Route,
-  ShieldCheck,
-} from 'lucide-react';
 import AlertCard from './dashboard/AlertCard';
 import { SkeletonLoader } from './ui/feedback';
 import { shiftDemoDate } from './ui/utils';
 import {
   fetchAlerts,
-  fetchLocalSignals,
-  fetchProductRisks,
-  fetchScenarios,
   humanizeAction,
   humanizeCategory,
   milevaToFrCategories,
   type CrisisAlert as MilevaAlert,
-  type LocalSignal,
-  type ProductRisk,
-  type Scenario,
 } from '../lib/mileva';
 import { DEMO_CRISIS_ALERTS } from '../lib/demo-data';
 import type { MatchResult, Profile } from '../types';
@@ -124,11 +112,6 @@ const DEMO_CRISIS_SUPPLIERS = [
     lng: 2.2035,
   },
 ];
-
-const dateFmt = new Intl.DateTimeFormat('fr-FR', {
-  day: '2-digit',
-  month: '2-digit',
-});
 
 const fullDateFmt = new Intl.DateTimeFormat('fr-FR', {
   day: 'numeric',
@@ -366,210 +349,8 @@ function supplierPriority(m: MatchResult): number {
   return 3;
 }
 
-function LocalSignalCard({ signal }: { signal: LocalSignal }) {
-  const richSignal = signal as LocalSignal & {
-    impact_pathway?: string;
-    impact_level?: string;
-    time_to_retail_effect?: string;
-    reliability?: string;
-    why_kept?: string;
-  };
-  const products = (signal.impacted_products ?? [])
-    .map((p) => p.product);
-  return (
-    <div className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-white p-4 shadow-level-1">
-      <div className="flex items-start gap-2">
-        <MapPin size={15} className="mt-1 flex-shrink-0 text-green" aria-hidden="true" />
-        <div>
-          <div className="text-sm font-semibold leading-snug text-text-primary">{signal.title}</div>
-          <div className="mt-1 text-xs text-text-muted">{signal.zone ?? 'Zone locale'} · {signal.category ?? 'signal local'}</div>
-        </div>
-      </div>
-      {products.length > 0 && (
-        <div className="flex flex-wrap gap-1.5">
-          {products.map((p) => (
-            <span
-              key={p}
-              className="rounded-full border border-border-default bg-bg-subtle px-2 py-0.5 text-xs font-semibold text-text-secondary"
-            >
-              {p}
-            </span>
-          ))}
-        </div>
-      )}
-      {richSignal.impact_pathway && (
-        <p className="text-sm leading-5 text-text-secondary">{richSignal.impact_pathway}</p>
-      )}
-      <div className="grid grid-cols-2 gap-2 text-xs text-text-muted">
-        {richSignal.impact_level && <span>Niveau : {richSignal.impact_level}</span>}
-        {richSignal.reliability && <span>Fiabilité : {richSignal.reliability}</span>}
-        {richSignal.time_to_retail_effect && <span>Effet rayon : {richSignal.time_to_retail_effect}</span>}
-        {signal.date_publication && <span>Date : {dateFmt.format(new Date(signal.date_publication))}</span>}
-      </div>
-      {richSignal.why_kept && (
-        <p className="rounded-lg bg-bg-subtle p-3 text-xs leading-5 text-text-muted">{richSignal.why_kept}</p>
-      )}
-      <div className="mt-auto flex items-center justify-between pt-1 text-xs text-text-muted">
-        <span>{signal.source_name ?? 'Source inconnue'}</span>
-        {signal.source_url && (
-          <a
-            href={signal.source_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex min-h-8 items-center gap-1 rounded-md px-2 text-green transition-all duration-180 hover:bg-green-soft focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-green focus-visible:ring-offset-2"
-          >
-            Lire <ExternalLink size={11} />
-          </a>
-        )}
-      </div>
-    </div>
-  );
-}
-
-function humanizeHorizon(value: string): string {
-  const labels: Record<string, string> = {
-    court_terme: 'Court terme',
-    moyen_terme: 'Moyen terme',
-    long_terme: 'Long terme',
-    '1_3_mois': '1 à 3 mois',
-  };
-  return labels[value] ?? value.replace(/_/g, ' ');
-}
-
-function humanizeImpact(value: string): string {
-  const labels: Record<string, string> = {
-    prix: 'Prix',
-    delai: 'Délais',
-    disponibilite: 'Disponibilité',
-    qualite: 'Qualité',
-  };
-  return labels[value] ?? value.replace(/_/g, ' ');
-}
-
-function riskTone(score: number): 'red' | 'amber' | 'green' {
-  if (score >= 65) return 'red';
-  if (score >= 45) return 'amber';
-  return 'green';
-}
-
-function toneClasses(tone: 'red' | 'amber' | 'green'): string {
-  return {
-    red: 'bg-red-light text-red border-red-mid',
-    amber: 'bg-amber-light text-amber border-amber-mid',
-    green: 'bg-green-light text-green border-green-mid',
-  }[tone];
-}
-
-function ProductRiskCard({ risk }: { risk: ProductRisk }) {
-  const tone = riskTone(risk.riskScore);
-  return (
-    <div className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-white p-4 shadow-level-1">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <div className="font-semibold text-text-primary">
-            {humanizeCategory(risk.productSlug)}
-          </div>
-          <div className="mt-1 text-sm text-text-muted">
-            {risk.products.join(' · ') || risk.productFamily}
-          </div>
-        </div>
-        <span className={`rounded-full border px-2 py-1 text-xs font-bold ${toneClasses(tone)}`}>
-          {risk.riskScore}/100
-        </span>
-      </div>
-
-      <div className="grid grid-cols-2 gap-2 text-xs">
-        <div className="rounded-lg bg-bg-subtle px-2.5 py-2">
-          <div className="font-semibold text-text-muted">Horizon</div>
-          <div className="font-bold text-text-secondary">{humanizeHorizon(risk.timeHorizon)}</div>
-        </div>
-        <div className="rounded-lg bg-bg-subtle px-2.5 py-2">
-          <div className="font-semibold text-text-muted">Confiance</div>
-          <div className="font-bold text-text-secondary">{risk.confidence}</div>
-        </div>
-      </div>
-
-      <div className="flex flex-wrap gap-1.5">
-        {[...risk.impactType, ...risk.geographies].map((impact) => (
-          <span
-            key={impact}
-            className="rounded-full border border-border-default bg-bg-subtle px-2 py-0.5 text-xs font-semibold text-text-secondary"
-          >
-            {humanizeImpact(impact)}
-          </span>
-        ))}
-      </div>
-
-      <ul className="mt-auto flex flex-col gap-1.5">
-        {risk.recommendedActions.map((action) => (
-          <li key={action} className="flex gap-2 text-sm leading-snug text-text-secondary">
-            <span className="mt-[0.45rem] h-[5px] w-[5px] flex-shrink-0 rounded-full bg-green" />
-            {action}
-          </li>
-        ))}
-      </ul>
-    </div>
-  );
-}
-
-function ScenarioCard({ scenario }: { scenario: Scenario }) {
-  return (
-    <div className="flex h-full flex-col gap-3 rounded-xl border border-border-default bg-white p-4 shadow-level-1">
-      <div className="flex items-start gap-2">
-        <Route size={16} className="mt-1 flex-shrink-0 text-warning" aria-hidden="true" />
-        <div>
-          <div className="font-semibold leading-snug text-text-primary">
-            {scenario.title}
-          </div>
-          <div className="mt-1 text-xs text-text-muted">
-            Probabilité {scenario.probability} · Sévérité {scenario.severity} · {humanizeHorizon(scenario.timeHorizon)}
-          </div>
-        </div>
-      </div>
-
-      <p className="text-sm leading-6 text-text-secondary">
-        {scenario.supplyChainPathway}
-      </p>
-
-      <div className="flex flex-wrap gap-1.5">
-        {scenario.affectedProducts.slice(0, 5).map((slug) => (
-          <span
-            key={slug}
-            className="rounded-full border border-border-default bg-bg-subtle px-2 py-0.5 text-xs font-semibold text-text-secondary"
-          >
-            {humanizeCategory(slug)}
-          </span>
-        ))}
-      </div>
-
-      <div className="mt-auto border-t border-border-default pt-3">
-        <div className="mb-2 flex items-center gap-2 text-caption font-semibold uppercase tracking-[0.08em] text-green">
-          <ShieldCheck size={13} />
-          À surveiller
-        </div>
-        <div className="text-sm text-text-secondary">
-          {scenario.earlyWarningIndicators.join(' · ')}
-        </div>
-        {scenario.retailerActions.length > 0 && (
-          <ul className="mt-3 grid gap-1.5">
-            {scenario.retailerActions.map((action) => (
-              <li key={action} className="flex gap-2 text-sm text-text-secondary">
-                <span className="mt-[0.45rem] h-[5px] w-[5px] flex-shrink-0 rounded-full bg-green" />
-                {action}
-              </li>
-            ))}
-          </ul>
-        )}
-      </div>
-    </div>
-  );
-}
-
 export default function DashboardClient({ suppliersByCategory, profile }: DashboardClientProps) {
   const [alerts, setAlerts] = useState<MilevaAlert[]>([]);
-  const [signals, setSignals] = useState<LocalSignal[]>([]);
-  const [productRisks, setProductRisks] = useState<ProductRisk[]>([]);
-  const [scenarios, setScenarios] = useState<Scenario[]>([]);
   const [loading, setLoading] = useState(true);
   const [fetchError, setFetchError] = useState(false);
 
@@ -578,30 +359,19 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
     setLoading(true);
     setFetchError(false);
 
-    Promise.allSettled([
-      fetchAlerts(),
-      fetchLocalSignals(),
-      fetchProductRisks(),
-      fetchScenarios(),
-    ]).then(([alertsRes, signalsRes, productsRes, scenariosRes]) => {
+    fetchAlerts().then((nextAlerts) => {
       if (cancelled) return;
 
-      if (alertsRes.status === 'fulfilled' && alertsRes.value.length > 0) {
-        setAlerts(alertsRes.value);
+      if (nextAlerts.length > 0) {
+        setAlerts(nextAlerts);
       } else {
         setAlerts(DEMO_CRISIS_ALERTS);
-        if (alertsRes.status === 'rejected') setFetchError(true);
       }
-
-      if (signalsRes.status === 'fulfilled') {
-        setSignals(signalsRes.value);
-      } else {
-        setSignals([]);
-      }
-
-      setProductRisks(productsRes.status === 'fulfilled' ? productsRes.value : []);
-      setScenarios(scenariosRes.status === 'fulfilled' ? scenariosRes.value : []);
-
+      setLoading(false);
+    }).catch(() => {
+      if (cancelled) return;
+      setAlerts(DEMO_CRISIS_ALERTS);
+      setFetchError(true);
       setLoading(false);
     });
 
@@ -639,11 +409,6 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
       />
     );
   };
-
-  const topProductRisks = [...productRisks]
-    .sort((a, b) => b.riskScore - a.riskScore)
-    .slice(0, 3);
-  const topScenarios = scenarios.slice(0, 2);
 
   return (
     <div className="mx-auto w-full max-w-dashboard">
@@ -688,46 +453,6 @@ export default function DashboardClient({ suppliersByCategory, profile }: Dashbo
         )}
       </section>
 
-      {/* PARKED for §5 Prévisions: « Signaux locaux » data wiring kept intact (fetchLocalSignals → signals), relocated out of Alertes per renovation spec §2.1. Restore/move to /reports in a later phase. */}
-      {false && !loading && signals.length > 0 && (
-        <div className="mt-10">
-          <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
-            Signaux locaux — axe Paris-Saclay
-          </p>
-          <div className="grid gap-4 md:grid-cols-3">
-            {signals.slice(0, 3).map((s, i) => (
-              <LocalSignalCard key={`${s.title}-${i}`} signal={s} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {!loading && topScenarios.length > 0 && (
-        <div className="mt-10">
-          <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
-            Scénarios à anticiper — prospective Mileva
-          </p>
-          <div className="grid gap-4 md:grid-cols-2">
-            {topScenarios.map((scenario) => (
-              <ScenarioCard key={scenario.id} scenario={scenario} />
-            ))}
-          </div>
-        </div>
-      )}
-
-      {/* TEMP HIDDEN per Carlos: Produits à surveiller hidden for v1 demo, restore post-June 12 */}
-      {false && !loading && topProductRisks.length > 0 && (
-        <div className="mt-10">
-          <p className="mb-4 text-caption font-semibold uppercase tracking-[0.08em] text-text-muted">
-            Produits à surveiller en rayon — vue acheteur Mileva
-          </p>
-          <div className="grid gap-4 md:grid-cols-3">
-            {topProductRisks.map((risk) => (
-              <ProductRiskCard key={risk.productSlug} risk={risk} />
-            ))}
-          </div>
-        </div>
-      )}
     </div>
   );
 }
